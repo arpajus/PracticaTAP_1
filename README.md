@@ -3,4 +3,4 @@ It would be a Controller who has n Invokers. Then with a Policy Manager, when th
 
 We are going to add MultiThreading on our code. Also, we are going to apply different dessign patterns to improve our code and reduce repated code. 
 
-//Test
+//Test TEST
