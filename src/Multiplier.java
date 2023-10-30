@@ -12,6 +12,4 @@ public class Multiplier extends Action {
         }
         setResult(result);
     }
-    
-    
 }
