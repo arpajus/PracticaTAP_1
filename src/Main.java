@@ -21,16 +21,25 @@ public class Main {
     controller.addAction(mltplr1);
     //same with actions, we have to add this actions to the invoker
 
+    //This action is a test to invoke InsufficientMemoryException
+    Adder add2=new Adder("add2", 10000, values);
+    controller.addAction(add2);
+    System.out.println("----------------------");
+    iv1.setAction(add2);
+    System.out.println("----------------------");
+
+
     System.out.println("The actual memory of iv1 is "+iv1.getTotalMemory());
     System.out.println("The actual memory of iv2 is "+iv2.getTotalMemory());
 
     iv1.setAction(add1);
-    //iv1.takeMemory(add1.getMemory());
+    //in the method setAction we are invoking the method takeMemory
     System.out.println("Iv1 has 1 action");
     System.out.println("The actual memory of iv1 is "+iv1.getTotalMemory());
 
+
+
     iv2.setAction(mltplr1);
-    //iv2.takeMemory(mltplr1.getMemory());
     System.out.println("Iv2 has 1 action");
     System.out.println("The actual memory of iv1 is "+iv2.getTotalMemory());
 
@@ -51,6 +60,7 @@ public class Main {
         action.operation(); 
         System.out.println("Result of the action " + action.getId() + ": " + action.getResult());
     }
+
 }
 }
 

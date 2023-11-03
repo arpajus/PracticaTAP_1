@@ -1,5 +1,3 @@
-import javax.naming.InsufficientResourcesException;
-
 public class Invoker {
     //creo que tendra que tener un array de Action, pero de momento esta bien asi
     private Action action;
@@ -18,9 +16,9 @@ public class Invoker {
                 this.action=action;
                 takeMemory(action.getMemory()); //we take memory because exactly in this moment we've associate the action to the invoker. 
             } else{
-                throw new InsuffcientMemoryException("No enough memory to take the action");
+                throw new InsufficientMemoryException("Not enough memory to take the action");
             }
-        } catch (InsuffcientMemoryException e) {
+        } catch (InsufficientMemoryException e) {
             System.out.println("Error: "+e.getMessage());
         }
     }
