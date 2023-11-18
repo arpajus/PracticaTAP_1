@@ -7,7 +7,6 @@ public abstract class Action{
     protected int values[];
     private int result;
 
-    //Contructor, crear una nueva accion (definir codigo y identificador (son lo mismo? el id y un codigo?))
     public Action(String id, double memory, int[] values) {
         this.id = id;
         this.memory = memory;

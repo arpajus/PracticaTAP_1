@@ -3,7 +3,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-//El controler es UNICO (hacerlo unico de alguna manera)
+//El controler es UNICO (hacerlo unico de alguna manera) a nivel de clase, (solo hay un controller)
 public class Controller {
     private List<Invoker> invokers;
     private List<Action> actions;
@@ -13,7 +13,6 @@ public class Controller {
         this.actions = actions;
     }
 
-    //Contructor sin parametros crea linked list de cada uno (en vez de una lista pasada por parametros)
     public Controller() {
         this.invokers = new LinkedList<Invoker>();
         this.actions = new LinkedList<Action>();
@@ -46,15 +45,15 @@ public class Controller {
     public void executeActions() {
         Iterator<Invoker> iterator = invokers.iterator();
         while (iterator.hasNext()) {
-            //es mejor declarar dentro o fuera del bucle?
             Invoker invoker = iterator.next();
             invoker.executeAction();
-            //EL INVOKER ES EL QUE RESERVA NO EL CONTROLLER, quiza se tiene que hacer el givememory dentro del invoker? No lo se, tengo que mirar la teoria
             invoker.releaseMemory(invoker.getAction().getMemory()); 
             // we give memory because exactly in this moment we've
             // finished the action related to the concret invoker.
         }
 
+        //Esto que utilidad tiene? Osea creas un arraylist results donde añades todas las actions
+        //Pero no se usa para nada, osea imprimes directamente de la lista actions, se usara mas adelante?
         List<Action> results = new ArrayList<>();
         for (Action action : actions) {
             results.add(action);
