@@ -1,16 +1,17 @@
 import java.util.Arrays;
 
-public abstract class Action{
-    //nose si aparte de id tiene que haber un codigo, no tengo claro si id y codigo son diferentes
+public abstract class Action {
+    // nose si aparte de id tiene que haber un codigo, no tengo claro si id y codigo
+    // son diferentes
     private String id;
-    private double memory;    //memory -> MB
+    private double memory; // memory -> MB
     protected int values[];
     private int result;
 
     public Action(String id, double memory, int[] values) {
         this.id = id;
         this.memory = memory;
-        this.values=values;
+        this.values = values;
     }
 
     public String getId() {
@@ -38,18 +39,17 @@ public abstract class Action{
     }
 
     public int getResult() {
-    return result;
+        return result;
     }
 
     public void setResult(int result) {
-    this.result = result;
-    } 
-    
+        this.result = result;
+    }
 
     @Override
     public String toString() {
         return "Action: [id=" + id + ", memory=" + memory + ", values=" + Arrays.toString(values) + "]";
     }
-    
+
     public abstract void operation();
 }

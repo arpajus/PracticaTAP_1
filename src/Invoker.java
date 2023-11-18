@@ -2,6 +2,7 @@ public class Invoker {
     // creo que tendra que tener un array de Action, pero de momento esta bien asi
     private Action action;
     private double totalMemory; // memory -> MB
+    //invokers hijos?
 
     public Invoker(double totalMemory) {
         this.totalMemory = totalMemory;
@@ -15,8 +16,9 @@ public class Invoker {
         try {
             if (action.getMemory() <= totalMemory) {
                 this.action = action;
-                takeMemory(action.getMemory()); 
-                // we take memory because exactly in this moment we've associate the action to the invoker.
+                takeMemory(action.getMemory());
+                // we take memory because exactly in this moment we've associate the action to
+                // the invoker.
             } else {
                 throw new InsufficientMemoryException("Not enough memory to take the action");
             }
@@ -51,4 +53,24 @@ public class Invoker {
         action.operation();
     }
 
+    // Merece la pena añadir interfaces para todas estas clases? Pensar y decidir
+
+    // FALTAN DECORATORS, para funcionalidades adicionales como caching and timing.
+    // SON CLASES DIFERENTES?? Mirar la teoria a ver si pone algo al respecto
+
+    // Añadir jerarquia de delegacion de invokers a invokers en 3 niveles
+    // (COMPOSITE)
+
+    /*
+     * El Controller puede sobrecargarse si debe gestionar muchos Invokers. Para
+     * simplificar el
+     * proceso, cada Invoker podrá gestionar internamente diferentes niveles
+     * Invokers. Un Invoker
+     * podrá pasar una petición de invocación a los Invokers de niveles más bajos.
+     * Implementad el
+     * sistema para soportar varias jerarquías (3 niveles) de Invokers que operen
+     * con normalidad y
+     * de manera transparente al Controller.
+     * Usad el patrón composite para implementar la jerarquía de Invokers.
+     */
 }
