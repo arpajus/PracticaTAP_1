@@ -4,34 +4,34 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Controller {
-    private List invokers;
+    private List<Invoker> invokers;
     private List<Action> actions;
 
-    public Controller(List invokers, List actions) {
+    public Controller(List<Invoker> invokers, List<Action> actions) {
         this.invokers = invokers;
         this.actions = actions;
     }
 
-    public List getInvokers() {
+    public List<Invoker> getInvokers() {
         return invokers;
     }
 
-    public void setInvokers(List invokers) {
+    public void setInvokers(List<Invoker> invokers) {
         this.invokers = invokers;
     }
 
-    public List getActions() {
+    public List<Action> getActions() {
         return actions;
     }
 
-    public void setActions(List actions) {
+    public void setActions(List<Action> actions) {
         this.actions = actions;
     }
 
 
     public Controller() {
-        this.invokers=new LinkedList();
-        this.actions=new LinkedList();
+        this.invokers=new LinkedList<Invoker>();
+        this.actions=new LinkedList<Action>();
     }
 
     public void addAction(Action action){
@@ -56,5 +56,4 @@ public class Controller {
             System.out.println(action);
         }
     }
-    
 }
