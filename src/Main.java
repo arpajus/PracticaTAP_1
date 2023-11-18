@@ -61,6 +61,11 @@ public class Main {
         System.out.println("Result of the action " + action.getId() + ": " + action.getResult());
     }
 
+    //TESTS ADRI_______________________________
+    //TESTS ADRI_______________________________
+    //TESTS ADRI_______________________________
+
+    
 }
 }
 

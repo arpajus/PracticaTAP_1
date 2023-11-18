@@ -3,10 +3,11 @@ import java.util.Arrays;
 public abstract class Action{
     //nose si aparte de id tiene que haber un codigo, no tengo claro si id y codigo son diferentes
     private String id;
-    private double memory;
+    private double memory;    //memory -> MB
     protected int values[];
     private int result;
 
+    //Contructor, crear una nueva accion (definir codigo y identificador (son lo mismo? el id y un codigo?))
     public Action(String id, double memory, int[] values) {
         this.id = id;
         this.memory = memory;
@@ -52,7 +53,4 @@ public abstract class Action{
     }
     
     public abstract void operation();
-
-    
-    
 }

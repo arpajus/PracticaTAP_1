@@ -36,7 +36,7 @@ public class Invoker {
     }
 
     //method that gives back the action memory to the invoker. We should invoke this method when the action is finished
-    public double giveMemory(double memoryToGive){
+    public double releaseMemory(double memoryToGive){
         totalMemory=totalMemory+memoryToGive;
         return totalMemory;
     }
