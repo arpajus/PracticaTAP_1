@@ -7,6 +7,7 @@ public abstract class Action {
     private double memory; // memory -> MB
     protected int values[];
     private int result;
+    private Invoker invoker;
 
     public Action(String id, double memory, int[] values) {
         this.id = id;
@@ -46,10 +47,20 @@ public abstract class Action {
         this.result = result;
     }
 
+    public void setInvoker(Invoker invoker) {
+        this.invoker = invoker;
+    }
+    
+    public Invoker getInvoker() {
+        return invoker;
+    }
+
     @Override
     public String toString() {
         return "Action: [id=" + id + ", memory=" + memory + ", values=" + Arrays.toString(values) + "]";
     }
 
     public abstract void operation();
+
+
 }

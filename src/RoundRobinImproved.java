@@ -4,8 +4,10 @@ public class RoundRobinImproved implements DistributionPolicy {
     private int currentInvokerIndex = 0; //This variable is usefull to know the last invoker that we've set an action
 
     @Override
-    public void distributeActions(ArrayList<Action> actions, ArrayList<Invoker> invokers) {
+    public boolean distributeActions(ArrayList<Action> actions, ArrayList<Invoker> invokers) {
         int initialIndex = currentInvokerIndex;
+        boolean allReturned=true;
+
         for (Action action : actions) {
             Invoker invoker = findAvailableInvoker(invokers, action);
 
@@ -15,12 +17,15 @@ public class RoundRobinImproved implements DistributionPolicy {
                     System.out.println("Action "+action.getId()+" assigned to Invoker "+(invokers.indexOf(invoker)+1));
                 } catch (InsufficientMemoryException e) {
                     System.out.println("Error assigning action to Invoker "+(invokers.indexOf(invoker)+1)+": "+e.getMessage());
+                    allReturned=false;
                 }
             } else{
                 System.out.println("No available invoker for action "+action.getId());
+                allReturned=false;
             }
         }
         currentInvokerIndex=initialIndex;
+        return allReturned;
     }
 
     private Invoker findAvailableInvoker(ArrayList<Invoker> invokers, Action action) {

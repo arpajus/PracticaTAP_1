@@ -1,26 +1,29 @@
+import java.util.ArrayList;;
 public class Invoker {
     // creo que tendra que tener un array de Action, pero de momento esta bien asi
-    private Action action;
+    private ArrayList<Action> actions;
     private double totalMemory; // memory -> MB
-    //invokers hijos?
+    // invokers hijos?
 
     public Invoker(double totalMemory) {
         this.totalMemory = totalMemory;
+        this.actions=new ArrayList<Action>();
     }
 
-    public Action getAction() {
-        return action;
+    public ArrayList<Action> getActions() {
+        return actions;
     }
 
     public void setAction(Action action) throws InsufficientMemoryException {
-            if (action.getMemory() <= totalMemory) {
-                this.action = action;
-                takeMemory(action.getMemory());
-                // we take memory because exactly in this moment we've associate the action to
-                // the invoker.
-            } else {
-                throw new InsufficientMemoryException("Not enough memory to take the action");
-            }
+        if (action.getMemory() <= totalMemory) {
+            actions.add(action);
+            action.setInvoker(this);
+            takeMemory(action.getMemory());
+            // we take memory because exactly in this moment we've associate the action to
+            // the invoker.
+        } else {
+            throw new InsufficientMemoryException("Not enough memory to take the action");
+        }
 
     }
 
@@ -47,8 +50,11 @@ public class Invoker {
     }
 
     public void executeAction() throws InsufficientMemoryException {
-        if(action!=null) action.operation();
-        else System.out.println("No action set for this invoker");
+        for (Action action : actions) {
+            System.out.println("Executing action: "+action.getId());
+            action.operation();
+        }
+        actions.clear();
     }
 
     // Merece la pena añadir interfaces para todas estas clases? Pensar y decidir

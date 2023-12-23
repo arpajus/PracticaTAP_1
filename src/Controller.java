@@ -41,7 +41,7 @@ public class Controller {
     public void setInvokers(ArrayList<Invoker> invokers) {
         this.invokers = invokers;
     }
-    
+
     public void setPolicy(DistributionPolicy policy) {
         this.policy = policy;
     }
@@ -54,43 +54,37 @@ public class Controller {
         invokers.add(invoker);
     }
 
-    public void distributeActions(){
-        policy.distributeActions(actions, invokers);
+    public boolean distributeActions() {
+        return policy.distributeActions(actions, invokers);
     }
 
     public void executeActions() {
-        Iterator<Invoker> iterator = invokers.iterator();
-        while (iterator.hasNext()) {
-            Invoker invoker = iterator.next();
-            Action invokerAction = invoker.getAction();
-
-            if (invokerAction != null && invokerAction.getMemory() <= invoker.getTotalMemory()) {
-                try {
-                    invoker.executeAction();
-                    invoker.releaseMemory(invokerAction.getMemory());
-                } catch (InsufficientMemoryException e) {
-                    System.out.println("Error executing action: " + e.getMessage());
-                }
+        for (Action action : actions) {
+            try {
+                Invoker invoker = action.getInvoker();
+                invoker.executeAction();
+                invoker.releaseMemory(action.getMemory());
+            } catch (InsufficientMemoryException e) {
+                System.out.println("Error executing actions for invoker: " + e.getMessage());
             }
         }
-        // we give memory because exactly in this moment we've
-        // finished the action related to the concret invoker.
-        // Lo comento porque no se para que sirve, y al cambiar el tipo de estructura
-        // hay que reprogramarlo
-        /*
-         * //Esto que utilidad tiene? Osea creas un arraylist results donde añades todas
-         * las actions
-         * //Pero no se usa para nada, osea imprimes directamente de la lista actions,
-         * se usara mas adelante?
-         * 
-         * }
-         */
-
     }
 
-
-    // decidir a que invoker asignar la accion (consultando sus recursos),
-    // luego si internamente un invoker esta muy "a tope" puede relegar en
-    // invokers de menor jerarquia para ayudarle (sin que el controller lo sepa)
-    // mirar la teoria para hacer esto
 }
+// we give memory because exactly in this moment we've
+// finished the action related to the concret invoker.
+// Lo comento porque no se para que sirve, y al cambiar el tipo de estructura
+// hay que reprogramarlo
+/*
+ * //Esto que utilidad tiene? Osea creas un arraylist results donde añades todas
+ * las actions
+ * //Pero no se usa para nada, osea imprimes directamente de la lista actions,
+ * se usara mas adelante?
+ * 
+ * }
+ */
+
+// decidir a que invoker asignar la accion (consultando sus recursos),
+// luego si internamente un invoker esta muy "a tope" puede relegar en
+// invokers de menor jerarquia para ayudarle (sin que el controller lo sepa)
+// mirar la teoria para hacer esto

@@ -11,5 +11,6 @@ public class Multiplier extends Action {
             result=result*values[i];
         }
         setResult(result);
+        System.out.println("Operation performed for " + getId() + ". Result: " + result);
     }
 }
