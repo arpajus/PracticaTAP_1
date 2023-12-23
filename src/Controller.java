@@ -7,11 +7,13 @@ public class Controller {
     // mirar teoria de ED y pensar que estrucutras son mejores para lo que queremos
     // hacer
     private ArrayList<Invoker> invokers;
-    private HashMap<String, Action> actions;
+    private ArrayList<Action> actions;
+    private DistributionPolicy policy;
 
-    public Controller(ArrayList<Invoker> invokers, HashMap<String, Action> actions) {
+    public Controller(ArrayList<Invoker> invokers, ArrayList<Action> actions) {
         this.invokers = invokers;
         this.actions = actions;
+        this.policy = new RoundRobin();
     }
 
     // creo que es mejor arraylist, porque los invokers son fijos (si hay 3 hay
@@ -20,7 +22,16 @@ public class Controller {
 
     public Controller() {
         this.invokers = new ArrayList<Invoker>();
-        this.actions = new HashMap<String, Action>();
+        this.actions = new ArrayList<Action>();
+        this.policy = new RoundRobin();
+    }
+
+    public ArrayList<Action> getActions() {
+        return actions;
+    }
+
+    public void setActions(ArrayList<Action> actions) {
+        this.actions = actions;
     }
 
     public ArrayList<Invoker> getInvokers() {
@@ -30,33 +41,40 @@ public class Controller {
     public void setInvokers(ArrayList<Invoker> invokers) {
         this.invokers = invokers;
     }
-
-    public HashMap<String, Action> getActions() {
-        return actions;
-    }
-
-    public void setActions(HashMap<String, Action> actions) {
-        this.actions = actions;
+    
+    public void setPolicy(DistributionPolicy policy) {
+        this.policy = policy;
     }
 
     public void addAction(Action action) {
-        actions.put(action.getId(), action);
+        actions.add(action);
     }
 
     public void addInvoker(Invoker invoker) {
         invokers.add(invoker);
     }
 
+    public void distributeActions(){
+        policy.distributeActions(actions, invokers);
+    }
+
     public void executeActions() {
         Iterator<Invoker> iterator = invokers.iterator();
         while (iterator.hasNext()) {
             Invoker invoker = iterator.next();
-            invoker.executeAction();
-            invoker.releaseMemory(invoker.getAction().getMemory());
-            // we give memory because exactly in this moment we've
-            // finished the action related to the concret invoker.
-        }
+            Action invokerAction = invoker.getAction();
 
+            if (invokerAction != null && invokerAction.getMemory() <= invoker.getTotalMemory()) {
+                try {
+                    invoker.executeAction();
+                    invoker.releaseMemory(invokerAction.getMemory());
+                } catch (InsufficientMemoryException e) {
+                    System.out.println("Error executing action: " + e.getMessage());
+                }
+            }
+        }
+        // we give memory because exactly in this moment we've
+        // finished the action related to the concret invoker.
         // Lo comento porque no se para que sirve, y al cambiar el tipo de estructura
         // hay que reprogramarlo
         /*
@@ -64,13 +82,12 @@ public class Controller {
          * las actions
          * //Pero no se usa para nada, osea imprimes directamente de la lista actions,
          * se usara mas adelante?
-         * List<Action> results = new ArrayList<>();
-         * for (Action action : actions) {
-         * results.add(action);
-         * System.out.println(action);
+         * 
          * }
          */
+
     }
+
 
     // decidir a que invoker asignar la accion (consultando sus recursos),
     // luego si internamente un invoker esta muy "a tope" puede relegar en

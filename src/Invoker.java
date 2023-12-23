@@ -12,8 +12,7 @@ public class Invoker {
         return action;
     }
 
-    public void setAction(Action action) {
-        try {
+    public void setAction(Action action) throws InsufficientMemoryException {
             if (action.getMemory() <= totalMemory) {
                 this.action = action;
                 takeMemory(action.getMemory());
@@ -22,9 +21,7 @@ public class Invoker {
             } else {
                 throw new InsufficientMemoryException("Not enough memory to take the action");
             }
-        } catch (InsufficientMemoryException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+
     }
 
     public double getTotalMemory() {
@@ -49,8 +46,9 @@ public class Invoker {
         return totalMemory;
     }
 
-    public void executeAction() {
-        action.operation();
+    public void executeAction() throws InsufficientMemoryException {
+        if(action!=null) action.operation();
+        else System.out.println("No action set for this invoker");
     }
 
     // Merece la pena añadir interfaces para todas estas clases? Pensar y decidir
