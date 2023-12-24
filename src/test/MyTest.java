@@ -18,17 +18,18 @@ import org.junit.jupiter.api.extension.InvocationInterceptor.Invocation;
 
 public class MyTest {
 
-    Controller controller = new Controller();
+    Controller controller;
     RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
     int[] values = { 1, 2, 3, 4 };
 
     @Test
     public void createInvokers() {
-
+        Controller.resetInstance();
+        controller = Controller.getInstance();
         controller.setPolicy(roundRobinImproved);
 
-        Invoker iv1 = new Invoker(1000,1);
-        Invoker iv2 = new Invoker(2000,2);
+        Invoker iv1 = new Invoker(1000, 1);
+        Invoker iv2 = new Invoker(2000, 2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -44,6 +45,8 @@ public class MyTest {
 
     @Test
     public void addRegularActions() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
         Adder add1 = new Adder("add1", 1500, values);
         Multiplier mltplr1 = new Multiplier("mltplr1", 200, values);
 
@@ -56,6 +59,8 @@ public class MyTest {
 
     @Test
     public void addMoreActions() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
         Adder add2 = new Adder("add2", 500, values);
         Adder add3 = new Adder("add3", 200, values);
         Adder add4 = new Adder("add4", 200, values);
@@ -76,18 +81,23 @@ public class MyTest {
 
     @Test
     public void addInsufficientMemoryActions() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
         // Configurar System.out para capturar la salida de la consola
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
-        Invoker iv1 = new Invoker(1000,1);
-        Invoker iv2 = new Invoker(2000,2);
+        Invoker iv1 = new Invoker(1000, 1);
+        Invoker iv2 = new Invoker(2000, 2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
+
         Adder add1 = new Adder("add1", 1500, values);
+
         controller.addAction(add1);
         controller.distributeActions();
+
         assertEquals(controller.distributeActions(), false);
 
         // Restaurar System.out
@@ -100,12 +110,14 @@ public class MyTest {
 
     @Test
     public void addActionsandLastInsufficientMemoryActions() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
         // Configurar System.out para capturar la salida de la consola
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
-        Invoker iv1 = new Invoker(1000,1);
-        Invoker iv2 = new Invoker(2000,2);
+        Invoker iv1 = new Invoker(1000, 1);
+        Invoker iv2 = new Invoker(2000, 2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -131,8 +143,10 @@ public class MyTest {
 
     @Test
     public void distributeActionsTestRoundRobin() {
-        Invoker iv1 = new Invoker(1000,1);
-        Invoker iv2 = new Invoker(2000,2);
+        Controller.resetInstance();
+        controller = Controller.getInstance();
+        Invoker iv1 = new Invoker(1000, 1);
+        Invoker iv2 = new Invoker(2000, 2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -149,10 +163,12 @@ public class MyTest {
 
     @Test
     public void distributeActionsTestRoundRobinImproved() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
         RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
         controller.setPolicy(roundRobinImproved);
-        Invoker iv1 = new Invoker(1000,1);
-        Invoker iv2 = new Invoker(2000,2);
+        Invoker iv1 = new Invoker(1000, 1);
+        Invoker iv2 = new Invoker(2000, 2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -169,10 +185,12 @@ public class MyTest {
 
     @Test
     public void distributeActionsInsufficientMemoryRoundRobinImproved() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
         RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
         controller.setPolicy(roundRobinImproved);
-        Invoker iv1 = new Invoker(1000,1);
-        Invoker iv2 = new Invoker(2000,2);
+        Invoker iv1 = new Invoker(1000, 1);
+        Invoker iv2 = new Invoker(2000, 2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -183,8 +201,10 @@ public class MyTest {
 
     @Test
     public void distributeActionsComparasionRoundRobinAndRoundRobinImproved() {
-        Invoker iv1 = new Invoker(1000,1);
-        Invoker iv2 = new Invoker(2000,2);
+        Controller.resetInstance();
+        controller = Controller.getInstance();
+        Invoker iv1 = new Invoker(1000, 1);
+        Invoker iv2 = new Invoker(2000, 2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -203,9 +223,11 @@ public class MyTest {
 
     @Test
     public void lifeCycleMemoryTest() {
-        Invoker iv1 = new Invoker(1000,1);
+        Controller.resetInstance();
+        controller = Controller.getInstance();
+        Invoker iv1 = new Invoker(1000, 1);
         controller.addInvoker(iv1);
-        Invoker iv2 = new Invoker(2000,2);
+        Invoker iv2 = new Invoker(2000, 2);
         controller.addInvoker(iv2);
         Adder add1 = new Adder("add1", 100, values);
         controller.addAction(add1);
@@ -230,9 +252,11 @@ public class MyTest {
 
     @Test
     public void lifeCylceMemoryRoundRobinImproved() {
-        Invoker iv1 = new Invoker(1000,1);
+        Controller.resetInstance();
+        controller = Controller.getInstance();
+        Invoker iv1 = new Invoker(1000, 1);
         controller.addInvoker(iv1);
-        Invoker iv2 = new Invoker(2000,2);
+        Invoker iv2 = new Invoker(2000, 2);
         controller.addInvoker(iv2);
         Adder add1 = new Adder("add1", 2000, values);
         controller.addAction(add1);
@@ -258,12 +282,14 @@ public class MyTest {
 
     @Test
     public void executeAssignedActionsResultsTest() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
         // This shows the results of the actions that have been done
-        Invoker iv1 = new Invoker(1000,1);
+        Invoker iv1 = new Invoker(1000, 1);
         controller.addInvoker(iv1);
-        Invoker iv2 = new Invoker(2000,2);
+        Invoker iv2 = new Invoker(2000, 2);
         controller.addInvoker(iv2);
         Adder add1 = new Adder("add1", 100, values);
         controller.addAction(add1);
@@ -285,15 +311,15 @@ public class MyTest {
         System.setOut(new PrintStream(System.out));
 
         List<Action> results = controller.getActions();
-        int[] expectedResults=new int[controller.getActions().size()];
-        int i=0;
+        int[] expectedResults = new int[controller.getActions().size()];
+        int i = 0;
         for (Action action : results) {
             if (action.getResult() != 0) {
-                expectedResults[i]=action.getResult();
+                expectedResults[i] = action.getResult();
                 i++;
             }
         }
-        assertArrayEquals(expectedResults, new int[]{10,24,10,10,10,10});
+        assertArrayEquals(expectedResults, new int[] { 10, 24, 10, 10, 10, 10 });
 
     }
 }

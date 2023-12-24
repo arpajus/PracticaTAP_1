@@ -9,7 +9,7 @@ public class Main {
         // memory.
         // every time that an action has finished we MUST give memory to the Invoker.
 
-        Controller controller = new Controller();
+        Controller controller = Controller.getInstance();
         RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
         controller.setPolicy(roundRobinImproved);
 
