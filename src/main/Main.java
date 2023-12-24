@@ -1,8 +1,6 @@
 package main;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
@@ -39,8 +37,8 @@ public class Main {
         controller.addAction(add4);
         Adder add5 = new Adder("add5", 200, values);
         controller.addAction(add5);
-        System.out.println("----------------------");
 
+        System.out.println("----------------------");
         System.out.println("----------------------");
 
         if (controller.distributeActions()) {

@@ -3,8 +3,6 @@ package main;
 import main.interfaces.DistributionPolicy;
 import main.interfaces.Observer;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.HashMap;
 
 //El controler es UNICO (hacerlo unico de alguna manera) a nivel de clase, (solo hay un controller)
 public class Controller implements Observer {
