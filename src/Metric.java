@@ -42,6 +42,4 @@ public class Metric {
     public void setUsedMemory(double usedMemory) {
         this.usedMemory = usedMemory;
     }
-
-    
 }

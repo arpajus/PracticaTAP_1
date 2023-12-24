@@ -3,13 +3,16 @@ import java.util.Iterator;
 import java.util.HashMap;
 
 //El controler es UNICO (hacerlo unico de alguna manera) a nivel de clase, (solo hay un controller)
-public class Controller implements Observer{
+public class Controller implements Observer {
     // mirar teoria de ED y pensar que estrucutras son mejores para lo que queremos
     // hacer
     private ArrayList<Invoker> invokers;
     private ArrayList<Action> actions;
     private DistributionPolicy policy;
     private ArrayList<Metric> metrics;
+
+    // investigar concurrentHashMap si es necesario para optimizar costes (y el
+    // concurrent se puede usar con multithreading)
 
     public Controller(ArrayList<Invoker> invokers, ArrayList<Action> actions) {
         this.invokers = invokers;
@@ -61,11 +64,11 @@ public class Controller implements Observer{
         return policy.distributeActions(actions, invokers);
     }
 
-    public void executeActions() {
+    public void executeAssignedActions() {
         for (Action action : actions) {
             try {
                 Invoker invoker = action.getInvoker();
-                invoker.executeAction();
+                invoker.executeInvokerActions();
                 invoker.releaseMemory(action.getMemory());
                 // we give memory because exactly in this moment we've
                 // finished the action related to the concret invoker.
@@ -80,10 +83,10 @@ public class Controller implements Observer{
     }
 
     public long getMaxExecutionTimeForAction(String actionId) {
-        return metrics.stream() //it converts the list to a stream
-                .filter(metric -> metric.getActionId().equals(actionId))    //it filters de metric to the action we want 
-                .mapToLong(Metric::getExecutionTime)    //we get the execution time
-                .max()  //we get the max of the all Execution times
+        return metrics.stream() // it converts the list to a stream
+                .filter(metric -> metric.getActionId().equals(actionId)) // it filters de metric to the action we want
+                .mapToLong(Metric::getExecutionTime) // we get the execution time
+                .max() // we get the max of the all Execution times
                 .orElse(0);
     }
 

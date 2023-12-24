@@ -39,29 +39,27 @@ public class Invoker {
 
     // method that substracts the action memory of the actual memory of invoker. We
     // should invoke this method when we invoke an action to the Invoker
-    public double takeMemory(double memoryToTake) {
+    private void takeMemory(double memoryToTake) {
         totalMemory = totalMemory - memoryToTake;
-        return totalMemory;
     }
 
     // method that gives back the action memory to the invoker. We should invoke
     // this method when the action is finished
-    public double releaseMemory(double memoryReleased) {
+    public void releaseMemory(double memoryReleased) {
         totalMemory = totalMemory + memoryReleased;
-        return totalMemory;
     }
 
-    public void executeAction() throws InsufficientMemoryException {
-        long startTime=System.currentTimeMillis();
+    //executes all actions at once
+    public void executeInvokerActions() throws InsufficientMemoryException {
+        long startTime = System.currentTimeMillis();
         for (Action action : actions) {
             System.out.println("Executing action: " + action.getId());
             action.operation();
-        long endTime=System.currentTimeMillis();
-        Metric metric=new Metric(action.getId(), endTime-startTime, action.getInvoker(), action.getMemory());
-        notifyObservers(metric);
+            long endTime = System.currentTimeMillis();
+            Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(), action.getMemory());
+            notifyObservers(metric);
         }
         actions.clear();
-
     }
 
     public void addObserver(Observer observer) {

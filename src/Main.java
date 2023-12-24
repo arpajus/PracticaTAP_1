@@ -7,13 +7,14 @@ public class Main {
         // every time we assign an action to an invoker we MUST invoke the method take
         // memory.
         // every time that an action has finished we MUST give memory to the Invoker.
+
         Controller controller = new Controller();
-        RoundRobinImproved roundRobinImproved=new RoundRobinImproved();
+        RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
         controller.setPolicy(roundRobinImproved);
 
-        //We add the Observer
-        //Observer observer=new Observer() {
-            
+        // We add the Observer
+        // Observer observer=new Observer() {
+
         Invoker iv1 = new Invoker(1000);
         controller.addInvoker(iv1);
         Invoker iv2 = new Invoker(2000);
@@ -44,7 +45,7 @@ public class Main {
             System.out.println("Actions distributed");
             System.out.println("The actual memory of iv1 is " + iv1.getTotalMemory());
             System.out.println("The actual memory of iv2 is " + iv2.getTotalMemory());
-            controller.executeActions();
+            controller.executeAssignedActions();
             System.out.println("Actions executed");
             // when actions are executed the method realese memory is working
             System.out.println("The actual memory of iv1 is " + iv1.getTotalMemory());
@@ -59,11 +60,12 @@ public class Main {
             }
         } else
             System.out.println("Not all actions could be assigned");
-
     }
 
     // TESTS ADRI_______________________________
     // TESTS ADRI_______________________________
     // TESTS ADRI_______________________________
+
+    // cambio funciones que no se use fuera de su propia clase a private
 
 }

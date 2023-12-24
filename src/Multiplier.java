@@ -6,9 +6,9 @@ public class Multiplier extends Action {
 
     @Override
     public void operation() {
-        int result=1;
-        for (int i=0; i<values.length; i++){
-            result=result*values[i];
+        int result = 1;
+        for (int i = 0; i < values.length; i++) {
+            result = result * values[i];
         }
         setResult(result);
         System.out.println("Operation performed for " + getId() + ". Result: " + result);

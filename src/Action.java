@@ -50,7 +50,7 @@ public abstract class Action {
     public void setInvoker(Invoker invoker) {
         this.invoker = invoker;
     }
-    
+
     public Invoker getInvoker() {
         return invoker;
     }
@@ -61,6 +61,4 @@ public abstract class Action {
     }
 
     public abstract void operation();
-
-
 }
