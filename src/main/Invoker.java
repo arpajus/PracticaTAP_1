@@ -11,27 +11,27 @@ public class Invoker {
     private ArrayList<Action> actions;
     private double totalMemory; // memory -> MB
     private int id;
-    private ArrayList<Observer> observers=new ArrayList<>();
-    private ArrayList<Metric> metrics=new ArrayList<>();
+    private ArrayList<Observer> observers = new ArrayList<>();
+    private ArrayList<Metric> metrics = new ArrayList<>();
 
-    //guarda en cache el id del action y su resultado (object porque yo no se que devuelve action)
-    private HashMap<String,Object> cache;
-    
-    
+    // guarda en cache el id del action y su resultado (object porque yo no se que
+    // devuelve action)
+    private HashMap<String, Object> cache;
+
     // invokers hijos?
 
     public Invoker(double totalMemory, int id) {
         this.totalMemory = totalMemory;
-        this.id=id;
+        this.id = id;
         this.actions = new ArrayList<Action>();
     }
 
-    public int getId(){
+    public int getId() {
         return id;
     }
 
-    public void setId(int id){
-        this.id=id;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public ArrayList<Action> getActions() {
@@ -39,12 +39,14 @@ public class Invoker {
     }
 
     public void setAction(Action action) throws InsufficientMemoryException {
-   /*      if (cache.containsKey(action.getId())){
-            //esta accion esta en cache, no hace falta calcular
-            
-            //hacer que setAction devuelva algo?
-            //return cache.get(action.getId())
-        } */
+        /*
+         * if (cache.containsKey(action.getId())){
+         * //esta accion esta en cache, no hace falta calcular
+         * 
+         * //hacer que setAction devuelva algo?
+         * //return cache.get(action.getId())
+         * }
+         */
         if (action.getMemory() <= totalMemory) {
             actions.add(action);
             action.setInvoker(this);
@@ -77,16 +79,16 @@ public class Invoker {
         totalMemory = totalMemory + memoryReleased;
     }
 
-    //executes all actions at once
+    // executes all actions at once
     public void executeInvokerActions() throws InsufficientMemoryException {
         long startTime = System.currentTimeMillis();
-        ArrayList<Metric> metricsToNotify=new ArrayList<>();
+        ArrayList<Metric> metricsToNotify = new ArrayList<>();
         for (Action action : actions) {
             System.out.println("Executing action: " + action.getId());
-            
+
             action.operation();
-            //--------------------------value es operation result, que no se cual sera
-            //cache.put(action.getId(), "operation_result");
+            // --------------------------value es operation result, que no se cual sera
+            // cache.put(action.getId(), "operation_result");
 
             long endTime = System.currentTimeMillis();
             Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(), action.getMemory());
@@ -94,24 +96,22 @@ public class Invoker {
         }
         notifyObservers(metricsToNotify);
         actions.clear();
-        System.out.println("Metrics recorded."); 
+        System.out.println("Metrics recorded.");
     }
 
     public void addObserver(Observer observer) {
         observers.add(observer);
     }
 
-    public void removeObserver(Observer observer){
+    public void removeObserver(Observer observer) {
         observers.remove(observer);
     }
 
     public void notifyObservers(ArrayList<Metric> metrics) {
-            for (Observer observer : observers) {
-                observer.updateMetric(metrics);
-            }
+        for (Observer observer : observers) {
+            observer.updateMetric(metrics);
         }
-
-    
+    }
 
     // Merece la pena añadir interfaces para todas estas clases? Pensar y decidir
 
