@@ -20,8 +20,9 @@ public class MyTest {
         controller.setPolicy(roundRobinImproved);
 
         Invoker iv1 = new Invoker(1000);
-        controller.addInvoker(iv1);
         Invoker iv2 = new Invoker(2000);
+
+        controller.addInvoker(iv1);
         controller.addInvoker(iv2);
 
         assertEquals(iv1.getTotalMemory(), 1000);
@@ -29,6 +30,8 @@ public class MyTest {
 
         assertEquals(controller.getInvokers().contains(iv1), true);
         assertEquals(controller.getInvokers().contains(iv2), true);
+
+        assertFalse(controller.getInvokers().isEmpty());
     }
 
     @Test
@@ -56,6 +59,8 @@ public class MyTest {
         controller.addAction(add4);
         controller.addAction(add5);
 
+        assertFalse(controller.getActions().isEmpty());
+
         assertEquals(controller.getActions().contains(add2), true);
         assertEquals(controller.getActions().contains(add3), true);
         assertEquals(controller.getActions().contains(add4), true);
@@ -69,10 +74,7 @@ public class MyTest {
 
     @Test
     public void executeAssignedActionsTest() {
-        List<Invoker> invokers = controller.getInvokers();
-        assertFalse(invokers.isEmpty(), "La lista de invocadores no debe estar vacía");
-
-        // NO COJE EL INVOKER (COMO QUE ESTA VACIO EL ARRAYLIST?)
+        assertFalse(controller.getInvokers().isEmpty());
 
         assertEquals(controller.getInvokers().get(0).getTotalMemory(), 200);
         assertEquals(controller.getInvokers().get(1).getTotalMemory(), 0);

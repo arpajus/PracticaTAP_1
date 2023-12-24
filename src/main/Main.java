@@ -42,14 +42,16 @@ public class Main {
         System.out.println("----------------------");
 
         if (controller.distributeActions()) {
+            List<Invoker> invokers = controller.getInvokers();
+
             System.out.println("Actions distributed");
-            System.out.println("The actual memory of iv1 is " + iv1.getTotalMemory());
-            System.out.println("The actual memory of iv2 is " + iv2.getTotalMemory());
+            System.out.println("The actual memory of iv1 is " + controller.getInvokers().get(0).getTotalMemory());
+            System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
             controller.executeAssignedActions();
             System.out.println("Actions executed");
             // when actions are executed the method realese memory is working
-            System.out.println("The actual memory of iv1 is " + iv1.getTotalMemory());
-            System.out.println("The actual memory of iv2 is " + iv2.getTotalMemory());
+            System.out.println("The actual memory of iv1 is " + controller.getInvokers().get(0).getTotalMemory());
+            System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
             // This shows the results of the actions that have been done
             System.out.println("Results of the actions: ");
             List<Action> results = controller.getActions();
@@ -65,7 +67,5 @@ public class Main {
     // TESTS ADRI_______________________________
     // TESTS ADRI_______________________________
     // TESTS ADRI_______________________________
-
-    // cambio funciones que no se use fuera de su propia clase a private
 
 }
