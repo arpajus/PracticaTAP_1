@@ -42,8 +42,6 @@ public class Main {
         System.out.println("----------------------");
 
         if (controller.distributeActions()) {
-            List<Invoker> invokers = controller.getInvokers();
-
             System.out.println("Actions distributed");
             System.out.println("The actual memory of iv1 is " + controller.getInvokers().get(0).getTotalMemory());
             System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
