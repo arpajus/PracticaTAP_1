@@ -3,11 +3,16 @@ package main;
 import java.util.ArrayList;
 import main.interfaces.Observer;
 import java.util.HashMap;
+import java.util.List;
+
+import org.junit.internal.ArrayComparisonFailure;
 
 public class Invoker {
     private ArrayList<Action> actions;
     private double totalMemory; // memory -> MB
-    private ArrayList<Observer> observers;
+    private int id;
+    private ArrayList<Observer> observers=new ArrayList<>();
+    private ArrayList<Metric> metrics=new ArrayList<>();
 
     //guarda en cache el id del action y su resultado (object porque yo no se que devuelve action)
     private HashMap<String,Object> cache;
@@ -15,9 +20,18 @@ public class Invoker {
     
     // invokers hijos?
 
-    public Invoker(double totalMemory) {
+    public Invoker(double totalMemory, int id) {
         this.totalMemory = totalMemory;
+        this.id=id;
         this.actions = new ArrayList<Action>();
+    }
+
+    public int getId(){
+        return id;
+    }
+
+    public void setId(int id){
+        this.id=id;
     }
 
     public ArrayList<Action> getActions() {
@@ -66,6 +80,7 @@ public class Invoker {
     //executes all actions at once
     public void executeInvokerActions() throws InsufficientMemoryException {
         long startTime = System.currentTimeMillis();
+        ArrayList<Metric> metricsToNotify=new ArrayList<>();
         for (Action action : actions) {
             System.out.println("Executing action: " + action.getId());
             
@@ -75,25 +90,28 @@ public class Invoker {
 
             long endTime = System.currentTimeMillis();
             Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(), action.getMemory());
-            notifyObservers(metric);
+            metricsToNotify.add(metric);
         }
+        notifyObservers(metricsToNotify);
         actions.clear();
+        System.out.println("Metrics recorded."); 
     }
 
     public void addObserver(Observer observer) {
-        if (observers == null) {
-            observers = new ArrayList<>();
-        }
         observers.add(observer);
     }
 
-    public void notifyObservers(Metric metric) {
-        if (observers != null) {
+    public void removeObserver(Observer observer){
+        observers.remove(observer);
+    }
+
+    public void notifyObservers(ArrayList<Metric> metrics) {
             for (Observer observer : observers) {
-                observer.updateMetric(metric);
+                observer.updateMetric(metrics);
             }
         }
-    }
+
+    
 
     // Merece la pena añadir interfaces para todas estas clases? Pensar y decidir
 

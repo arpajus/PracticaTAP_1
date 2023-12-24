@@ -81,8 +81,12 @@ public class Controller implements Observer {
         }
     }
 
-    public void updateMetric(Metric metric) {
-        metrics.add(metric);
+    public void updateMetric(ArrayList<Metric> metrics) {
+        this.metrics.addAll(metrics);
+    }
+
+    public ArrayList<Metric> getMetrics() {
+        return metrics;
     }
 
     public long getMaxExecutionTimeForAction(String actionId) {
@@ -91,6 +95,17 @@ public class Controller implements Observer {
                 .mapToLong(Metric::getExecutionTime) // we get the execution time
                 .max() // we get the max of the all Execution times
                 .orElse(0);
+    }
+
+    public void printMetrics() {
+        System.out.println("Metrics:");
+        ArrayList<Metric> metrics = getMetrics();
+        for (Metric metric : metrics) {
+            System.out.println("Action: " + metric.getActionId() +
+                    ", Time: " + metric.getExecutionTime() +
+                    ", Invoker: " + metric.getAssignedInvoker().getId() +
+                    ", Memory Used: " + metric.getUsedMemory());
+        }
     }
 
 }

@@ -27,8 +27,8 @@ public class MyTest {
 
         controller.setPolicy(roundRobinImproved);
 
-        Invoker iv1 = new Invoker(1000);
-        Invoker iv2 = new Invoker(2000);
+        Invoker iv1 = new Invoker(1000,1);
+        Invoker iv2 = new Invoker(2000,2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -80,8 +80,8 @@ public class MyTest {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
-        Invoker iv1 = new Invoker(1000);
-        Invoker iv2 = new Invoker(2000);
+        Invoker iv1 = new Invoker(1000,1);
+        Invoker iv2 = new Invoker(2000,2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -104,8 +104,8 @@ public class MyTest {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
-        Invoker iv1 = new Invoker(1000);
-        Invoker iv2 = new Invoker(2000);
+        Invoker iv1 = new Invoker(1000,1);
+        Invoker iv2 = new Invoker(2000,2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -131,8 +131,8 @@ public class MyTest {
 
     @Test
     public void distributeActionsTestRoundRobin() {
-        Invoker iv1 = new Invoker(1000);
-        Invoker iv2 = new Invoker(2000);
+        Invoker iv1 = new Invoker(1000,1);
+        Invoker iv2 = new Invoker(2000,2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -151,8 +151,8 @@ public class MyTest {
     public void distributeActionsTestRoundRobinImproved() {
         RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
         controller.setPolicy(roundRobinImproved);
-        Invoker iv1 = new Invoker(1000);
-        Invoker iv2 = new Invoker(2000);
+        Invoker iv1 = new Invoker(1000,1);
+        Invoker iv2 = new Invoker(2000,2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -171,8 +171,8 @@ public class MyTest {
     public void distributeActionsInsufficientMemoryRoundRobinImproved() {
         RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
         controller.setPolicy(roundRobinImproved);
-        Invoker iv1 = new Invoker(1000);
-        Invoker iv2 = new Invoker(2000);
+        Invoker iv1 = new Invoker(1000,1);
+        Invoker iv2 = new Invoker(2000,2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -183,8 +183,8 @@ public class MyTest {
 
     @Test
     public void distributeActionsComparasionRoundRobinAndRoundRobinImproved() {
-        Invoker iv1 = new Invoker(1000);
-        Invoker iv2 = new Invoker(2000);
+        Invoker iv1 = new Invoker(1000,1);
+        Invoker iv2 = new Invoker(2000,2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -203,9 +203,9 @@ public class MyTest {
 
     @Test
     public void lifeCycleMemoryTest() {
-        Invoker iv1 = new Invoker(1000);
+        Invoker iv1 = new Invoker(1000,1);
         controller.addInvoker(iv1);
-        Invoker iv2 = new Invoker(2000);
+        Invoker iv2 = new Invoker(2000,2);
         controller.addInvoker(iv2);
         Adder add1 = new Adder("add1", 100, values);
         controller.addAction(add1);
@@ -230,9 +230,9 @@ public class MyTest {
 
     @Test
     public void lifeCylceMemoryRoundRobinImproved() {
-        Invoker iv1 = new Invoker(1000);
+        Invoker iv1 = new Invoker(1000,1);
         controller.addInvoker(iv1);
-        Invoker iv2 = new Invoker(2000);
+        Invoker iv2 = new Invoker(2000,2);
         controller.addInvoker(iv2);
         Adder add1 = new Adder("add1", 2000, values);
         controller.addAction(add1);
@@ -261,9 +261,9 @@ public class MyTest {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
         // This shows the results of the actions that have been done
-        Invoker iv1 = new Invoker(1000);
+        Invoker iv1 = new Invoker(1000,1);
         controller.addInvoker(iv1);
-        Invoker iv2 = new Invoker(2000);
+        Invoker iv2 = new Invoker(2000,2);
         controller.addInvoker(iv2);
         Adder add1 = new Adder("add1", 100, values);
         controller.addAction(add1);
