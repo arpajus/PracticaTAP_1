@@ -10,6 +10,11 @@ public class Main {
         Controller controller = new Controller();
         RoundRobinImproved roundRobinImproved=new RoundRobinImproved();
         controller.setPolicy(roundRobinImproved);
+
+        //We add the Observer
+        Observer observer=new Observer() {
+            
+        };
         Invoker iv1 = new Invoker(1000);
         controller.addInvoker(iv1);
         Invoker iv2 = new Invoker(2000);

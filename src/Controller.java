@@ -3,17 +3,19 @@ import java.util.Iterator;
 import java.util.HashMap;
 
 //El controler es UNICO (hacerlo unico de alguna manera) a nivel de clase, (solo hay un controller)
-public class Controller {
+public class Controller implements Observer{
     // mirar teoria de ED y pensar que estrucutras son mejores para lo que queremos
     // hacer
     private ArrayList<Invoker> invokers;
     private ArrayList<Action> actions;
     private DistributionPolicy policy;
+    private ArrayList<Metric> metrics;
 
     public Controller(ArrayList<Invoker> invokers, ArrayList<Action> actions) {
         this.invokers = invokers;
         this.actions = actions;
         this.policy = new RoundRobin();
+        this.metrics = new ArrayList<>();
     }
 
     // creo que es mejor arraylist, porque los invokers son fijos (si hay 3 hay
@@ -24,6 +26,7 @@ public class Controller {
         this.invokers = new ArrayList<Invoker>();
         this.actions = new ArrayList<Action>();
         this.policy = new RoundRobin();
+        this.metrics = new ArrayList<>();
     }
 
     public ArrayList<Action> getActions() {
@@ -64,15 +67,28 @@ public class Controller {
                 Invoker invoker = action.getInvoker();
                 invoker.executeAction();
                 invoker.releaseMemory(action.getMemory());
+                // we give memory because exactly in this moment we've
+                // finished the action related to the concret invoker.
             } catch (InsufficientMemoryException e) {
                 System.out.println("Error executing actions for invoker: " + e.getMessage());
             }
         }
     }
 
+    public void updateMetric(Metric metric) {
+        metrics.add(metric);
+    }
+
+    public long getMaxExecutionTimeForAction(String actionId) {
+        return metrics.stream() //it converts the list to a stream
+                .filter(metric -> metric.getActionId().equals(actionId))    //it filters de metric to the action we want 
+                .mapToLong(Metric::getExecutionTime)    //we get the execution time
+                .max()  //we get the max of the all Execution times
+                .orElse(0);
+    }
+
 }
-// we give memory because exactly in this moment we've
-// finished the action related to the concret invoker.
+
 // Lo comento porque no se para que sirve, y al cambiar el tipo de estructura
 // hay que reprogramarlo
 /*

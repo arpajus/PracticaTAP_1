@@ -1,13 +1,15 @@
 import java.util.ArrayList;;
+
 public class Invoker {
     // creo que tendra que tener un array de Action, pero de momento esta bien asi
     private ArrayList<Action> actions;
     private double totalMemory; // memory -> MB
+    private ArrayList<Observer> observers;
     // invokers hijos?
 
     public Invoker(double totalMemory) {
         this.totalMemory = totalMemory;
-        this.actions=new ArrayList<Action>();
+        this.actions = new ArrayList<Action>();
     }
 
     public ArrayList<Action> getActions() {
@@ -50,11 +52,31 @@ public class Invoker {
     }
 
     public void executeAction() throws InsufficientMemoryException {
+        long startTime=System.currentTimeMillis();
         for (Action action : actions) {
-            System.out.println("Executing action: "+action.getId());
+            System.out.println("Executing action: " + action.getId());
             action.operation();
+        long endTime=System.currentTimeMillis();
+        Metric metric=new Metric(action.getId(), endTime-startTime, action.getInvoker(), action.getMemory());
+        notifyObservers(metric);
         }
         actions.clear();
+
+    }
+
+    public void addObserver(Observer observer) {
+        if (observers == null) {
+            observers = new ArrayList<>();
+        }
+        observers.add(observer);
+    }
+
+    public void notifyObservers(Metric metric) {
+        if (observers != null) {
+            for (Observer observer : observers) {
+                observer.updateMetric(metric);
+            }
+        }
     }
 
     // Merece la pena añadir interfaces para todas estas clases? Pensar y decidir
