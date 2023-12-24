@@ -1,6 +1,7 @@
 package test;
 
 import main.*;
+import main.policy.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 

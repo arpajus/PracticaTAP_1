@@ -2,6 +2,7 @@ package main;
 
 import main.interfaces.DistributionPolicy;
 import main.interfaces.Observer;
+import main.policy.*;
 import java.util.ArrayList;
 
 //El controler es UNICO (hacerlo unico de alguna manera) a nivel de clase, (solo hay un controller)
