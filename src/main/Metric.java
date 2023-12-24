@@ -1,3 +1,5 @@
+package main;
+
 public class Metric {
     private String actionId;
     private long executionTime;

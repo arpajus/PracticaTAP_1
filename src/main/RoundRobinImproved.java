@@ -1,3 +1,6 @@
+package main;
+
+import main.interfaces.DistributionPolicy;
 import java.util.ArrayList;
 
 public class RoundRobinImproved implements DistributionPolicy {

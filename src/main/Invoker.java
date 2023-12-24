@@ -1,4 +1,7 @@
-import java.util.ArrayList;;
+package main;
+
+import java.util.ArrayList;
+import main.interfaces.Observer;
 
 public class Invoker {
     // creo que tendra que tener un array de Action, pero de momento esta bien asi

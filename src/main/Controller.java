@@ -1,3 +1,7 @@
+package main;
+
+import main.interfaces.DistributionPolicy;
+import main.interfaces.Observer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.HashMap;
