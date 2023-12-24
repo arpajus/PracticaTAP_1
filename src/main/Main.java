@@ -23,25 +23,23 @@ public class Main {
         // we have to add the invokers to the controller enviroment
 
         int[] values = { 1, 2, 3, 4 };
-        Adder add1 = new Adder("add1", 1500, values);
+        Adder add1 = new Adder("add1", 100, values);
         controller.addAction(add1);
-        Multiplier mltplr1 = new Multiplier("mltplr1", 200, values);
+        Multiplier mltplr1 = new Multiplier("mltplr1", 100, values);
         controller.addAction(mltplr1);
         // same with actions, we have to add this actions to the invoker
 
-        // This action is a test to invoke InsufficientMemoryException
-        Adder add2 = new Adder("add2", 500, values);
+        Adder add2 = new Adder("add2", 100, values);
         controller.addAction(add2);
-        Adder add3 = new Adder("add3", 200, values);
+        Adder add3 = new Adder("add3", 100, values);
         controller.addAction(add3);
-        Adder add4 = new Adder("add4", 200, values);
-        controller.addAction(add4);
-        Adder add5 = new Adder("add5", 200, values);
+        Adder add4 = new Adder("add4", 100, values);
+        controller.addAction(add4); 
+        Adder add5 = new Adder("add5", 100, values);
         controller.addAction(add5);
 
         System.out.println("----------------------");
         System.out.println("----------------------");
-
         if (controller.distributeActions()) {
             System.out.println("Actions distributed");
             System.out.println("The actual memory of iv1 is " + controller.getInvokers().get(0).getTotalMemory());

@@ -5,7 +5,6 @@ import main.interfaces.Observer;
 import java.util.HashMap;
 
 public class Invoker {
-    // creo que tendra que tener un array de Action, pero de momento esta bien asi
     private ArrayList<Action> actions;
     private double totalMemory; // memory -> MB
     private ArrayList<Observer> observers;
@@ -26,12 +25,12 @@ public class Invoker {
     }
 
     public void setAction(Action action) throws InsufficientMemoryException {
-        if (cache.containsKey(action.getId())){
+   /*      if (cache.containsKey(action.getId())){
             //esta accion esta en cache, no hace falta calcular
             
             //hacer que setAction devuelva algo?
             //return cache.get(action.getId())
-        }
+        } */
         if (action.getMemory() <= totalMemory) {
             actions.add(action);
             action.setInvoker(this);
@@ -72,7 +71,7 @@ public class Invoker {
             
             action.operation();
             //--------------------------value es operation result, que no se cual sera
-            cache.put(action.getId(), "operation_result");
+            //cache.put(action.getId(), "operation_result");
 
             long endTime = System.currentTimeMillis();
             Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(), action.getMemory());
