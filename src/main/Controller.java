@@ -7,28 +7,31 @@ import java.util.ArrayList;
 
 public class Controller implements Observer {
 
-    //volatile: to ensure that changes made by one thread are visible to other threads
-    private static volatile Controller controller;
+    // volatile: to ensure that changes made by one thread are visible to other
+    // threads
+    private static volatile Controller controller = new Controller(1);
 
+    private int id;
     private ArrayList<Invoker> invokers;
     private ArrayList<Action> actions;
     private DistributionPolicy policy;
-    private ArrayList<Metric> metrics; //metrics for the Obsverver
+    private ArrayList<Metric> metrics; // metrics for the Obsverver
 
-    //Singleton: ensures that only one instance of a class exists in the entire application
+    // Singleton: ensures that only one instance of a class exists in the entire
+    // application
     public static Controller getInstance() {
         if (controller == null) {
             synchronized (Controller.class) {
                 // Double check within sync
                 if (controller == null) {
-                    controller = new Controller();
+                    controller = new Controller(1);
                 }
             }
         }
         return controller;
     }
 
-    //used for tests
+    // used for tests
     public static void resetInstance() {
         controller = null;
     }
@@ -36,23 +39,28 @@ public class Controller implements Observer {
     // investigar concurrentHashMap si es necesario para optimizar costes (y el
     // concurrent se puede usar con multithreading)
 
-    /*
-     * private Controller(ArrayList<Invoker> invokers, ArrayList<Action> actions) {
-     * this.invokers = invokers;
-     * this.actions = actions;
-     * this.policy = new RoundRobin();
-     * this.metrics = new ArrayList<>();
-     * }
-     */
+    private Controller(ArrayList<Invoker> invokers, ArrayList<Action> actions, int id) {
+        this.invokers = invokers;
+        this.actions = actions;
+        this.policy = new RoundRobin();
+        this.metrics = new ArrayList<>();
+        this.id=id;
+    }
+
     // creo que es mejor arraylist, porque los invokers son fijos (si hay 3 hay
     // siempre 3, o 30)
     // por lo que el acceso sera O(1), en vez de O(n) con linked list
 
-    private Controller() {
+    private Controller(int id) {
         this.invokers = new ArrayList<Invoker>();
         this.actions = new ArrayList<Action>();
         this.policy = new RoundRobin();
         this.metrics = new ArrayList<>();
+        this.id=id;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public ArrayList<Action> getActions() {

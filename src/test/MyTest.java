@@ -322,4 +322,10 @@ public class MyTest {
         assertArrayEquals(expectedResults, new int[] { 10, 24, 10, 10, 10, 10 });
 
     }
+
+    @Test
+    public void checkOneController(){
+        Controller controller2=Controller.getInstance();
+        assertEquals(controller2.getId(), 1);
+    }
 }
