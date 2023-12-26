@@ -21,6 +21,12 @@ public class MyTest {
     int[] values = { 1, 2, 3, 4 };
 
     @Test
+    public void checkOneController(){
+        Controller controller2=Controller.getInstance();
+        assertEquals(controller2.getId(), 1);
+    }
+
+    @Test
     public void createInvokers() {
         Controller.resetInstance();
         controller = Controller.getInstance();
@@ -470,11 +476,5 @@ public class MyTest {
 
         assertEquals(iv1.getTotalMemory(), 3000);
         assertEquals(iv2.getTotalMemory(), 1000);
-    }
-
-    @Test
-    public void checkOneController(){
-        Controller controller2=Controller.getInstance();
-        assertEquals(controller2.getId(), 1);
     }
 }
