@@ -3,9 +3,6 @@ package main;
 import java.util.ArrayList;
 import main.interfaces.Observer;
 import java.util.HashMap;
-import java.util.List;
-
-import org.junit.internal.ArrayComparisonFailure;
 
 public class Invoker {
     private ArrayList<Action> actions;
