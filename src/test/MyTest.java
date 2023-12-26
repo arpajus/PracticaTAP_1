@@ -471,4 +471,10 @@ public class MyTest {
         assertEquals(iv1.getTotalMemory(), 3000);
         assertEquals(iv2.getTotalMemory(), 1000);
     }
+
+    @Test
+    public void checkOneController(){
+        Controller controller2=Controller.getInstance();
+        assertEquals(controller2.getId(), 1);
+    }
 }
