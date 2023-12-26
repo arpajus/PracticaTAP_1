@@ -7,8 +7,7 @@ import java.util.ArrayList;
 
 public class Controller implements Observer {
 
-    // volatile: to ensure that changes made by one thread are visible to other
-    // threads
+    //volatile: to ensure that changes made by one thread are visible to other threads
     private static volatile Controller controller = new Controller(1);
 
     private int id;
@@ -87,6 +86,12 @@ public class Controller implements Observer {
         actions.add(action);
     }
 
+    public void addAction(Action action, int nTimes) {
+        for (int i = 0; i < nTimes; i++) {
+            actions.add(action);
+        }
+    }
+
     public void addInvoker(Invoker invoker) {
         invokers.add(invoker);
     }
@@ -99,8 +104,11 @@ public class Controller implements Observer {
         for (Action action : actions) {
             try {
                 Invoker invoker = action.getInvoker();
-                invoker.executeInvokerActions();
-                invoker.releaseMemory(action.getMemory());
+                //if invoker is null, the action is not assigned
+                if (invoker != null){
+                    invoker.executeInvokerActions();
+                    invoker.releaseMemory(action.getMemory());
+                }
                 // we give memory because exactly in this moment we've
                 // finished the action related to the concret invoker.
             } catch (InsufficientMemoryException e) {
