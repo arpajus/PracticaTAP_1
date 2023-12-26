@@ -16,13 +16,14 @@ import org.junit.Test;
 
 public class MyTest {
 
-    Controller controller;
+    Controller controller = Controller.getInstance();
     RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
     int[] values = { 1, 2, 3, 4 };
 
     @Test
-    public void checkOneController(){
-        Controller controller2=Controller.getInstance();
+    public void checkOneController() {
+        assertEquals(controller.getId(), 1);
+        Controller controller2 = Controller.getInstance();
         assertEquals(controller2.getId(), 1);
     }
 
@@ -327,78 +328,6 @@ public class MyTest {
     }
 
     @Test
-    public void RoundRobinImprovedTest() {
-       Controller.resetInstance();
-        controller = Controller.getInstance();
-
-        Invoker iv1 = new Invoker(3000, 1);
-        Invoker iv2 = new Invoker(1000, 2);
-        controller.addInvoker(iv1);
-        controller.addInvoker(iv2);
-        Adder add1 = new Adder("add1", 2000, values);
-        Adder add2 = new Adder("add2", 100, values);
-        Adder add5 = new Adder("add5", 800, values);
-        
-        controller.setPolicy(new GreedyGroup());
-        //Test 1______________________________
-        controller.addAction(add1);
-        controller.addAction(add2, 3);
-        controller.addAction(add5);
-
-        assertEquals(iv1.getTotalMemory(), 3000);
-        assertEquals(iv2.getTotalMemory(), 1000);
-
-        controller.distributeActions();
-
-        assertEquals(iv1.getTotalMemory(), 700);
-        assertEquals(iv2.getTotalMemory(), 200);
-
-        controller.executeAssignedActions();
-
-        assertEquals(iv1.getTotalMemory(), 3000);
-        assertEquals(iv2.getTotalMemory(), 1000);
-
-        //Test 2______________________________
-        Adder add6 = new Adder("add6", 3100, values);
-
-        assertEquals(iv1.getTotalMemory(), 3000);
-        assertEquals(iv2.getTotalMemory(), 1000);
-
-        controller.getActions().clear();
-        controller.addAction(add6);
-
-        controller.distributeActions();
-
-        //testing it doesn't try to execute an unassigned action
-        assertEquals(iv1.getTotalMemory(), 3000);
-        assertEquals(iv2.getTotalMemory(), 1000);
-
-        controller.executeAssignedActions();
-
-        assertEquals(iv1.getTotalMemory(), 3000);
-        assertEquals(iv2.getTotalMemory(), 1000);        
-
-        //Test 3______________________________
-        assertEquals(iv1.getTotalMemory(), 3000);
-        assertEquals(iv2.getTotalMemory(), 1000);
-
-        controller.getActions().clear();
-        controller.addAction(add1, 2);
-
-        controller.distributeActions();
-
-        assertEquals(iv1.getTotalMemory(), 1000);
-        assertEquals(iv2.getTotalMemory(), 1000);
-
-        controller.executeAssignedActions();
-        //HA LIBERADO MEMORIA SIN QUE ESTE REALMENTE EJECUTADA (falta comprobacion de ejecutar correctamente)
-        //si no se ha asignado a ningun invoker porque entra, no se puede liberar
-
-        assertEquals(iv1.getTotalMemory(), 3000);
-        assertEquals(iv2.getTotalMemory(), 1000);
-    }
-
-    @Test
     public void GreedyGroupTest() {
         Controller.resetInstance();
         controller = Controller.getInstance();
@@ -410,10 +339,9 @@ public class MyTest {
         Adder add1 = new Adder("add1", 2000, values);
         Adder add2 = new Adder("add2", 100, values);
         Adder add5 = new Adder("add5", 800, values);
+
         controller.setPolicy(new GreedyGroup());
-        
-  /*      
-        //Test 1______________________________
+        // Test 1______________________________
         controller.addAction(add1);
         controller.addAction(add2, 3);
         controller.addAction(add5);
@@ -431,7 +359,7 @@ public class MyTest {
         assertEquals(iv1.getTotalMemory(), 3000);
         assertEquals(iv2.getTotalMemory(), 1000);
 
-        //Test 2______________________________
+        // Test 2______________________________
         Adder add6 = new Adder("add6", 3100, values);
 
         assertEquals(iv1.getTotalMemory(), 3000);
@@ -442,18 +370,16 @@ public class MyTest {
 
         controller.distributeActions();
 
-        //testing it doesn't try to execute an unassigned action
+        // testing it doesn't try to execute an unassigned action
         assertEquals(iv1.getTotalMemory(), 3000);
         assertEquals(iv2.getTotalMemory(), 1000);
 
         controller.executeAssignedActions();
 
         assertEquals(iv1.getTotalMemory(), 3000);
-        assertEquals(iv2.getTotalMemory(), 1000);        
+        assertEquals(iv2.getTotalMemory(), 1000);
 
-*/
-
-        //Test 3______________________________
+        // Test 3______________________________
         assertEquals(iv1.getTotalMemory(), 3000);
         assertEquals(iv2.getTotalMemory(), 1000);
 
@@ -466,13 +392,92 @@ public class MyTest {
         assertEquals(iv2.getTotalMemory(), 1000);
 
         controller.executeAssignedActions();
-        //HA LIBERADO MEMORIA SIN QUE ESTE REALMENTE EJECUTADA (falta comprobacion de ejecutar correctamente)
-        //si no se ha asignado a ningun invoker porque entra, no se puede liberar
+        // HA LIBERADO MEMORIA SIN QUE ESTE REALMENTE EJECUTADA (falta comprobacion de
+        // ejecutar correctamente)
+        // si no se ha asignado a ningun invoker porque entra, no se puede liberar
 
-        //el mismo action con mismo ID esta asignada al mismo invoker, por lo que si una no entra, creera que si ha entrado,
-        //porque la misma instancia esta asignada varias veces
+        assertEquals(iv1.getTotalMemory(), 3000);
+        assertEquals(iv2.getTotalMemory(), 1000);
+    }
 
-        //aunque no deberia porque estan en el array (se supone en posiciones diferentes)
+    @Test
+    public void GreedyGroupTest2() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
+
+        Invoker iv1 = new Invoker(3000, 1);
+        Invoker iv2 = new Invoker(1000, 2);
+        controller.addInvoker(iv1);
+        controller.addInvoker(iv2);
+        Adder add1 = new Adder("add1", 2000, values);
+        Adder add2 = new Adder("add2", 100, values);
+        Adder add5 = new Adder("add5", 800, values);
+        controller.setPolicy(new GreedyGroup());
+
+        /*
+         * //Test 1______________________________
+         * controller.addAction(add1);
+         * controller.addAction(add2, 3);
+         * controller.addAction(add5);
+         * 
+         * assertEquals(iv1.getTotalMemory(), 3000);
+         * assertEquals(iv2.getTotalMemory(), 1000);
+         * 
+         * controller.distributeActions();
+         * 
+         * assertEquals(iv1.getTotalMemory(), 700);
+         * assertEquals(iv2.getTotalMemory(), 200);
+         * 
+         * controller.executeAssignedActions();
+         * 
+         * assertEquals(iv1.getTotalMemory(), 3000);
+         * assertEquals(iv2.getTotalMemory(), 1000);
+         * 
+         * //Test 2______________________________
+         * Adder add6 = new Adder("add6", 3100, values);
+         * 
+         * assertEquals(iv1.getTotalMemory(), 3000);
+         * assertEquals(iv2.getTotalMemory(), 1000);
+         * 
+         * controller.getActions().clear();
+         * controller.addAction(add6);
+         * 
+         * controller.distributeActions();
+         * 
+         * //testing it doesn't try to execute an unassigned action
+         * assertEquals(iv1.getTotalMemory(), 3000);
+         * assertEquals(iv2.getTotalMemory(), 1000);
+         * 
+         * controller.executeAssignedActions();
+         * 
+         * assertEquals(iv1.getTotalMemory(), 3000);
+         * assertEquals(iv2.getTotalMemory(), 1000);
+         * 
+         */
+
+        // Test 3______________________________
+        assertEquals(iv1.getTotalMemory(), 3000);
+        assertEquals(iv2.getTotalMemory(), 1000);
+
+        controller.getActions().clear();
+        controller.addAction(add1, 2);
+
+        controller.distributeActions();
+
+        assertEquals(iv1.getTotalMemory(), 1000);
+        assertEquals(iv2.getTotalMemory(), 1000);
+
+        controller.executeAssignedActions();
+        // HA LIBERADO MEMORIA SIN QUE ESTE REALMENTE EJECUTADA (falta comprobacion de
+        // ejecutar correctamente)
+        // si no se ha asignado a ningun invoker porque entra, no se puede liberar
+
+        // el mismo action con mismo ID esta asignada al mismo invoker, por lo que si
+        // una no entra, creera que si ha entrado,
+        // porque la misma instancia esta asignada varias veces
+
+        // aunque no deberia porque estan en el array (se supone en posiciones
+        // diferentes)
 
         assertEquals(iv1.getTotalMemory(), 3000);
         assertEquals(iv2.getTotalMemory(), 1000);
