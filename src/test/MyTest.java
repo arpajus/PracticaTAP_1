@@ -482,4 +482,92 @@ public class MyTest {
         assertEquals(iv1.getTotalMemory(), 3000);
         assertEquals(iv2.getTotalMemory(), 1000);
     }
+
+    @Test
+    public void testUniformGroupDistribution() throws InsufficientMemoryException { // 3 actions 2 invokers
+        UniformGroup uniformGroup = new UniformGroup(); // -> 2 actions 1 invoker
+        controller.setPolicy(uniformGroup); // -> 1 action 1 invoker
+
+        Invoker iv1 = new Invoker(1000, 1);
+        controller.addInvoker(iv1);
+        Invoker iv2 = new Invoker(2000, 2);
+        controller.addInvoker(iv2);
+
+        Adder add1 = new Adder("add1", 100, values);
+        Adder add2 = new Adder("add2", 200, values);
+        Adder add3 = new Adder("add3", 300, values);
+
+        controller.addAction(add1);
+        controller.addAction(add2);
+        controller.addAction(add3);
+
+        assertTrue(controller.distributeActions());
+        assertEquals(2, iv1.getActions().size());
+        assertEquals(1, iv2.getActions().size());
+    }
+
+    @Test
+    public void testUniformGroupInsufficientMemory() {
+        UniformGroup uniformGroup = new UniformGroup();
+        controller.setPolicy(uniformGroup);
+
+        Invoker iv1 = new Invoker(1000, 1);
+        controller.addInvoker(iv1);
+        Invoker iv2 = new Invoker(2000, 2);
+        controller.addInvoker(iv2);
+
+        Adder add1 = new Adder("add1", 1500, values);
+        controller.addAction(add1);
+
+        assertFalse(controller.distributeActions());
+    }
+
+    @Test
+    public void UniformGroupTestFail() {
+        UniformGroup uniformGroup = new UniformGroup();
+        controller.setPolicy(uniformGroup);
+        Invoker iv1 = new Invoker(1000, 1);
+        controller.addInvoker(iv1);
+        Invoker iv2 = new Invoker(2000, 2);
+        controller.addInvoker(iv2);
+
+        Adder add1 = new Adder("add1", 100, values);
+        Adder add2 = new Adder("add2", 100, values);
+        Adder add3 = new Adder("add3", 900, values);
+        Adder add4 = new Adder("add4", 100, values);
+        Adder add5 = new Adder("add5", 100, values);
+
+        controller.addAction(add1);
+        controller.addAction(add2);
+        controller.addAction(add3);
+        controller.addAction(add4);
+        controller.addAction(add5);
+
+        assertFalse(controller.distributeActions());
+    }
+
+    @Test
+    public void testUniformGroupWithMultipleInvokersAndActions() throws InsufficientMemoryException {
+        UniformGroup uniformGroup = new UniformGroup();
+        controller.setPolicy(uniformGroup);
+
+        Invoker iv1 = new Invoker(1000, 1);
+        controller.addInvoker(iv1);
+        Invoker iv2 = new Invoker(1500, 2);
+        controller.addInvoker(iv2);
+        Invoker iv3 = new Invoker(2000, 3);
+        controller.addInvoker(iv3);
+
+        for (int i = 1; i <= 7; i++) {
+            Action action = new Adder("add" + i, 100 * i, values);
+            controller.addAction(action);
+        }
+        assertTrue(controller.distributeActions());
+        assertEquals(3, iv1.getActions().size());
+        assertEquals(2, iv2.getActions().size());
+        assertEquals(2, iv3.getActions().size());
+        assertEquals(400, iv1.getTotalMemory()); // 1000-100-200-300=400
+        assertEquals(600, iv2.getTotalMemory()); // 1500-400-500=600
+        assertEquals(700, iv3.getTotalMemory()); // 2000-600-700=700
+    }
 }

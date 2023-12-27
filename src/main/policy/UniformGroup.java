@@ -10,8 +10,28 @@ public class UniformGroup implements DistributionPolicy {
 
     @Override
     public boolean distributeActions(ArrayList<Action> actions, ArrayList<Invoker> invokers) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'distributeActions'");
+        int actionsPerInvoker = actions.size() / invokers.size();
+        int remainingActions = actions.size() % invokers.size();
+        int invokersIndex = 0;
+        boolean allReturned = true;
+
+        for (Invoker invoker : invokers) {
+            int actionsToAssign = actionsPerInvoker + (remainingActions-- > 0 ? 1 : 0);
+            for (int i = 0; i < actionsToAssign; i++) {
+                Action action = actions.get(0);
+                actions.remove(0);
+                try {
+                    invoker.setAction(action);
+                    System.out.println(("Action " + action.getId() + " assigned to Invoker " + (invokersIndex + 1)));
+                } catch (InsufficientMemoryException e) {
+                    System.out.println(
+                            "Error assigning sction to Invoker " + (invokersIndex + 1) + ": " + e.getMessage());
+                    allReturned=false;
+                }
+            }
+            invokersIndex++;
+        }
+        return allReturned;
     }
 
 }
