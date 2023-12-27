@@ -570,4 +570,47 @@ public class MyTest {
         assertEquals(600, iv2.getTotalMemory()); // 1500-400-500=600
         assertEquals(700, iv3.getTotalMemory()); // 2000-600-700=700
     }
+
+    @Test
+    public void BigGroupTest() {
+        BigGroup bigGroup = new BigGroup(12);
+        controller.setPolicy(bigGroup);
+
+        Invoker iv1 = new Invoker(100000, 1);
+        controller.addInvoker(iv1);
+        Invoker iv2 = new Invoker(200000, 2);
+        controller.addInvoker(iv2);
+
+        for (int i = 1; i <= 18; i++) {
+            Action action = new Adder("add" + i, 100, values);
+            controller.addAction(action);
+        }
+        assertTrue(controller.distributeActions());
+        assertEquals(12, iv1.getActions().size());
+        assertEquals(6, iv2.getActions().size());
+    }
+
+    @Test
+    public void BigGroup3Invokers() {
+        BigGroup bigGroup = new BigGroup(7);
+        controller.setPolicy(bigGroup);
+
+        Invoker iv1 = new Invoker(100000, 1);
+        controller.addInvoker(iv1);
+        Invoker iv2 = new Invoker(2000000, 2);
+        controller.addInvoker(iv2);
+        Invoker iv3 = new Invoker(1000000, 3);
+        controller.addInvoker(iv3);
+
+        for (int i = 1; i <= 18; i++) {
+            Action action = new Adder("add" + i, 100, values);
+            controller.addAction(action);
+        }
+
+        assertTrue(controller.distributeActions());
+        assertEquals(14, iv1.getActions().size());
+        assertEquals(4, iv2.getActions().size());
+        assertEquals(0, iv3.getActions().size());
+
+    }
 }
