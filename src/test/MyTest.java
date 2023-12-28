@@ -484,7 +484,10 @@ public class MyTest {
     }
 
     @Test
-    public void testUniformGroupDistribution() throws InsufficientMemoryException { // 3 actions 2 invokers
+    public void testUniformGroupDistribution() throws InsufficientMemoryException {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
+        // 3 actions 2 invokers
         UniformGroup uniformGroup = new UniformGroup(); // -> 2 actions 1 invoker
         controller.setPolicy(uniformGroup); // -> 1 action 1 invoker
 
@@ -508,6 +511,8 @@ public class MyTest {
 
     @Test
     public void testUniformGroupInsufficientMemory() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
         UniformGroup uniformGroup = new UniformGroup();
         controller.setPolicy(uniformGroup);
 
@@ -524,6 +529,8 @@ public class MyTest {
 
     @Test
     public void UniformGroupTestFail() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
         UniformGroup uniformGroup = new UniformGroup();
         controller.setPolicy(uniformGroup);
         Invoker iv1 = new Invoker(1000, 1);
@@ -548,6 +555,8 @@ public class MyTest {
 
     @Test
     public void testUniformGroupWithMultipleInvokersAndActions() throws InsufficientMemoryException {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
         UniformGroup uniformGroup = new UniformGroup();
         controller.setPolicy(uniformGroup);
 
@@ -573,6 +582,8 @@ public class MyTest {
 
     @Test
     public void BigGroupTest() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
         BigGroup bigGroup = new BigGroup(12);
         controller.setPolicy(bigGroup);
 
@@ -592,6 +603,8 @@ public class MyTest {
 
     @Test
     public void BigGroup3Invokers() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
         BigGroup bigGroup = new BigGroup(7);
         controller.setPolicy(bigGroup);
 
