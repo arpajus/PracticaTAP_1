@@ -687,4 +687,26 @@ public class MyTest {
         assertEquals(4, iv2.getActions().size());
 
     }
+
+    @Test
+    public void BigGroupFail(){
+        Controller.resetInstance();
+        controller = Controller.getInstance();
+        BigGroup bigGroup = new BigGroup(12);
+        controller.setPolicy(bigGroup);
+
+        Invoker iv1=new Invoker(0, 1);
+        controller.addInvoker(iv1);
+        Invoker iv2=new Invoker(0, 2);
+        controller.addInvoker(iv2);
+
+        Adder add1=new Adder("add1", 1000, values);
+        controller.addAction(add1, 12);
+
+        assertFalse(controller.distributeActions());
+        assertEquals(0, iv1.getActions().size());
+        assertEquals(0, iv2.getActions().size());
+
+
+    }
 }
