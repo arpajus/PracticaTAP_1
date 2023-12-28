@@ -414,46 +414,43 @@ public class MyTest {
         Adder add5 = new Adder("add5", 800, values);
         controller.setPolicy(new GreedyGroup());
 
-        /*
-         * //Test 1______________________________
-         * controller.addAction(add1);
-         * controller.addAction(add2, 3);
-         * controller.addAction(add5);
-         * 
-         * assertEquals(iv1.getTotalMemory(), 3000);
-         * assertEquals(iv2.getTotalMemory(), 1000);
-         * 
-         * controller.distributeActions();
-         * 
-         * assertEquals(iv1.getTotalMemory(), 700);
-         * assertEquals(iv2.getTotalMemory(), 200);
-         * 
-         * controller.executeAssignedActions();
-         * 
-         * assertEquals(iv1.getTotalMemory(), 3000);
-         * assertEquals(iv2.getTotalMemory(), 1000);
-         * 
-         * //Test 2______________________________
-         * Adder add6 = new Adder("add6", 3100, values);
-         * 
-         * assertEquals(iv1.getTotalMemory(), 3000);
-         * assertEquals(iv2.getTotalMemory(), 1000);
-         * 
-         * controller.getActions().clear();
-         * controller.addAction(add6);
-         * 
-         * controller.distributeActions();
-         * 
-         * //testing it doesn't try to execute an unassigned action
-         * assertEquals(iv1.getTotalMemory(), 3000);
-         * assertEquals(iv2.getTotalMemory(), 1000);
-         * 
-         * controller.executeAssignedActions();
-         * 
-         * assertEquals(iv1.getTotalMemory(), 3000);
-         * assertEquals(iv2.getTotalMemory(), 1000);
-         * 
-         */
+        // Test 1______________________________
+        controller.addAction(add1);
+        controller.addAction(add2, 3);
+        controller.addAction(add5);
+
+        assertEquals(iv1.getTotalMemory(), 3000);
+        assertEquals(iv2.getTotalMemory(), 1000);
+
+        controller.distributeActions();
+
+        assertEquals(iv1.getTotalMemory(), 700);
+        assertEquals(iv2.getTotalMemory(), 200);
+
+        controller.executeAssignedActions();
+
+        assertEquals(iv1.getTotalMemory(), 3000);
+        assertEquals(iv2.getTotalMemory(), 1000);
+
+        // Test 2______________________________
+        Adder add6 = new Adder("add6", 3100, values);
+
+        assertEquals(iv1.getTotalMemory(), 3000);
+        assertEquals(iv2.getTotalMemory(), 1000);
+
+        controller.getActions().clear();
+        controller.addAction(add6);
+
+        controller.distributeActions();
+
+        // testing it doesn't try to execute an unassigned action
+        assertEquals(iv1.getTotalMemory(), 3000);
+        assertEquals(iv2.getTotalMemory(), 1000);
+
+        controller.executeAssignedActions();
+
+        assertEquals(iv1.getTotalMemory(), 3000);
+        assertEquals(iv2.getTotalMemory(), 1000);
 
         // Test 3______________________________
         assertEquals(iv1.getTotalMemory(), 3000);
@@ -587,18 +584,25 @@ public class MyTest {
         BigGroup bigGroup = new BigGroup(12);
         controller.setPolicy(bigGroup);
 
-        Invoker iv1 = new Invoker(100000, 1);
+        Invoker iv1 = new Invoker(2000, 1);
+        Invoker iv2 = new Invoker(5000, 2);
+
         controller.addInvoker(iv1);
-        Invoker iv2 = new Invoker(200000, 2);
         controller.addInvoker(iv2);
 
-        for (int i = 1; i <= 18; i++) {
-            Action action = new Adder("add" + i, 100, values);
-            controller.addAction(action);
-        }
+        Action action = new Adder("add", 100, values);
+        controller.addAction(action, 18);
+
+        assertEquals(iv1.getTotalMemory(), 2000);
+        assertEquals(iv2.getTotalMemory(), 5000);
+
         assertTrue(controller.distributeActions());
-        assertEquals(12, iv1.getActions().size());
-        assertEquals(6, iv2.getActions().size());
+
+        assertEquals(iv1.getTotalMemory(), 200);
+        assertEquals(iv2.getTotalMemory(), 5000);
+
+        assertEquals(18, iv1.getActions().size());
+        assertEquals(0, iv2.getActions().size());
     }
 
     @Test
@@ -608,22 +612,79 @@ public class MyTest {
         BigGroup bigGroup = new BigGroup(7);
         controller.setPolicy(bigGroup);
 
-        Invoker iv1 = new Invoker(100000, 1);
+        Invoker iv1 = new Invoker(1500, 1);
+        Invoker iv2 = new Invoker(1000, 2);
+        Invoker iv3 = new Invoker(3000, 3);
+
         controller.addInvoker(iv1);
-        Invoker iv2 = new Invoker(2000000, 2);
         controller.addInvoker(iv2);
-        Invoker iv3 = new Invoker(1000000, 3);
         controller.addInvoker(iv3);
 
-        for (int i = 1; i <= 18; i++) {
-            Action action = new Adder("add" + i, 100, values);
-            controller.addAction(action);
-        }
+        Action action = new Adder("add", 100, values);
+        controller.addAction(action, 18);
+
+        assertEquals(iv1.getTotalMemory(), 1500);
+        assertEquals(iv2.getTotalMemory(), 1000);
+        assertEquals(iv3.getTotalMemory(), 3000);
 
         assertTrue(controller.distributeActions());
-        assertEquals(14, iv1.getActions().size());
-        assertEquals(4, iv2.getActions().size());
+
+        assertEquals(iv1.getTotalMemory(), 100);
+        assertEquals(iv2.getTotalMemory(), 600);
+        assertEquals(iv3.getTotalMemory(), 3000);
+
+        assertEquals(14, iv1.getActions().size()); // 700+700
+        assertEquals(4, iv2.getActions().size()); // 400
         assertEquals(0, iv3.getActions().size());
+    }
+
+    @Test
+    public void BigGroupTest1() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
+        BigGroup bigGroup = new BigGroup(4);
+        controller.setPolicy(bigGroup);
+
+        Invoker iv1 = new Invoker(1400, 1);
+        Invoker iv2 = new Invoker(2000, 2);
+        controller.addInvoker(iv1);
+        controller.addInvoker(iv2);
+
+        Action action0 = new Adder("action0", 250, values);
+        Action action1 = new Adder("action1", 250, values);
+        Action action2 = new Adder("action2", 250, values);
+        Action action3 = new Adder("action3", 250, values);
+
+        Action action4 = new Adder("action4", 100, values);
+        Action action5 = new Adder("action5", 200, values);
+        Action action6 = new Adder("action6", 100, values);
+        Action action7 = new Adder("action7", 200, values);
+
+        Action action8 = new Adder("action8", 100, values);
+        Action action9 = new Adder("action9", 100, values);
+
+        controller.addAction(action0);
+        controller.addAction(action1);
+        controller.addAction(action2);
+        controller.addAction(action3); // g1 = 1000
+
+        controller.addAction(action4);
+        controller.addAction(action5);
+        controller.addAction(action6);
+        controller.addAction(action7); // g2 = 600
+
+        controller.addAction(action8);
+        controller.addAction(action9); // g3 = 200
+
+        assertEquals(iv1.getTotalMemory(), 1400);
+        assertEquals(iv2.getTotalMemory(), 2000);
+
+        assertTrue(controller.distributeActions());
+
+        assertEquals(iv1.getTotalMemory(), 200); // g1 + g3
+        assertEquals(iv2.getTotalMemory(), 1400); // g2
+        assertEquals(6, iv1.getActions().size());
+        assertEquals(4, iv2.getActions().size());
 
     }
 }

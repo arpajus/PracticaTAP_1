@@ -8,12 +8,11 @@ public class Invoker {
     private ArrayList<Action> actions;
     private double totalMemory; // memory -> MB
     private int id;
-    private ArrayList<Observer> observers = new ArrayList<>();
-    private ArrayList<Metric> metrics = new ArrayList<>();
 
-    // guarda en cache el id del action y su resultado (object porque yo no se que
-    // devuelve action)
-    private HashMap<String, Object> cache;
+    private ArrayList<Observer> observers = new ArrayList<>();
+    public ArrayList<Metric> metrics = new ArrayList<>();
+    public HashMap<String, Object> cache; // guarda en cache el id del action y su resultado (object porque yo no se que
+                                          // devuelve action)
 
     // invokers hijos?
 

@@ -4,6 +4,7 @@ import main.interfaces.DistributionPolicy;
 import main.Action;
 import main.InsufficientMemoryException;
 import main.Invoker;
+
 import java.util.ArrayList;
 
 public class BigGroup implements DistributionPolicy {
@@ -16,18 +17,24 @@ public class BigGroup implements DistributionPolicy {
 
     @Override
     public boolean distributeActions(ArrayList<Action> actions, ArrayList<Invoker> invokers) {
+        // Check if invokers or actions are empty
         if (invokers.isEmpty() || actions.isEmpty()) {
             return false;
         }
 
-        for (Invoker invoker : invokers) {
-            for (int i = 0; i < groupSize && !actions.isEmpty(); i++) {
-                Action action = actions.remove(0);
-                try {
-                    invoker.setAction(action);
-                } catch (InsufficientMemoryException e) {
-                    System.out.println(
-                            "Error assigning sction to Invoker " + (invoker.getId() + 1) + ": " + e.getMessage());
+        // Iterate over groups until all actions are assigned
+        for (int i = 0; i < actions.size(); i += groupSize) {
+            // Create a group of actions
+            ArrayList<Action> groupActions = new ArrayList<>();
+            for (int j = i; j < i + groupSize && j < actions.size(); j++) {
+                groupActions.add(actions.get(j));
+            }
+
+            // Try to assign the entire group to an invoker
+            for (Invoker invoker : invokers) {
+                if (canAssignGroup(invoker, groupActions)) {
+                    assignGroup(invoker, groupActions);
+                    break;
                 }
             }
         }
@@ -35,4 +42,18 @@ public class BigGroup implements DistributionPolicy {
         return true;
     }
 
+    private boolean canAssignGroup(Invoker invoker, ArrayList<Action> groupActions) {
+        double groupMemory = groupActions.stream().mapToDouble(Action::getMemory).sum();
+        return groupMemory <= invoker.getTotalMemory();
+    }
+
+    private void assignGroup(Invoker invoker, ArrayList<Action> groupActions) {
+        for (Action action : groupActions) {
+            try {
+                invoker.setAction(action);
+            } catch (InsufficientMemoryException e) {
+                System.out.println("Error assigning action to Invoker " + invoker.getId() + ": " + e.getMessage());
+            }
+        }
+    }
 }
