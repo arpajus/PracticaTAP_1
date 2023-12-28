@@ -7,7 +7,8 @@ import java.util.ArrayList;
 
 public class Controller implements Observer {
 
-    //volatile: to ensure that changes made by one thread are visible to other threads
+    // volatile: to ensure that changes made by one thread are visible to other
+    // threads
     private static volatile Controller controller = new Controller(1);
 
     private int id;
@@ -43,7 +44,7 @@ public class Controller implements Observer {
         this.actions = actions;
         this.policy = new RoundRobin();
         this.metrics = new ArrayList<>();
-        this.id=id;
+        this.id = id;
     }
 
     // creo que es mejor arraylist, porque los invokers son fijos (si hay 3 hay
@@ -55,7 +56,7 @@ public class Controller implements Observer {
         this.actions = new ArrayList<Action>();
         this.policy = new RoundRobin();
         this.metrics = new ArrayList<>();
-        this.id=id;
+        this.id = id;
     }
 
     public int getId() {
@@ -87,13 +88,25 @@ public class Controller implements Observer {
     }
 
     public void addAction(Action action, int nTimes) {
+        // adds the same action N times, it laso adds i to de ID
+        // action.id = hi, n = 4 -> hi0, hi1, hi2, hi3
         for (int i = 0; i < nTimes; i++) {
-            actions.add(action);
+            Action newAction = new ConcreteAction(action.getId() + i, action.getMemory(), action.getValues());
+            actions.add(newAction);
         }
     }
 
     public void addInvoker(Invoker invoker) {
         invokers.add(invoker);
+    }
+
+    public void addInvoker(Invoker invoker, int nTimes) {
+        // adds the invoker action N times, it laso adds i to de ID
+        // invoker.id = hi, n = 4 -> hi0, hi1, hi2, hi3
+        for (int i = 0; i < nTimes; i++) {
+            Invoker newInvoker = new Invoker(invoker.getTotalMemory(), invoker.getId());
+            invokers.add(newInvoker);
+        }
     }
 
     public boolean distributeActions() {
@@ -104,8 +117,8 @@ public class Controller implements Observer {
         for (Action action : actions) {
             try {
                 Invoker invoker = action.getInvoker();
-                //if invoker is null, the action is not assigned
-                if (invoker != null){
+                // if invoker is null, the action is not assigned
+                if (invoker != null) {
                     invoker.executeInvokerActions();
                     invoker.releaseMemory(action.getMemory());
                 }
