@@ -18,6 +18,7 @@ public class BigGroup implements DistributionPolicy {
     @Override
     public boolean distributeActions(ArrayList<Action> actions, ArrayList<Invoker> invokers) {
         // Check if invokers or actions are empty
+        boolean assigned = false;
         if (invokers.isEmpty() || actions.isEmpty()) {
             return false;
         }
@@ -33,13 +34,13 @@ public class BigGroup implements DistributionPolicy {
             // Try to assign the entire group to an invoker
             for (Invoker invoker : invokers) {
                 if (canAssignGroup(invoker, groupActions)) {
+                    assigned = true;
                     assignGroup(invoker, groupActions);
                     break;
                 }
             }
         }
-
-        return true;
+        return assigned;
     }
 
     private boolean canAssignGroup(Invoker invoker, ArrayList<Action> groupActions) {
