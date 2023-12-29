@@ -341,7 +341,6 @@ public class MyTest {
         Adder add5 = new Adder("add5", 800, values);
 
         controller.setPolicy(new GreedyGroup());
-        // Test 1______________________________
         controller.addAction(add1);
         controller.addAction(add2, 3);
         controller.addAction(add5);
@@ -363,7 +362,6 @@ public class MyTest {
         assertEquals(iv1.getTotalMemory(), 3000);
         assertEquals(iv2.getTotalMemory(), 1000);
 
-        // Test 2______________________________
         Adder add6 = new Adder("add6", 3100, values);
 
         assertEquals(iv1.getTotalMemory(), 3000);
@@ -407,23 +405,19 @@ public class MyTest {
         assertEquals(iv2.getTotalMemory(), 1000);
         assertEquals(0, iv1.getActions().size());
         assertEquals(0, iv2.getActions().size());
-    }
 
-    @Test
-    public void GreedyGroupTest2() {
         Controller.resetInstance();
         controller = Controller.getInstance();
 
-        Invoker iv1 = new Invoker(3000, 1);
-        Invoker iv2 = new Invoker(1000, 2);
+        iv1 = new Invoker(3000, 1);
+        iv2 = new Invoker(1000, 2);
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
-        Adder add1 = new Adder("add1", 2000, values);
-        Adder add2 = new Adder("add2", 100, values);
-        Adder add5 = new Adder("add5", 800, values);
+        add1 = new Adder("add1", 2000, values);
+        add2 = new Adder("add2", 100, values);
+        add5 = new Adder("add5", 800, values);
         controller.setPolicy(new GreedyGroup());
 
-        // Test 1______________________________
         controller.addAction(add1);
         controller.addAction(add2, 3);
         controller.addAction(add5);
@@ -445,8 +439,7 @@ public class MyTest {
         assertEquals(0, iv1.getActions().size());
         assertEquals(0, iv2.getActions().size());
 
-        // Test 2______________________________
-        Adder add6 = new Adder("add6", 3100, values);
+        add6 = new Adder("add6", 3100, values);
 
         assertEquals(iv1.getTotalMemory(), 3000);
         assertEquals(iv2.getTotalMemory(), 1000);
@@ -469,7 +462,6 @@ public class MyTest {
         assertEquals(0, iv1.getActions().size());
         assertEquals(0, iv2.getActions().size());
 
-        // Test 3______________________________
         assertEquals(iv1.getTotalMemory(), 3000);
         assertEquals(iv2.getTotalMemory(), 1000);
 
@@ -489,23 +481,19 @@ public class MyTest {
         assertEquals(iv2.getTotalMemory(), 1000);
         assertEquals(0, iv1.getActions().size());
         assertEquals(0, iv2.getActions().size());
-    }
 
-    @Test
-    public void GreedyGroupTest3() {
         Controller.resetInstance();
         controller = Controller.getInstance();
 
-        Invoker iv1 = new Invoker(90, 1);
-        Invoker iv2 = new Invoker(10, 2);
+        iv1 = new Invoker(90, 1);
+        iv2 = new Invoker(10, 2);
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
-        Adder add1 = new Adder("add1", 2000, values);
-        Adder add2 = new Adder("add2", 100, values);
-        Adder add5 = new Adder("add5", 800, values);
+        add1 = new Adder("add1", 2000, values);
+        add2 = new Adder("add2", 100, values);
+        add5 = new Adder("add5", 800, values);
         controller.setPolicy(new GreedyGroup());
 
-        // Test 1______________________________
         controller.addAction(add1);
         controller.addAction(add2, 3);
         controller.addAction(add5);
@@ -514,7 +502,7 @@ public class MyTest {
         assertEquals(iv2.getTotalMemory(), 10);
 
         assertFalse(controller.distributeActions());
-        
+
         assertEquals(0, iv1.getActions().size());
         assertEquals(0, iv2.getActions().size());
 
@@ -530,13 +518,13 @@ public class MyTest {
         assertEquals(iv2.getTotalMemory(), 10);
 
         Adder add3 = new Adder("add3", 3, values);
-        controller.addAction(add3, 35); //105
+        controller.addAction(add3, 35); // 105
 
         assertEquals(iv1.getTotalMemory(), 90);
         assertEquals(iv2.getTotalMemory(), 10);
 
         assertTrue(controller.distributeActions());
-        
+
         assertEquals(30, iv1.getActions().size());
         assertEquals(3, iv2.getActions().size());
         assertEquals(iv1.getTotalMemory(), 0);
@@ -548,6 +536,83 @@ public class MyTest {
         assertEquals(0, iv2.getActions().size());
         assertEquals(iv1.getTotalMemory(), 90);
         assertEquals(iv2.getTotalMemory(), 10);
+
+        Controller.resetInstance();
+        controller = Controller.getInstance();
+
+        Invoker iv3 = new Invoker(1500, 3);
+        Invoker iv4 = new Invoker(2000, 4);
+        controller.addInvoker(iv3);
+        controller.addInvoker(iv4);
+
+        add3 = new Adder("add3", 1200, values);
+        Adder add4 = new Adder("add4", 500, values);
+        Adder add7 = new Adder("add7", 600, values);
+
+        controller.setPolicy(new GreedyGroup());
+
+        controller.addAction(add3);
+        controller.addAction(add4, 2);
+        controller.addAction(add7);
+
+        assertEquals(iv3.getTotalMemory(), 1500);
+        assertEquals(iv4.getTotalMemory(), 2000);
+
+        assertTrue(controller.distributeActions());
+
+        assertEquals(1, iv3.getActions().size());
+        assertEquals(3, iv4.getActions().size());
+        assertEquals(iv3.getTotalMemory(), 300);
+        assertEquals(iv4.getTotalMemory(), 400);
+
+        controller.executeAssignedActions();
+
+        assertEquals(0, iv3.getActions().size());
+        assertEquals(0, iv4.getActions().size());
+        assertEquals(iv3.getTotalMemory(), 1500);
+        assertEquals(iv4.getTotalMemory(), 2000);
+
+        Adder add8 = new Adder("add8", 1800, values);
+
+        assertEquals(iv3.getTotalMemory(), 1500);
+        assertEquals(iv4.getTotalMemory(), 2000);
+
+        controller.getActions().clear();
+        controller.addAction(add8);
+
+        assertTrue(controller.distributeActions());
+
+        assertEquals(iv3.getTotalMemory(), 1500);
+        assertEquals(iv4.getTotalMemory(), 200);
+        assertEquals(0, iv3.getActions().size());
+        assertEquals(1, iv4.getActions().size());
+
+        controller.executeAssignedActions();
+
+        assertEquals(iv3.getTotalMemory(), 1500);
+        assertEquals(iv4.getTotalMemory(), 2000);
+        assertEquals(0, iv3.getActions().size());
+        assertEquals(0, iv4.getActions().size());
+
+        assertEquals(iv3.getTotalMemory(), 1500);
+        assertEquals(iv4.getTotalMemory(), 2000);
+
+        controller.getActions().clear();
+        controller.addAction(add3, 3);
+
+        assertTrue(controller.distributeActions());
+
+        assertEquals(iv3.getTotalMemory(), 300);
+        assertEquals(iv4.getTotalMemory(), 800);
+        assertEquals(1, iv3.getActions().size());
+        assertEquals(1, iv4.getActions().size());
+
+        controller.executeAssignedActions();
+
+        assertEquals(iv3.getTotalMemory(), 1500);
+        assertEquals(iv4.getTotalMemory(), 2000);
+        assertEquals(0, iv3.getActions().size());
+        assertEquals(0, iv4.getActions().size());
     }
 
     @Test
@@ -759,18 +824,18 @@ public class MyTest {
     }
 
     @Test
-    public void BigGroupFail(){
+    public void BigGroupFail() {
         Controller.resetInstance();
         controller = Controller.getInstance();
         BigGroup bigGroup = new BigGroup(12);
         controller.setPolicy(bigGroup);
 
-        Invoker iv1=new Invoker(0, 1);
-        Invoker iv2=new Invoker(0, 2);
+        Invoker iv1 = new Invoker(0, 1);
+        Invoker iv2 = new Invoker(0, 2);
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
 
-        Adder add1=new Adder("add1", 1000, values);
+        Adder add1 = new Adder("add1", 1000, values);
         controller.addAction(add1, 12);
 
         assertFalse(controller.distributeActions());
