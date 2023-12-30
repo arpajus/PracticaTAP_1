@@ -2,31 +2,29 @@ package main;
 
 import java.util.ArrayList;
 import main.interfaces.Observer;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Invoker {
     private ArrayList<Action> actions;
     private double totalMemory; // memory -> MB
-    private int id;
-
+    private String id;
     private ArrayList<Observer> observers = new ArrayList<>();
     public ArrayList<Metric> metrics = new ArrayList<>();
-    public HashMap<String, Object> cache; // guarda en cache el id del action y su resultado (object porque yo no se que
-                                          // devuelve action)
+    public ConcurrentHashMap<String, Result> cache = new ConcurrentHashMap<>();
 
     // invokers hijos?
 
-    public Invoker(double totalMemory, int id) {
+    public Invoker(double totalMemory, String id) {
         this.totalMemory = totalMemory;
         this.id = id;
         this.actions = new ArrayList<Action>();
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -35,24 +33,49 @@ public class Invoker {
     }
 
     public void setAction(Action action) throws InsufficientMemoryException {
-        /*
-         * if (cache.containsKey(action.getId())){
-         * //esta accion esta en cache, no hace falta calcular
-         * 
-         * //hacer que setAction devuelva algo?
-         * //return cache.get(action.getId())
-         * }
-         */
         if (action.getMemory() <= totalMemory) {
-            actions.add(action);
-            action.setInvoker(this);
-            takeMemory(action.getMemory());
+            if (!searchHash(cache, action.getValues(), action)) {
+                actions.add(action);
+                action.setInvoker(this);
+                takeMemory(action.getMemory());
+            }
             // we take memory because exactly in this moment we've associate the action to
             // the invoker.
         } else {
             throw new InsufficientMemoryException("Not enough memory to take the action");
         }
+    }
 
+    private boolean searchHash(ConcurrentHashMap<String, Result> hashmap, int[] values, Action action) {
+        for (Result result : hashmap.values()) {
+            if (arrayEqual(result.getInput(), values)) {
+                action.setResult(result.getResult());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean arrayEqual(int[] input, int[] values) {
+        if (input == values) {
+            return true;
+        }
+
+        if (input == null || values == null) {
+            return false;
+        }
+
+        if (input.length != values.length) {
+            return false;
+        }
+
+        for (int i = 0; i < input.length; i++) {
+            if (input[i] != values[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public double getTotalMemory() {
@@ -77,17 +100,21 @@ public class Invoker {
 
     // executes all actions at once
     public void executeInvokerActions() throws InsufficientMemoryException {
-        long startTime = System.currentTimeMillis();
         ArrayList<Metric> metricsToNotify = new ArrayList<>();
+        long startTime = System.currentTimeMillis();
         for (Action action : actions) {
             System.out.println("Executing action: " + action.getId());
-
             action.operation();
-            // --------------------------value es operation result, que no se cual sera
-            // cache.put(action.getId(), "operation_result");
-
             long endTime = System.currentTimeMillis();
-            Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(), action.getMemory());
+
+            // added to the hashmap
+            Result result = new Result(action.getId(), action.getValues(), action.getResult());
+            cache.put(result.getId(), result);
+
+            // --------------------------value es operation result, que no se cual sera
+            //
+            Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(),
+                    action.getMemory());
             metricsToNotify.add(metric);
         }
         notifyObservers(metricsToNotify);
@@ -97,6 +124,10 @@ public class Invoker {
 
     public void addObserver(Observer observer) {
         observers.add(observer);
+    }
+
+    public ArrayList<Observer> getObservers() {
+        return observers;
     }
 
     public void removeObserver(Observer observer) {
@@ -109,24 +140,7 @@ public class Invoker {
         }
     }
 
-    // Merece la pena añadir interfaces para todas estas clases? Pensar y decidir
-
-    // FALTAN DECORATORS, para funcionalidades adicionales como caching and timing.
-    // SON CLASES DIFERENTES?? Mirar la teoria a ver si pone algo al respecto
-
-    // Añadir jerarquia de delegacion de invokers a invokers en 3 niveles
-    // (COMPOSITE)
-
-    /*
-     * El Controller puede sobrecargarse si debe gestionar muchos Invokers. Para
-     * simplificar el
-     * proceso, cada Invoker podrá gestionar internamente diferentes niveles
-     * Invokers. Un Invoker
-     * podrá pasar una petición de invocación a los Invokers de niveles más bajos.
-     * Implementad el
-     * sistema para soportar varias jerarquías (3 niveles) de Invokers que operen
-     * con normalidad y
-     * de manera transparente al Controller.
-     * Usad el patrón composite para implementar la jerarquía de Invokers.
-     */
+    public ConcurrentHashMap<String, Result> getCache() {
+        return this.cache;
+    }
 }

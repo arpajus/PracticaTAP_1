@@ -14,6 +14,7 @@ public class Controller implements Observer {
     private int id;
     private ArrayList<Invoker> invokers;
     private ArrayList<Action> actions;
+    // Controller acts as Context from Strategy pattern
     private DistributionPolicy policy;
     private ArrayList<Metric> metrics; // metrics for the Obsverver
 
@@ -67,6 +68,15 @@ public class Controller implements Observer {
         return actions;
     }
 
+    public Action getActionById(String id) {
+        for (Action action : actions) {
+            if (action.getId().equals(id)) {
+                return action;
+            }
+        }
+        return null;
+    }
+
     public void setActions(ArrayList<Action> actions) {
         this.actions = actions;
     }
@@ -98,15 +108,26 @@ public class Controller implements Observer {
 
     public void addInvoker(Invoker invoker) {
         invokers.add(invoker);
+        invoker.addObserver(this);
     }
 
     public void addInvoker(Invoker invoker, int nTimes) {
         // adds the invoker action N times, it laso adds i to de ID
         // invoker.id = hi, n = 4 -> hi0, hi1, hi2, hi3
         for (int i = 0; i < nTimes; i++) {
-            Invoker newInvoker = new Invoker(invoker.getTotalMemory(), invoker.getId());
+            Invoker newInvoker = new Invoker(invoker.getTotalMemory(), invoker.getId() + "_" + i);
             invokers.add(newInvoker);
+            newInvoker.addObserver(this);
         }
+    }
+
+    public Invoker getInvokerById(String id) {
+        for (Invoker invoker : invokers) {
+            if (invoker.getId().equals(id)) {
+                return invoker;
+            }
+        }
+        return null;
     }
 
     public boolean distributeActions() {
@@ -121,6 +142,7 @@ public class Controller implements Observer {
                 if (invoker != null) {
                     invoker.executeInvokerActions();
                     invoker.releaseMemory(action.getMemory());
+                    action.setInvoker(null);
                 }
                 // we give memory because exactly in this moment we've
                 // finished the action related to the concret invoker.
@@ -144,6 +166,10 @@ public class Controller implements Observer {
                 .mapToLong(Metric::getExecutionTime) // we get the execution time
                 .max() // we get the max of the all Execution times
                 .orElse(0);
+    }
+
+    public void printExecutionTimeForAction(String id) {
+        System.out.println(getMaxExecutionTimeForAction(id));
     }
 
     public void printMetrics() {

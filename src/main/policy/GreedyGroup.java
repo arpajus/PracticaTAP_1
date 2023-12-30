@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GreedyGroup implements DistributionPolicy {
+
     @Override
     public boolean distributeActions(ArrayList<Action> actions, ArrayList<Invoker> invokers) {
         boolean assigned = false;

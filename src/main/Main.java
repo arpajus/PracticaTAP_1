@@ -1,6 +1,8 @@
 package main;
 
 import main.policy.*;
+
+import java.math.BigInteger;
 import java.util.List;
 
 public class Main {
@@ -16,10 +18,10 @@ public class Main {
         // We add the Observer
         // Observer observer=new Observer() {
 
-        Invoker iv1 = new Invoker(1000,1);
+        Invoker iv1 = new Invoker(1000,"1");
         controller.addInvoker(iv1);
         iv1.addObserver(controller);
-        Invoker iv2 = new Invoker(2000,2);
+        Invoker iv2 = new Invoker(2000,"2");
         controller.addInvoker(iv2);
         iv2.addObserver(controller);
         // we have to add the invokers to the controller enviroment
@@ -61,7 +63,7 @@ public class Main {
             System.out.println("Results of the actions: ");
             List<Action> results = controller.getActions();
             for (Action action : results) {
-                if (action.getResult() != 0) {
+                if (action.getResult() != BigInteger.ZERO) {
                     System.out.println("Result of the action " + action.getId() + ": " + action.getResult());
                 }
             }
@@ -73,4 +75,5 @@ public class Main {
     // TESTS ADRI_______________________________
     // TESTS ADRI_______________________________
 
+    //hay que hacer que cuando se hagan las actions se eliminen del controller creo
 }

@@ -1,5 +1,7 @@
 package main;
 
+import java.math.BigInteger;
+
 public class Adder extends Action {
 
     public Adder(String id, double memory, int[] values) {
@@ -12,7 +14,7 @@ public class Adder extends Action {
         for (int i = 0; i < values.length; i++) {
             result = result + values[i];
         }
-        setResult(result);
+        setResult(BigInteger.valueOf(result));
         System.out.println("Operation performed for " + getId() + ". Result: " + result);
     }
 

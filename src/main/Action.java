@@ -1,4 +1,5 @@
 package main;
+import java.math.BigInteger;
 
 import java.util.Arrays;
 
@@ -8,12 +9,13 @@ public abstract class Action {
     private String id;
     private double memory; // memory -> MB
     protected int values[];
-    private int result;
+    private BigInteger result;
     private Invoker invoker;
 
     public Action(String id, double memory, int[] values) {
         this.id = id;
         this.memory = memory;
+        //copy of values or refference?
         this.values = values;
     }
 
@@ -41,11 +43,11 @@ public abstract class Action {
         this.values = values;
     }
 
-    public int getResult() {
+    public BigInteger getResult() {
         return result;
     }
 
-    public void setResult(int result) {
+    public void setResult(BigInteger result) {
         this.result = result;
     }
 
