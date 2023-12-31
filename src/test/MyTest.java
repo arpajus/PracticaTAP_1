@@ -1250,13 +1250,16 @@ public class MyTest {
         assertEquals(BigInteger.valueOf(10), controller.getActionById("add1").getResult());
         assertEquals(BigInteger.valueOf(24), controller.getActionById("mltplr1").getResult());
 
-        // assertEquals(BigInteger.valueOf(10),
-        // controller.getInvokerById("invoker_0").getCache().get("add1").getResult());
-        // assertEquals(BigInteger.valueOf(24),
-        // controller.getInvokerById("invoker_0").getCache().get("mltplr1").getResult());
-        // assertNull(controller.getInvokers("invoker_1").getCache().get("add1"));
-        // assertNull(controller.getInvokerById("invoker_1").getCache().get("mltplr1"));
+        assertEquals(BigInteger.valueOf(10), controller.getInvokerById("invoker_0").getCache().get("add1").getResult());
+        assertEquals(BigInteger.valueOf(24), controller.getInvokerById("invoker_0").getCache().get("mltplr1").getResult());
+        assertNull(controller.getInvokerById("invoker_1").getCache().get("add1"));
+        assertNull(controller.getInvokerById("invoker_1").getCache().get("mltplr1"));
 
+        
+        assertEquals(BigInteger.valueOf(10), controller.getInvokers().get(0).getCache().get("add1").getResult());
+        assertEquals(BigInteger.valueOf(24), controller.getInvokerById("invoker_0").getCache().get("mltplr1").getResult());
+        assertNull(controller.getInvokerById("invoker_1").getCache().get("add1"));
+        assertNull(controller.getInvokerById("invoker_1").getCache().get("mltplr1"));
     }
 
     @Test
@@ -1305,8 +1308,8 @@ public class MyTest {
         assertEquals(bigInteger, controller.getActionById("factorial").getResult());
 
         // factorial has sleep(10s)
-        //assertEquals(bigInteger, controller.getInvokerById("invoker_0").getCache().get("factorial").getResult());
-        //assertNull(controller.getInvokerById("invoker_1").getCache().get("factorial"));
+        assertEquals(bigInteger, controller.getInvokerById("invoker_0").getCache().get("factorial").getResult());
+        assertNull(controller.getInvokerById("invoker_1").getCache().get("factorial"));
 
         // now the result is in cache
         assertTrue(controller.distributeActions());
@@ -1328,8 +1331,8 @@ public class MyTest {
         assertEquals(controller.getInvokerById("invoker_1").getTotalMemory(), 1000);
 
         assertEquals(bigInteger, controller.getActionById("factorial").getResult());
-        //assertEquals(bigInteger, controller.getInvokerById("invoker_0").getCache().get("factorial").getResult());
-        //assertNull(controller.getInvokerById("invoker_1").getCache().get("factorial"));
+        assertEquals(bigInteger, controller.getInvokerById("invoker_0").getCache().get("factorial").getResult());
+        assertNull(controller.getInvokerById("invoker_1").getCache().get("factorial"));
     }
 
     @Test

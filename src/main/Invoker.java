@@ -2,6 +2,7 @@ package main;
 
 import java.util.ArrayList;
 import main.interfaces.Observer;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Invoker {
     private ArrayList<Action> actions;
@@ -98,5 +99,9 @@ public class Invoker {
         for (Observer observer : observers) {
             observer.updateMetric(metrics);
         }
+    }
+
+    public ConcurrentHashMap<String, Result> getCache() {
+        return null;
     }
 }

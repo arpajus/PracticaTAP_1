@@ -8,14 +8,13 @@ import main.Invoker;
 import main.Metric;
 import main.Result;
 import main.interfaces.Observer;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 //Decorator for memorization (cache)
 public class InvokerCacheDecorator extends Invoker {
     public ConcurrentHashMap<String, Result> cache = new ConcurrentHashMap<>();
     Invoker invoker;
-    
+
     public InvokerCacheDecorator(Invoker invoker) {
         super(invoker.getTotalMemory(), invoker.getId());
         this.invoker = invoker;
