@@ -37,13 +37,17 @@ public class InvokerCacheDecorator extends Invoker {
             if (!searchHash(cache, action.getValues(), action)) {
                 invoker.getActions().add(action);
                 action.setInvoker(this);
-                invoker.setTotalMemory(invoker.getTotalMemory() - action.getMemory());
+                takeMemory(action.getMemory());
             }
             // we take memory because exactly in this moment we've associate the action to
             // the invoker.
         } else {
             throw new InsufficientMemoryException("Not enough memory to take the action");
         }
+    }
+
+    private void takeMemory(double memoryToTake) {
+        invoker.setTotalMemory(invoker.getTotalMemory() - memoryToTake);
     }
 
     private boolean searchHash(ConcurrentHashMap<String, Result> hashmap, int[] values, Action action) {
