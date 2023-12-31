@@ -137,11 +137,10 @@ public class Controller implements Observer {
     public void executeAssignedActions() {
         for (Action action : actions) {
             try {
-                Invoker invoker = action.getInvoker();
                 // if invoker is null, the action is not assigned
-                if (invoker != null) {
-                    invoker.executeInvokerActions();
-                    invoker.releaseMemory(action.getMemory());
+                if (action.getInvoker() != null) {
+                    action.getInvoker().executeInvokerActions();
+                    action.getInvoker().releaseMemory(action.getMemory());
                     action.setInvoker(null);
                 }
                 // we give memory because exactly in this moment we've

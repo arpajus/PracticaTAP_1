@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 //Decorator for memorization (cache)
 public class InvokerCacheDecorator extends Invoker {
-    public ConcurrentHashMap<String, Result> cache = new ConcurrentHashMap<>();
     Invoker invoker;
 
     public InvokerCacheDecorator(Invoker invoker) {
@@ -34,7 +33,7 @@ public class InvokerCacheDecorator extends Invoker {
 
     public void setAction(Action action) throws InsufficientMemoryException {
         if (action.getMemory() <= invoker.getTotalMemory()) {
-            if (!searchHash(cache, action.getValues(), action)) {
+            if (!searchHash(invoker.getCache(), action.getValues(), action)) {
                 invoker.getActions().add(action);
                 action.setInvoker(this);
                 takeMemory(action.getMemory());
@@ -49,6 +48,7 @@ public class InvokerCacheDecorator extends Invoker {
     private void takeMemory(double memoryToTake) {
         invoker.setTotalMemory(invoker.getTotalMemory() - memoryToTake);
     }
+
 
     private boolean searchHash(ConcurrentHashMap<String, Result> hashmap, int[] values, Action action) {
         for (Result result : hashmap.values()) {
@@ -106,7 +106,7 @@ public class InvokerCacheDecorator extends Invoker {
 
             // added to the hashmap
             Result result = new Result(action.getId(), action.getValues(), action.getResult());
-            cache.put(result.getId(), result);
+            invoker.getCache().put(result.getId(), result);
 
             // --------------------------value es operation result, que no se cual sera
             //
@@ -136,6 +136,6 @@ public class InvokerCacheDecorator extends Invoker {
     }
 
     public ConcurrentHashMap<String, Result> getCache() {
-        return this.cache;
+        return invoker.getCache();
     }
 }

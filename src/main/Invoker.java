@@ -10,6 +10,7 @@ public class Invoker {
     private String id;
     private ArrayList<Observer> observers = new ArrayList<>();
     public ArrayList<Metric> metrics = new ArrayList<>();
+    public ConcurrentHashMap<String, Result> cache = new ConcurrentHashMap<>();
 
     // invokers hijos?
 
@@ -100,8 +101,8 @@ public class Invoker {
             observer.updateMetric(metrics);
         }
     }
-
+    
     public ConcurrentHashMap<String, Result> getCache() {
-        return null;
+        return this.cache;
     }
 }

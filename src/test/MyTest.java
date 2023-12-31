@@ -1250,6 +1250,9 @@ public class MyTest {
         assertEquals(BigInteger.valueOf(10), controller.getActionById("add1").getResult());
         assertEquals(BigInteger.valueOf(24), controller.getActionById("mltplr1").getResult());
 
+        assertTrue(controller.getInvokerById("invoker_0").getCache().get("add1") != null);
+        assertTrue(controller.getInvokerById("invoker_1").getCache().get("mltplr1") != null);
+        
         assertEquals(BigInteger.valueOf(10), controller.getInvokerById("invoker_0").getCache().get("add1").getResult());
         assertEquals(BigInteger.valueOf(24), controller.getInvokerById("invoker_0").getCache().get("mltplr1").getResult());
         assertNull(controller.getInvokerById("invoker_1").getCache().get("add1"));
