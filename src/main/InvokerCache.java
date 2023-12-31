@@ -1,3 +1,4 @@
+/**
 package main;
 
 import java.util.ArrayList;
@@ -35,7 +36,6 @@ public class Invoker {
             actions.add(action);
             action.setInvoker(this);
             takeMemory(action.getMemory());
-
             // we take memory because exactly in this moment we've associate the action to
             // the invoker.
         } else {
@@ -71,6 +71,9 @@ public class Invoker {
             System.out.println("Executing action: " + action.getId());
             action.operation();
             long endTime = System.currentTimeMillis();
+
+            Result result = new Result(action.getId(), action.getValues(), action.getResult());
+
             // --------------------------value es operation result, que no se cual sera
             //
             Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(),
@@ -100,3 +103,4 @@ public class Invoker {
         }
     }
 }
+**/
