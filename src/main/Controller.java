@@ -4,6 +4,7 @@ import main.interfaces.DistributionPolicy;
 import main.interfaces.Observer;
 import main.policy.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -182,12 +183,43 @@ public class Controller implements Observer {
         });
     }
 
-    public void analyzeInvokerMemory(List<Metric> metrics) {
+        public void analyzeExecutionTimeBis(ArrayList<Metric> metrics) {
+        Map<String, Long> minExecutionTimes = new HashMap<>();
+        Map<String, Long> maxExecutionTimes = new HashMap<>();
+        Map<String, Long> totalExecutionTimes = new HashMap<>();
+        Map<String, Integer> actionCounts = new HashMap<>();
+
+        metrics.forEach(metric -> {
+            String invokerId = metric.getAssignedInvoker().getId();
+            long executionTime = metric.getExecutionTime();
+
+            minExecutionTimes.merge(invokerId, executionTime, Long::min);
+            maxExecutionTimes.merge(invokerId, executionTime, Long::max);
+            totalExecutionTimes.merge(invokerId, executionTime, Long::sum);
+            actionCounts.merge(invokerId, 1, Integer::sum);
+        });
+
+        minExecutionTimes.forEach((invokerId, minExecutionTime) -> {
+            long maxExecutionTime = maxExecutionTimes.get(invokerId);
+            long totalExecutionTime = totalExecutionTimes.get(invokerId);
+            int actionCount = actionCounts.get(invokerId);
+
+            double averageExecutionTime = actionCount > 0 ? (double) totalExecutionTime / actionCount : 0.0;
+
+            System.out.println("Invoker: " + invokerId +
+                    ", Min Execution Time: " + minExecutionTime +
+                    ", Max Execution Time: " + maxExecutionTime +
+                    ", Average Execution Time: " + averageExecutionTime +
+                    ", Total Execution Time: " + totalExecutionTime);
+        });
+    }
+
+    public void analyzeInvokerMemory(ArrayList<Metric> metrics) {
         Map<String, Double> invokerMemoryUsage = new ConcurrentHashMap<>();
 
         metrics.forEach(metric -> {
             String invokerId = metric.getAssignedInvoker().getId();
-            // Add the memory of every action
+            // Add the memory used for every action
             invokerMemoryUsage.merge(invokerId, metric.getUsedMemory(), Double::sum);
         });
 
@@ -195,7 +227,8 @@ public class Controller implements Observer {
             double totalMemory = metrics.stream()
                     .filter(metric -> metric.getAssignedInvoker().getId().equals(invokerId))
                     .mapToDouble(metric -> metric.getAssignedInvoker().getTotalMemory())
-                    .sum();
+                    .findFirst().orElse(0.0);
+
             double percentageUsed = (memoryUsage / totalMemory) * 100;
             
             System.out.println("Invoker: " + invokerId +

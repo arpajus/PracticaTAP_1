@@ -59,6 +59,8 @@ public class Main {
             System.out.println("-----------------");
             controller.analyzeExecutionTime(controller.getMetrics());
             controller.analyzeInvokerMemory(controller.getMetrics());
+            System.out.println("-------------");
+            controller.analyzeExecutionTimeBis(controller.getMetrics());
             // This shows the results of the actions that have been done
             System.out.println("Results of the actions: ");
             List<Action> results = controller.getActions();

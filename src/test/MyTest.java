@@ -120,7 +120,7 @@ public class MyTest {
     public void addActionsandLastInsufficientMemoryActions() {
         Controller.resetInstance();
         controller = Controller.getInstance();
-        //configure system.out
+        // configure system.out
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
@@ -141,11 +141,8 @@ public class MyTest {
         boolean actionsAssigned = controller.distributeActions();
         assertFalse(actionsAssigned);
 
-        // Restaurar System.out
         System.setOut(new PrintStream(System.out));
 
-        // Verificar si el mensaje de error esperado se encuentra en la salida de la
-        // consola
         assertTrue(outContent.toString().contains("Not enough memory to take the action"));
     }
 
@@ -1250,15 +1247,16 @@ public class MyTest {
 
         assertTrue(controller.getInvokerById("invoker_0").getCache().get("add1") != null);
         assertTrue(controller.getInvokerById("invoker_1").getCache().get("mltplr1") != null);
-        
+
         assertEquals(BigInteger.valueOf(10), controller.getInvokerById("invoker_0").getCache().get("add1").getResult());
-        assertEquals(BigInteger.valueOf(24), controller.getInvokerById("invoker_0").getCache().get("mltplr1").getResult());
+        assertEquals(BigInteger.valueOf(24),
+                controller.getInvokerById("invoker_0").getCache().get("mltplr1").getResult());
         assertNull(controller.getInvokerById("invoker_1").getCache().get("add1"));
         assertNull(controller.getInvokerById("invoker_1").getCache().get("mltplr1"));
 
-        
         assertEquals(BigInteger.valueOf(10), controller.getInvokers().get(0).getCache().get("add1").getResult());
-        assertEquals(BigInteger.valueOf(24), controller.getInvokerById("invoker_0").getCache().get("mltplr1").getResult());
+        assertEquals(BigInteger.valueOf(24),
+                controller.getInvokerById("invoker_0").getCache().get("mltplr1").getResult());
         assertNull(controller.getInvokerById("invoker_1").getCache().get("add1"));
         assertNull(controller.getInvokerById("invoker_1").getCache().get("mltplr1"));
     }
@@ -1416,5 +1414,27 @@ public class MyTest {
         assertEquals(controller.getInvokerById("invoker_1").getTotalMemory(), 1000);
         assertEquals(0, controller.getInvokerById("invoker_0").getActions().size());
         assertEquals(0, controller.getInvokerById("invoker_1").getActions().size());
+    }
+
+    @Test
+    public void ObserverTest() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
+        controller.setPolicy(roundRobinImproved);
+
+        Invoker iv1 = new Invoker(1000, "iv1");
+        controller.addInvoker(iv1);
+        Invoker iv2 = new Invoker(2000, "iv2");
+        controller.addInvoker(iv2);
+
+        iv1.addObserver(controller);
+        iv2.addObserver(controller);
+
+        Adder add = new Adder("add", 100, values);
+        controller.addAction(add, 5);
+
+        controller.distributeActions();
+        controller.executeAssignedActions(); // the invokers have notified the controller sending metrics
+        assertEquals(5, controller.getMetrics().size()); // there are 5 actions, so there are 5 metrics, one for action
     }
 }
