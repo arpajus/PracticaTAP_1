@@ -1,6 +1,8 @@
-package main;
+package main.operations;
 
 import java.math.BigInteger;
+
+import main.Action;
 
 public class Factorial extends Action {
 
@@ -21,7 +23,7 @@ public class Factorial extends Action {
         
         // trick to check cache access
         try {
-            Thread.sleep(1);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

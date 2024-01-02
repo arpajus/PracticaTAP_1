@@ -1,6 +1,7 @@
 package main.policy;
 
 import main.interfaces.DistributionPolicy;
+import main.interfaces.InterfaceInvoker;
 import main.Action;
 import main.Invoker;
 import main.InsufficientMemoryException;
@@ -15,18 +16,20 @@ public class UniformGroup implements DistributionPolicy {
         int invokersIndex = 0;
         boolean allReturned = true;
 
-        for (Invoker invoker : invokers) {
+        for (InterfaceInvoker invoker : invokers) {
             int actionsToAssign = actionsPerInvoker + (remainingActions-- > 0 ? 1 : 0);
             for (int i = 0; i < actionsToAssign; i++) {
                 Action action = actions.get(0);
                 actions.remove(0);
                 try {
-                    invoker.setAction(action);
-                    System.out.println(("Action " + action.getId() + " assigned to Invoker " + (invokersIndex + 1)));
+                    if (invoker.setAction(action)) {
+                        System.out
+                                .println(("Action " + action.getId() + " assigned to Invoker " + (invokersIndex + 1)));
+                    }
                 } catch (InsufficientMemoryException e) {
                     System.out.println(
                             "Error assigning sction to Invoker " + (invokersIndex + 1) + ": " + e.getMessage());
-                    allReturned=false;
+                    allReturned = false;
                 }
             }
             invokersIndex++;

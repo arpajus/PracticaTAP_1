@@ -2,10 +2,10 @@ package main.policy;
 
 import main.interfaces.DistributionPolicy;
 import main.Action;
-import main.Invoker;
 import main.InsufficientMemoryException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import main.Invoker;
 
 public class GreedyGroup implements DistributionPolicy {
 
@@ -17,10 +17,11 @@ public class GreedyGroup implements DistributionPolicy {
             Invoker invoker = findAvailableInvoker(invokers, action);
             if (invoker != null) {
                 try {
-                    invoker.setAction(action);
-                    assigned = true;
-                    System.out.println(
-                            "Action " + action.getId() + " assigned to Invoker " + (invokers.indexOf(invoker) + 1));
+                    if (invoker.setAction(action)) {
+                        assigned = true;
+                        System.out.println(
+                                "Action " + action.getId() + " assigned to Invoker " + (invokers.indexOf(invoker) + 1));
+                    }
                 } catch (InsufficientMemoryException e) {
                     System.out.println("Error assigning action to Invoker " + (invokers.indexOf(invoker) + 1) + ": "
                             + e.getMessage());

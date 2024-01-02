@@ -2,6 +2,7 @@ package main;
 import java.math.BigInteger;
 
 import java.util.Arrays;
+import main.interfaces.InterfaceInvoker;
 
 public abstract class Action {
     // nose si aparte de id tiene que haber un codigo, no tengo claro si id y codigo
@@ -10,7 +11,7 @@ public abstract class Action {
     private double memory; // memory -> MB
     protected int values[];
     private BigInteger result;
-    private Invoker invoker;
+    private InterfaceInvoker invoker;
 
     public Action(String id, double memory, int[] values) {
         this.id = id;
@@ -55,7 +56,7 @@ public abstract class Action {
         this.invoker = invoker;
     }
 
-    public Invoker getInvoker() {
+    public InterfaceInvoker getInvoker() {
         return invoker;
     }
 

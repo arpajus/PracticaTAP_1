@@ -1,12 +1,14 @@
 package main;
 
+import main.interfaces.InterfaceInvoker;
+
 public class Metric {
     private String actionId;
     private long executionTime;
-    private Invoker assignedInvoker;
+    private InterfaceInvoker assignedInvoker;
     private double usedMemory;
     
-    public Metric(String actionId, long executionTime, Invoker assignedInvoker, double usedMemory) {
+    public Metric(String actionId, long executionTime, InterfaceInvoker assignedInvoker, double usedMemory) {
         this.actionId = actionId;
         this.executionTime = executionTime;
         this.assignedInvoker = assignedInvoker;
@@ -29,11 +31,11 @@ public class Metric {
         this.executionTime = executionTime;
     }
 
-    public Invoker getAssignedInvoker() {
+    public InterfaceInvoker getAssignedInvoker() {
         return assignedInvoker;
     }
 
-    public void setAssignedInvoker(Invoker assignedInvoker) {
+    public void setAssignedInvoker(InterfaceInvoker assignedInvoker) {
         this.assignedInvoker = assignedInvoker;
     }
 

@@ -1,1 +1,5 @@
+\bin\test\*.class
 bin\test\*.class
+*.class
+main\*.class
+\main\.*class

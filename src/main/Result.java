@@ -7,10 +7,10 @@ public class Result {
     private int[] input;
     private BigInteger result;
 
-    public Result(String id, int[] input, BigInteger result) {
-        this.id = id;
-        this.input = input;
-        this.result = result;
+    public Result(Action action) {
+        this.id = action.getId();
+        this.input = action.getValues();
+        this.result = action.getResult();
     }
 
     public String getId() {

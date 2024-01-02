@@ -1,6 +1,8 @@
 package main;
 
+import main.decorator.InvokerDecorator;
 import main.interfaces.DistributionPolicy;
+import main.interfaces.InterfaceInvoker;
 import main.interfaces.Observer;
 import main.policy.*;
 import java.util.ArrayList;
@@ -120,9 +122,16 @@ public class Controller implements Observer {
         // adds the invoker action N times, it laso adds i to de ID
         // invoker.id = hi, n = 4 -> hi0, hi1, hi2, hi3
         for (int i = 0; i < nTimes; i++) {
-            Invoker newInvoker = new Invoker(invoker.getTotalMemory(), invoker.getId() + "_" + i);
-            invokers.add(newInvoker);
-            newInvoker.addObserver(this);
+            if (invoker instanceof InvokerDecorator) {
+                Invoker newInvoker = new InvokerDecorator(
+                        new Invoker(invoker.getTotalMemory(), invoker.getId() + "_" + i));
+                invokers.add(newInvoker);
+                newInvoker.addObserver(this);
+            } else {
+                Invoker newInvoker = new Invoker(invoker.getTotalMemory(), invoker.getId() + "_" + i);
+                invokers.add(newInvoker);
+                newInvoker.addObserver(this);
+            }
         }
     }
 
@@ -144,7 +153,14 @@ public class Controller implements Observer {
             try {
                 // if invoker is null, the action is not assigned
                 if (action.getInvoker() != null) {
-                    action.getInvoker().executeInvokerActions();
+                    InterfaceInvoker invoker = action.getInvoker();
+                    if (invoker instanceof InvokerDecorator) {
+                        // con cache
+                        invoker.executeInvokerActions();
+                    } else {
+                        // sin cache
+                        invoker.executeInvokerActions();
+                    }
                     action.getInvoker().releaseMemory(action.getMemory());
                     action.setInvoker(null);
                 }
@@ -172,7 +188,8 @@ public class Controller implements Observer {
         metricsByAction.forEach((actionId, actionMetrics) -> {
             long minExecutionTime = actionMetrics.stream().mapToLong(Metric::getExecutionTime).min().orElse(0);
             long maxExecutionTime = actionMetrics.stream().mapToLong(Metric::getExecutionTime).max().orElse(0);
-            double averageExecutionTime = actionMetrics.stream().mapToLong(Metric::getExecutionTime).average().orElse(0);
+            double averageExecutionTime = actionMetrics.stream().mapToLong(Metric::getExecutionTime).average()
+                    .orElse(0);
             long totalExecutionTime = actionMetrics.stream().mapToLong(Metric::getExecutionTime).sum();
 
             System.out.println("Action: " + actionId +
@@ -183,7 +200,7 @@ public class Controller implements Observer {
         });
     }
 
-        public void analyzeExecutionTimeBis(ArrayList<Metric> metrics) {
+    public void analyzeExecutionTimeBis(ArrayList<Metric> metrics) {
         Map<String, Long> minExecutionTimes = new HashMap<>();
         Map<String, Long> maxExecutionTimes = new HashMap<>();
         Map<String, Long> totalExecutionTimes = new HashMap<>();
@@ -230,7 +247,7 @@ public class Controller implements Observer {
                     .findFirst().orElse(0.0);
 
             double percentageUsed = (memoryUsage / totalMemory) * 100;
-            
+
             System.out.println("Invoker: " + invokerId +
                     ", Memory Usage: " + memoryUsage +
                     " MB, Percentage Used: " + percentageUsed + "%");
@@ -247,7 +264,6 @@ public class Controller implements Observer {
                     ", Memory Used: " + metric.getUsedMemory());
         }
     }
-
 }
 
 // Lo comento porque no se para que sirve, y al cambiar el tipo de estructura

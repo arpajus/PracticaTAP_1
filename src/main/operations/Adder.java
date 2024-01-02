@@ -1,6 +1,8 @@
-package main;
+package main.operations;
 
 import java.math.BigInteger;
+
+import main.Action;
 
 public class Adder extends Action {
 

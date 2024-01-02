@@ -1,18 +1,18 @@
 package main;
 
+import main.interfaces.InterfaceInvoker;
 import java.util.ArrayList;
 import main.interfaces.Observer;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Invoker {
+public class Invoker implements InterfaceInvoker {
+
     private ArrayList<Action> actions;
     private double totalMemory; // memory -> MB
     private String id;
     private ArrayList<Observer> observers = new ArrayList<>();
     public ArrayList<Metric> metrics = new ArrayList<>();
     public ConcurrentHashMap<String, Result> cache = new ConcurrentHashMap<>();
-
-    // invokers hijos?
 
     public Invoker(double totalMemory, String id) {
         this.totalMemory = totalMemory;
@@ -32,14 +32,14 @@ public class Invoker {
         return actions;
     }
 
-    public void setAction(Action action) throws InsufficientMemoryException {
+    public boolean setAction(Action action) throws InsufficientMemoryException {
         if (action.getMemory() <= totalMemory) {
             actions.add(action);
             action.setInvoker(this);
             takeMemory(action.getMemory());
-
             // we take memory because exactly in this moment we've associate the action to
             // the invoker.
+            return true;
         } else {
             throw new InsufficientMemoryException("Not enough memory to take the action");
         }
@@ -66,15 +66,26 @@ public class Invoker {
     }
 
     // executes all actions at once
-    public void executeInvokerActions() throws InsufficientMemoryException {
+    public ArrayList<Result> executeInvokerActions() throws InsufficientMemoryException {
         ArrayList<Metric> metricsToNotify = new ArrayList<>();
+        ArrayList<Result> results = new ArrayList<>();
         long startTime = System.currentTimeMillis();
         for (Action action : actions) {
             System.out.println("Executing action: " + action.getId());
             action.operation();
             long endTime = System.currentTimeMillis();
-            // --------------------------value es operation result, que no se cual sera
-            //
+            
+
+            //-------------------------------------------------------------------------
+            //cache
+            //-------------------------------------------------------------------------
+            Result r = new Result(action);            
+            results.add(r);
+            cache.put(r.getId(),r);
+            //-------------------------------------------------------------------------
+            //cache
+            //-------------------------------------------------------------------------
+
             Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(),
                     action.getMemory());
             metricsToNotify.add(metric);
@@ -82,13 +93,15 @@ public class Invoker {
         notifyObservers(metricsToNotify);
         actions.clear();
         System.out.println("Metrics recorded.");
+        return results;
     }
 
-    //it checks that a observer isn't an observer right now. To delete duplicates
+    // it checks that a observer isn't an observer right now. To delete duplicates
     public void addObserver(Observer observer) {
         if (!observers.contains(observer)) {
             observers.add(observer);
-        }    }
+        }
+    }
 
     public ArrayList<Observer> getObservers() {
         return observers;
@@ -103,7 +116,7 @@ public class Invoker {
             observer.updateMetric(metrics);
         }
     }
-    
+
     public ConcurrentHashMap<String, Result> getCache() {
         return this.cache;
     }

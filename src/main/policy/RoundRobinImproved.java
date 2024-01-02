@@ -19,9 +19,10 @@ public class RoundRobinImproved implements DistributionPolicy {
 
             if (invoker != null) {
                 try {
-                    invoker.setAction(action);
-                    System.out.println(
-                            "Action " + action.getId() + " assigned to Invoker " + (invokers.indexOf(invoker) + 1));
+                    if (invoker.setAction(action)) {
+                        System.out.println(
+                                "Action " + action.getId() + " assigned to Invoker " + (invokers.indexOf(invoker) + 1));
+                    }
                 } catch (InsufficientMemoryException e) {
                     System.out.println("Error assigning action to Invoker " + (invokers.indexOf(invoker) + 1) + ": "
                             + e.getMessage());
