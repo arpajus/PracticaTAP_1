@@ -1,7 +1,6 @@
 package main.policy;
 
 import main.interfaces.DistributionPolicy;
-import main.interfaces.InterfaceInvoker;
 import main.Action;
 import main.InsufficientMemoryException;
 import main.Invoker;

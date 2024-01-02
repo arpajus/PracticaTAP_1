@@ -1,10 +1,7 @@
 package test;
 
 import main.*;
-import main.operations.*;
 import main.decorator.InvokerDecorator;
-import main.interfaces.InterfaceInvoker;
-import main.interfaces.Observer;
 import main.operations.Adder;
 import main.operations.Factorial;
 import main.operations.Multiplier;
@@ -1183,7 +1180,6 @@ public class MyTest {
         controller = Controller.getInstance();
         values = new int[] { 1, 2, 3, 4 };
 
-        Invoker iv0Regular = new Invoker(100, "0");
         Invoker iv2Regular = new Invoker(2500, "2");
         Invoker iv1Decorator = new InvokerDecorator(new Invoker(1000, "1"));
         Invoker iv2Decorator = new InvokerDecorator(iv2Regular);
