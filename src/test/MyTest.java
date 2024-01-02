@@ -9,6 +9,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -1436,5 +1437,12 @@ public class MyTest {
         controller.distributeActions();
         controller.executeAssignedActions(); // the invokers have notified the controller sending metrics
         assertEquals(5, controller.getMetrics().size()); // there are 5 actions, so there are 5 metrics, one for action
+
+        for (Metric metric : controller.getMetrics()) { //it checks that there are information on the metrics
+            assertNotNull(metric.getActionId());
+            assertNotNull(metric.getAssignedInvoker());
+            assertNotNull(metric.getExecutionTime());
+            assertNotNull(metric.getUsedMemory());
+        }
     }
 }
