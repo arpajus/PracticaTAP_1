@@ -93,7 +93,7 @@ public class MyTest {
     public void addInsufficientMemoryActions() {
         Controller.resetInstance();
         controller = Controller.getInstance();
-        // Configurar System.out para capturar la salida de la consola
+        // Configure System.out
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
@@ -110,11 +110,9 @@ public class MyTest {
 
         assertEquals(controller.distributeActions(), false);
 
-        // Restaurar System.out
+        // Reset System.out
         System.setOut(new PrintStream(System.out));
 
-        // Verificar si el mensaje de error esperado se encuentra en la salida de la
-        // consola
         assertTrue(outContent.toString().contains("Not enough memory to take the action"));
     }
 
@@ -122,7 +120,7 @@ public class MyTest {
     public void addActionsandLastInsufficientMemoryActions() {
         Controller.resetInstance();
         controller = Controller.getInstance();
-        // Configurar System.out para capturar la salida de la consola
+        //configure system.out
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 

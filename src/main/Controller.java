@@ -4,6 +4,10 @@ import main.interfaces.DistributionPolicy;
 import main.interfaces.Observer;
 import main.policy.*;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class Controller implements Observer {
 
@@ -159,16 +163,45 @@ public class Controller implements Observer {
         return metrics;
     }
 
-    public long getMaxExecutionTimeForAction(String actionId) {
-        return metrics.stream() // it converts the list to a stream
-                .filter(metric -> metric.getActionId().equals(actionId)) // it filters de metric to the action we want
-                .mapToLong(Metric::getExecutionTime) // we get the execution time
-                .max() // we get the max of the all Execution times
-                .orElse(0);
+    public void analyzeExecutionTime(ArrayList<Metric> metrics) {
+        Map<String, List<Metric>> metricsByAction = metrics.stream()
+                .collect(Collectors.groupingBy(Metric::getActionId));
+
+        // Calculates the min, max, avg and total time for one action
+        metricsByAction.forEach((actionId, actionMetrics) -> {
+            long minExecutionTime = actionMetrics.stream().mapToLong(Metric::getExecutionTime).min().orElse(0);
+            long maxExecutionTime = actionMetrics.stream().mapToLong(Metric::getExecutionTime).max().orElse(0);
+            double averageExecutionTime = actionMetrics.stream().mapToLong(Metric::getExecutionTime).average().orElse(0);
+            long totalExecutionTime = actionMetrics.stream().mapToLong(Metric::getExecutionTime).sum();
+
+            System.out.println("Action: " + actionId +
+                    ", Min Execution Time: " + minExecutionTime +
+                    ", Max Execution Time: " + maxExecutionTime +
+                    ", Average Execution Time: " + averageExecutionTime +
+                    ", Total Execution Time: " + totalExecutionTime);
+        });
     }
 
-    public void printExecutionTimeForAction(String id) {
-        System.out.println(getMaxExecutionTimeForAction(id));
+    public void analyzeInvokerMemory(List<Metric> metrics) {
+        Map<String, Double> invokerMemoryUsage = new ConcurrentHashMap<>();
+
+        metrics.forEach(metric -> {
+            String invokerId = metric.getAssignedInvoker().getId();
+            // Add the memory of every action
+            invokerMemoryUsage.merge(invokerId, metric.getUsedMemory(), Double::sum);
+        });
+
+        invokerMemoryUsage.forEach((invokerId, memoryUsage) -> {
+            double totalMemory = metrics.stream()
+                    .filter(metric -> metric.getAssignedInvoker().getId().equals(invokerId))
+                    .mapToDouble(metric -> metric.getAssignedInvoker().getTotalMemory())
+                    .sum();
+            double percentageUsed = (memoryUsage / totalMemory) * 100;
+            
+            System.out.println("Invoker: " + invokerId +
+                    ", Memory Usage: " + memoryUsage +
+                    " MB, Percentage Used: " + percentageUsed + "%");
+        });
     }
 
     public void printMetrics() {

@@ -84,9 +84,11 @@ public class Invoker {
         System.out.println("Metrics recorded.");
     }
 
+    //it checks that a observer isn't an observer right now. To delete duplicates
     public void addObserver(Observer observer) {
-        observers.add(observer);
-    }
+        if (!observers.contains(observer)) {
+            observers.add(observer);
+        }    }
 
     public ArrayList<Observer> getObservers() {
         return observers;

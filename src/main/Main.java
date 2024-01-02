@@ -48,6 +48,7 @@ public class Main {
             System.out.println("Actions distributed");
             System.out.println("The actual memory of iv1 is " + controller.getInvokers().get(0).getTotalMemory());
             System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
+
             controller.executeAssignedActions();
             controller.printMetrics();
             System.out.println("Actions executed");
@@ -55,10 +56,9 @@ public class Main {
             System.out.println("The actual memory of iv1 is " + controller.getInvokers().get(0).getTotalMemory());
             System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
 
-            String actionId = "add2";
-            long maxExecutionTime = controller.getMaxExecutionTimeForAction(actionId);
-            System.out.println("Max Execution Time for Action " + actionId + ": " + maxExecutionTime);
-
+            System.out.println("-----------------");
+            controller.analyzeExecutionTime(controller.getMetrics());
+            controller.analyzeInvokerMemory(controller.getMetrics());
             // This shows the results of the actions that have been done
             System.out.println("Results of the actions: ");
             List<Action> results = controller.getActions();
