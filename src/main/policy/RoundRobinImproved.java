@@ -3,7 +3,8 @@ package main.policy;
 import main.interfaces.DistributionPolicy;
 import main.Action;
 import main.Invoker;
-import main.InsufficientMemoryException;
+import main.exceptions.InsufficientMemoryException;
+
 import java.util.ArrayList;
 
 public class RoundRobinImproved implements DistributionPolicy {

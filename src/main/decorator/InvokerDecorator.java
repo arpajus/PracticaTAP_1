@@ -3,12 +3,11 @@ package main.decorator;
 import java.util.ArrayList;
 
 import main.Action;
-import main.InsufficientMemoryException;
 import main.Invoker;
 import main.Metric;
 import main.Result;
+import main.exceptions.InsufficientMemoryException;
 import main.interfaces.Observer;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InvokerDecorator extends Invoker {

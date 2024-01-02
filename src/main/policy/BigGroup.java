@@ -2,8 +2,8 @@ package main.policy;
 
 import main.interfaces.DistributionPolicy;
 import main.Action;
-import main.InsufficientMemoryException;
 import main.Invoker;
+import main.exceptions.InsufficientMemoryException;
 
 import java.util.ArrayList;
 

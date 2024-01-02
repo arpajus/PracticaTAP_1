@@ -2,10 +2,11 @@ package main.policy;
 
 import main.interfaces.DistributionPolicy;
 import main.Action;
-import main.InsufficientMemoryException;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import main.Invoker;
+import main.exceptions.InsufficientMemoryException;
 
 public class GreedyGroup implements DistributionPolicy {
 

@@ -2,6 +2,7 @@ package test;
 
 import main.*;
 import main.decorator.InvokerDecorator;
+import main.exceptions.InsufficientMemoryException;
 import main.operations.Adder;
 import main.operations.Factorial;
 import main.operations.Multiplier;
@@ -1129,7 +1130,7 @@ public class MyTest {
         assertEquals(0, controller.getInvokerById("invoker_1").getActions().size());
 
         controller.addAction(add100);
-        //should not be added (is in cache)
+        // should not be added (is in cache)
         assertFalse(controller.distributeActions());
 
         assertEquals(controller.getInvokerById("invoker_0").getTotalMemory(), 1000);

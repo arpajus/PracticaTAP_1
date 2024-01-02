@@ -1,6 +1,7 @@
 package main;
 
 import main.decorator.InvokerDecorator;
+import main.exceptions.InsufficientMemoryException;
 import main.interfaces.DistributionPolicy;
 import main.interfaces.InterfaceInvoker;
 import main.interfaces.Observer;

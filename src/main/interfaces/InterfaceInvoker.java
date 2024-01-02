@@ -3,8 +3,9 @@ package main.interfaces;
 import main.Action;
 import main.Metric;
 import main.Result;
+import main.exceptions.InsufficientMemoryException;
+
 import java.util.ArrayList;
-import main.InsufficientMemoryException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public interface InterfaceInvoker {
