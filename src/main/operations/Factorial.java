@@ -23,7 +23,7 @@ public class Factorial extends Action {
         
         // trick to check cache access
         try {
-            Thread.sleep(10000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

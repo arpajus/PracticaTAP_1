@@ -974,7 +974,7 @@ public class MyTest {
     }
 
     @Test
-    public void DecoratorFactorial10s() {
+    public void DecoratorFactorial5s() {
         Controller.resetInstance();
         controller = Controller.getInstance();
 
@@ -1047,7 +1047,7 @@ public class MyTest {
     }
 
     @Test
-    public void FactorialWithoutCache20s() {
+    public void FactorialWithoutCache10s() {
         Controller.resetInstance();
         controller = Controller.getInstance();
 
