@@ -1,5 +1,6 @@
-package main;
+package main.decorator;
 
+import  main.Action;
 import java.math.BigInteger;
 
 public class Result {

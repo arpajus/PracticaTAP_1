@@ -15,15 +15,13 @@ import java.util.stream.Collectors;
 
 public class Controller implements Observer {
 
-    // volatile: to ensure that changes made by one thread are visible to other
-    // threads
+    // volatile: to ensure that changes made by one thread are visible to other threads
     private static volatile Controller controller = new Controller(1);
 
     private int id;
     private ArrayList<Invoker> invokers;
     private ArrayList<Action> actions;
-    // Controller acts as Context from Strategy pattern
-    private DistributionPolicy policy;
+    private DistributionPolicy policy; // Controller acts as Context from Strategy pattern
     private ArrayList<Metric> metrics; // metrics for the Obsverver
 
     // Singleton: ensures that only one instance of a class exists in the entire

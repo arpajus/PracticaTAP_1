@@ -6,8 +6,6 @@ import main.Action;
 
 public class Multiplier extends Action {
 
-    int result = 0;
-
     public Multiplier(String id, double memory, int[] values) {
         super(id, memory, values);
     }

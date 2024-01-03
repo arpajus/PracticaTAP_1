@@ -2,7 +2,7 @@ package main.interfaces;
 
 import main.Action;
 import main.Metric;
-import main.Result;
+import main.decorator.Result;
 import main.exceptions.InsufficientMemoryException;
 
 import java.util.ArrayList;

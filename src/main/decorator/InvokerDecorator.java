@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import main.Action;
 import main.Invoker;
 import main.Metric;
-import main.Result;
 import main.exceptions.InsufficientMemoryException;
 import main.interfaces.Observer;
 import java.util.concurrent.ConcurrentHashMap;

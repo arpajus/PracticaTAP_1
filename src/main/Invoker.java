@@ -1,5 +1,6 @@
 package main;
 
+import main.decorator.Result;
 import main.exceptions.InsufficientMemoryException;
 import main.interfaces.InterfaceInvoker;
 import java.util.ArrayList;
