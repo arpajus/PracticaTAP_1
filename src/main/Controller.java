@@ -264,19 +264,3 @@ public class Controller implements Observer {
         }
     }
 }
-
-// Lo comento porque no se para que sirve, y al cambiar el tipo de estructura
-// hay que reprogramarlo
-/*
- * //Esto que utilidad tiene? Osea creas un arraylist results donde añades todas
- * las actions
- * //Pero no se usa para nada, osea imprimes directamente de la lista actions,
- * se usara mas adelante?
- * 
- * }
- */
-
-// decidir a que invoker asignar la accion (consultando sus recursos),
-// luego si internamente un invoker esta muy "a tope" puede relegar en
-// invokers de menor jerarquia para ayudarle (sin que el controller lo sepa)
-// mirar la teoria para hacer esto

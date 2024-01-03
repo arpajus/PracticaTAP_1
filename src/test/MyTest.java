@@ -1617,7 +1617,7 @@ public class MyTest {
         assertEquals(iv2Decorator.getTotalMemory(), 2500);
         assertEquals(new BigInteger("10"), controller.getActionById("add6").getResult());
         assertEquals(new BigInteger("24"), controller.getActionById("mul1").getResult());
-        
+
         // new value set
         values = new int[] { 1, 2, 3 };
         Adder add3 = new Adder("add3", 1100, values);
@@ -1727,11 +1727,12 @@ public class MyTest {
         assertEquals(iv3Decorator.getTotalMemory(), 3000);
         assertEquals(new BigInteger("3"), controller.getActionById("add1").getResult());
 
-        
+        Multiplier mul2 = new Multiplier("mul2", 1300, values);
         assertTrue(iv1Decorator.chronometer(add1) != "");
         assertTrue(iv1Decorator.chronometer(add2) != "");
         assertTrue(iv1Decorator.chronometer(add3) != "");
         assertTrue(iv1Decorator.chronometer(add6) != "");
         assertTrue(iv1Decorator.chronometer(mul1) != "");
+        assertTrue(iv1Decorator.chronometer(mul2) == "");
     }
 }
