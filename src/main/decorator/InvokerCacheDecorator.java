@@ -9,10 +9,10 @@ import main.exceptions.InsufficientMemoryException;
 import main.interfaces.Observer;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class InvokerDecorator extends Invoker {
+public class InvokerCacheDecorator extends Invoker {
     private Invoker invoker;
 
-    public InvokerDecorator(Invoker invoker) {
+    public InvokerCacheDecorator(Invoker invoker) {
         super(invoker.getTotalMemory(), invoker.getId());
         this.invoker = invoker;
     }

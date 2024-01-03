@@ -1,6 +1,6 @@
 package main;
 
-import main.decorator.InvokerDecorator;
+import main.decorator.InvokerCacheDecorator;
 import main.exceptions.InsufficientMemoryException;
 import main.interfaces.DistributionPolicy;
 import main.interfaces.InterfaceInvoker;
@@ -121,8 +121,8 @@ public class Controller implements Observer {
         // adds the invoker action N times, it laso adds i to de ID
         // invoker.id = hi, n = 4 -> hi0, hi1, hi2, hi3
         for (int i = 0; i < nTimes; i++) {
-            if (invoker instanceof InvokerDecorator) {
-                Invoker newInvoker = new InvokerDecorator(
+            if (invoker instanceof InvokerCacheDecorator) {
+                Invoker newInvoker = new InvokerCacheDecorator(
                         new Invoker(invoker.getTotalMemory(), invoker.getId() + "_" + i));
                 invokers.add(newInvoker);
                 newInvoker.addObserver(this);
@@ -153,7 +153,7 @@ public class Controller implements Observer {
                 // if invoker is null, the action is not assigned
                 if (action.getInvoker() != null) {
                     InterfaceInvoker invoker = action.getInvoker();
-                    if (invoker instanceof InvokerDecorator) {
+                    if (invoker instanceof InvokerCacheDecorator) {
                         // con cache
                         invoker.executeInvokerActions();
                     } else {
