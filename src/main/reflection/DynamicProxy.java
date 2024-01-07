@@ -18,7 +18,6 @@ public class DynamicProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object invocationResult = null;
-        // Lógica de asignación al Controller
         try {
             System.out.println("Before method " + method.getName());
             invocationResult = method.invoke(this.target, args);

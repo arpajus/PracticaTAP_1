@@ -1801,6 +1801,7 @@ public class MyTest {
                 new DynamicProxy(adder));
         t.operation();
         //buscar en controller
+
         InterfaceAction action = ActionProxy.invoke(mul);
         action.operation();
         
