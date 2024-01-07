@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
 
 public class Controller implements Observer {
 
-    // volatile: to ensure that changes made by one thread are visible to other threads
+    // volatile: to ensure that changes made by one thread are visible to other
+    // threads
     private static volatile Controller controller = new Controller(1);
 
     private int id;
@@ -49,7 +50,7 @@ public class Controller implements Observer {
     private Controller(ArrayList<Invoker> invokers, ArrayList<Action> actions, int id) {
         this.invokers = invokers;
         this.actions = actions;
-        this.policy = new RoundRobin();
+        this.policy = new RoundRobinImproved();
         this.metrics = new ArrayList<>();
         this.id = id;
     }
@@ -107,7 +108,7 @@ public class Controller implements Observer {
         // adds the same action N times, it laso adds i to de ID
         // action.id = hi, n = 4 -> hi0, hi1, hi2, hi3
         for (int i = 0; i < nTimes; i++) {
-            Action newAction = new ConcreteAction(action.getId() + i, action.getMemory(), action.getValues());
+            Action newAction = new GeneralAction(action.getId() + i, action.getMemory(), action.getValues());
             actions.add(newAction);
         }
     }
@@ -145,6 +146,25 @@ public class Controller implements Observer {
 
     public boolean distributeActions() {
         return policy.distributeActions(actions, invokers);
+    }
+
+    public void executeActionById(String id) {
+        Action foundAction = actions.stream()
+                .filter(action -> action.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+        if (foundAction.getInvoker() != null) {
+            InterfaceInvoker invoker = foundAction.getInvoker();
+            if (invoker instanceof InvokerCacheDecorator) {
+                // con cache
+                invoker.executeThisAction(foundAction);
+            } else {
+                // sin cache
+                invoker.executeThisAction(foundAction);
+            }
+            foundAction.getInvoker().releaseMemory(foundAction.getMemory());
+            foundAction.setInvoker(null);
+        }
     }
 
     public void executeAssignedActions() {

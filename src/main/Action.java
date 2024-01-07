@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import main.interfaces.InterfaceInvoker;
 
-public abstract class Action {
+public abstract class Action{
     // nose si aparte de id tiene que haber un codigo, no tengo claro si id y codigo
     // son diferentes
     private String id;

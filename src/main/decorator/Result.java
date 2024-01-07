@@ -1,6 +1,6 @@
 package main.decorator;
 
-import  main.Action;
+import main.Action;
 import java.math.BigInteger;
 
 public class Result {
@@ -13,7 +13,7 @@ public class Result {
         this.input = action.getValues();
         this.result = action.getResult();
     }
-
+    
     public String getId() {
         return id;
     }

@@ -8,6 +8,8 @@ import main.operations.Adder;
 import main.operations.Factorial;
 import main.operations.Multiplier;
 import main.policy.*;
+import main.reflection.ActionProxy;
+import java.lang.reflect.*;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNull;
@@ -1734,5 +1736,70 @@ public class MyTest {
         assertTrue(iv1Decorator.chronometer(add6) != "");
         assertTrue(iv1Decorator.chronometer(mul1) != "");
         assertTrue(iv1Decorator.chronometer(mul2) == "");
+
+        // assertTrue(false);
+        // mejorar tests del cronometro, no se muy bien como hacerlo (son strings...)
+    }
+
+    @Test
+    public void executeThisAction() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
+        values = new int[] { 1, 2, 3, 4 };
+
+        Invoker iv1Decorator = new Invoker(1000, "1");
+        Invoker iv2Decorator = new Invoker(1000, "2");
+
+        controller.addInvoker(iv1Decorator);
+        controller.addInvoker(iv2Decorator);
+
+        Adder a = new Adder("a", 100, values);
+        Adder b = new Adder("b", 100, values);
+        Adder c = new Adder("c", 100, values);
+
+        controller.addAction(a);
+        controller.addAction(b);
+        controller.addAction(c);
+
+        assertTrue(controller.distributeActions());
+        controller.executeActionById("a");
+        
+        assertEquals(new BigInteger("10"), controller.getActionById("a").getResult());
+
+        assertEquals(null, controller.getActionById("b").getResult());
+        assertEquals(null, controller.getActionById("c").getResult());
+
+        controller.executeAssignedActions();
+
+        assertEquals(new BigInteger("10"), controller.getActionById("a").getResult());
+        assertEquals(new BigInteger("10"), controller.getActionById("b").getResult());
+        assertEquals(new BigInteger("10"), controller.getActionById("c").getResult());
+    }
+
+    @Test
+    public void ActionDynamicProxyTest() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
+        values = new int[] { 1, 2, 3, 4 };
+
+        InvokerChronometerDecorator iv1Decorator = new InvokerChronometerDecorator(
+                new InvokerCacheDecorator(
+                        new Invoker(1000, "1")));
+        InvokerChronometerDecorator iv2Decorator = new InvokerChronometerDecorator(
+                new InvokerCacheDecorator(
+                        new Invoker(2500, "2")));
+
+        controller.addInvoker(iv1Decorator);
+        controller.addInvoker(iv2Decorator);
+
+        Adder a = new Adder("id", 100, values);
+
+        Object concreteAction = ActionProxy.newInstance(new Adder("id", 100, values));
+        Action t = (Action) Proxy.newProxyInstance(
+                Action.class.getClassLoader(),
+                new Class<?>[] { Action.class },
+                new ActionProxy(a));
+        t.operation();
+        assertEquals(new BigInteger("10"), t.getResult());
     }
 }

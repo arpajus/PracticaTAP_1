@@ -3,6 +3,7 @@ package main.decorator;
 import java.util.ArrayList;
 
 import main.Action;
+import java.util.Arrays;
 import main.Invoker;
 import main.Metric;
 import main.exceptions.InsufficientMemoryException;
@@ -61,17 +62,17 @@ public class InvokerCacheDecorator extends Invoker {
     @Override
     public ArrayList<Result> executeInvokerActions() throws InsufficientMemoryException {
         ArrayList<Result> results = invoker.executeInvokerActions();
-        for (Result result : results) {
+        /*for (Result result : results) {
             // -------------------------------------------------------------------------
             // cache
             // -------------------------------------------------------------------------
 
-            // invoker.getCache().put(result.getId(), result);
+             invoker.getCache().put(result.getId(), result);
 
             // -------------------------------------------------------------------------
             // cache
             // -------------------------------------------------------------------------
-        }
+        }*/
         return results;
     }
 
@@ -101,32 +102,11 @@ public class InvokerCacheDecorator extends Invoker {
 
     private boolean searchHash(int[] values, Action action) {
         for (Result result : invoker.getCache().values()) {
-            if (arrayEqual(result.getInput(), values) && action.getId().equals(result.getId())) {
+            if (Arrays.equals(result.getInput(), values) && action.getId().equals(result.getId())) {
                 action.setResult(result.getResult());
                 return true;
             }
         }
         return false;
-    }
-
-    private boolean arrayEqual(int[] input, int[] values) {
-        if (input == values) {
-            return true;
-        }
-
-        if (input == null || values == null) {
-            return false;
-        }
-
-        if (input.length != values.length) {
-            return false;
-        }
-
-        for (int i = 0; i < input.length; i++) {
-            if (input[i] != values[i]) {
-                return false;
-            }
-        }
-        return true;
     }
 }

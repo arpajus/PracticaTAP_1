@@ -25,6 +25,8 @@ public interface InterfaceInvoker {
 
     public ArrayList<Result> executeInvokerActions() throws InsufficientMemoryException;
 
+    public Result executeThisAction(Action foundAction);
+
     public void addObserver(Observer observer);
 
     public ArrayList<Observer> getObservers();
@@ -34,4 +36,5 @@ public interface InterfaceInvoker {
     public void notifyObservers(ArrayList<Metric> metrics);
 
     public ConcurrentHashMap<String, Result> getCache();
+
 }

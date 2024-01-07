@@ -76,17 +76,10 @@ public class Invoker implements InterfaceInvoker {
             System.out.println("Executing action: " + action.getId());
             action.operation();
             long endTime = System.currentTimeMillis();
-            
 
-            //-------------------------------------------------------------------------
-            //cache
-            //-------------------------------------------------------------------------
-            Result r = new Result(action);            
+            Result r = new Result(action);
             results.add(r);
-            cache.put(r.getId(),r);
-            //-------------------------------------------------------------------------
-            //cache
-            //-------------------------------------------------------------------------
+            cache.put(r.getId(), r);
 
             Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(),
                     action.getMemory());
@@ -96,6 +89,28 @@ public class Invoker implements InterfaceInvoker {
         actions.clear();
         System.out.println("Metrics recorded.");
         return results;
+    }
+
+    public Result executeThisAction(Action action) {
+        ArrayList<Metric> metricsToNotify = new ArrayList<>();
+        Result result;
+        System.out.println("Executing action: " + action.getId());
+
+        long startTime = System.currentTimeMillis();
+        action.operation();
+        long endTime = System.currentTimeMillis();
+
+        result = new Result(action);
+        cache.put(result.getId(), result);
+
+        Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(),
+                action.getMemory());
+        metricsToNotify.add(metric);
+
+        notifyObservers(metricsToNotify);
+        actions.remove(action);
+        System.out.println("Metrics recorded.");
+        return result;
     }
 
     // it checks that a observer isn't an observer right now. To delete duplicates

@@ -8,10 +8,8 @@ import main.Controller;
 import main.Invoker;
 import main.Metric;
 import main.exceptions.InsufficientMemoryException;
-import main.interfaces.InterfaceInvoker;
 import main.interfaces.Observer;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class InvokerChronometerDecorator extends Invoker {
     private Invoker invoker;
