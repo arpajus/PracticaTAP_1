@@ -1800,11 +1800,11 @@ public class MyTest {
                 new Class<?>[] { InterfaceAction.class },
                 new DynamicProxy(adder));
         t.operation();
-        //buscar en controller
+        //quien ejecuta esto? Esta en cache?
 
         InterfaceAction action = ActionProxy.invoke(mul);
         action.operation();
-        
+
         assertEquals(new BigInteger("10"), t.getResult());
         assertEquals(new BigInteger("24"), action.getResult());
     }
