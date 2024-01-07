@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 import main.Action;
 
-public class Factorial extends Action {
+public class Factorial extends Action  {
 
     int result = 0; // BigInteger??
 

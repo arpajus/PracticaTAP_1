@@ -19,5 +19,4 @@ public class Adder extends Action {
         setResult(BigInteger.valueOf(result));
         System.out.println("Operation performed for " + getId() + ". Result: " + result);
     }
-
 }

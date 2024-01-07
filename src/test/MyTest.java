@@ -4,11 +4,13 @@ import main.*;
 import main.decorator.InvokerCacheDecorator;
 import main.decorator.InvokerChronometerDecorator;
 import main.exceptions.InsufficientMemoryException;
+import main.interfaces.InterfaceAction;
 import main.operations.Adder;
 import main.operations.Factorial;
 import main.operations.Multiplier;
 import main.policy.*;
 import main.reflection.ActionProxy;
+import main.reflection.DynamicProxy;
 import java.lang.reflect.*;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -1737,8 +1739,6 @@ public class MyTest {
         assertTrue(iv1Decorator.chronometer(mul1) != "");
         assertTrue(iv1Decorator.chronometer(mul2) == "");
 
-        // assertTrue(false);
-        // mejorar tests del cronometro, no se muy bien como hacerlo (son strings...)
     }
 
     @Test
@@ -1763,7 +1763,7 @@ public class MyTest {
 
         assertTrue(controller.distributeActions());
         controller.executeActionById("a");
-        
+
         assertEquals(new BigInteger("10"), controller.getActionById("a").getResult());
 
         assertEquals(null, controller.getActionById("b").getResult());
@@ -1792,14 +1792,19 @@ public class MyTest {
         controller.addInvoker(iv1Decorator);
         controller.addInvoker(iv2Decorator);
 
-        Adder a = new Adder("id", 100, values);
+        Adder adder = new Adder("add", 100, values);
+        Multiplier mul = new Multiplier("mul", 100, values);
 
-        Object concreteAction = ActionProxy.newInstance(new Adder("id", 100, values));
-        Action t = (Action) Proxy.newProxyInstance(
+        InterfaceAction t = (InterfaceAction) Proxy.newProxyInstance(
                 Action.class.getClassLoader(),
-                new Class<?>[] { Action.class },
-                new ActionProxy(a));
+                new Class<?>[] { InterfaceAction.class },
+                new DynamicProxy(adder));
         t.operation();
+        //buscar en controller
+        InterfaceAction action = ActionProxy.invoke(mul);
+        action.operation();
+        
         assertEquals(new BigInteger("10"), t.getResult());
+        assertEquals(new BigInteger("24"), action.getResult());
     }
 }
