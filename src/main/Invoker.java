@@ -4,8 +4,16 @@ import main.decorator.Result;
 import main.exceptions.InsufficientMemoryException;
 import main.interfaces.InterfaceInvoker;
 import java.util.ArrayList;
+import java.util.List;
+
 import main.interfaces.Observer;
+
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Invoker implements InterfaceInvoker {
 
@@ -15,6 +23,7 @@ public class Invoker implements InterfaceInvoker {
     private ArrayList<Observer> observers = new ArrayList<>();
     public ArrayList<Metric> metrics = new ArrayList<>();
     public ConcurrentHashMap<String, Result> cache = new ConcurrentHashMap<>();
+    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
     public Invoker(double totalMemory, String id) {
         this.totalMemory = totalMemory;
@@ -136,5 +145,54 @@ public class Invoker implements InterfaceInvoker {
 
     public ConcurrentHashMap<String, Result> getCache() {
         return this.cache;
+    }
+
+    public List<Future<Result>> executeInvokerActionsAsync() {
+        ArrayList<Metric> metricsToNotify = new ArrayList<>();
+        List<Future<Result>> futures = new ArrayList<>();
+        long startTime = System.currentTimeMillis();
+
+        List<Callable<Result>> callables = new ArrayList<>();
+
+        for (Action action : actions) {
+            System.out.println("Executing action: " + action.getId());
+
+            Future<Result> future = executorService.submit(() -> {
+                try {
+                    action.operation();
+                    long endTime = System.currentTimeMillis();
+                    Result r = new Result(action);
+                    cache.put(r.getId(), r);
+                    Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(),
+                            action.getMemory());
+                    metricsToNotify.add(metric);
+
+                    return r;
+                } catch (Exception e) {
+                    return null;
+                }
+            });
+
+            futures.add(future);
+        }
+
+        notifyObservers(metricsToNotify);
+        actions.clear();
+        System.out.println("Metrics recorded.");
+        return futures;
+    }
+
+    public void waitForFutures(List<Future<Result>> futures) throws InterruptedException, ExecutionException {
+        for (Future<Result> future : futures) {
+            try {
+                future.get(); // Wait the other futures
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void shutdownExecutorService() {
+        executorService.shutdown();
     }
 }

@@ -5,9 +5,13 @@ import main.policy.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 import main.decorator.Result;
 
-public class Main {
+
+public class Main2 {
     public static void main(String[] args) {
         // every time we assign an action to an invoker we MUST invoke the method take
         // memory.
@@ -37,31 +41,24 @@ public class Main {
             System.out.println("The actual memory of iv1 is " + controller.getInvokers().get(0).getTotalMemory());
             System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
 
-            controller.executeAssignedActions();
-            controller.printMetrics();
-            System.out.println("Actions executed");
-            // when actions are executed the method realese memory is working
-            System.out.println("The actual memory of iv1 is " + controller.getInvokers().get(0).getTotalMemory());
-            System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
+            List<Future<Result>> futures = iv1.executeInvokerActionsAsync();  
+            List<Future<Result>> futures2 = iv2.executeInvokerActionsAsync();
 
-            System.out.println("-----------------");
-            controller.analyzeExecutionTime(controller.getMetrics());
-            controller.analyzeInvokerMemory(controller.getMetrics());
-            System.out.println("-------------");
-            controller.analyzeExecutionTimeBis(controller.getMetrics());
-            // This shows the results of the actions that have been done
-            System.out.println("Results of the actions: ");
-            List<Action> results = controller.getActions();
-            for (Action action : results) {
-                if (action.getResult() != BigInteger.ZERO) {
-                    System.out.println("Result of the action " + action.getId() + ": " + action.getResult());
-                }
+            try {
+                iv1.waitForFutures(futures);
+                iv2.waitForFutures(futures2);
+
+                iv1.shutdownExecutorService();
+                iv2.shutdownExecutorService();
+
+                controller.analyzeExecutionTime(controller.getMetrics());
+                controller.printMetrics();
+                controller.analyzeExecutionTimeBis(controller.getMetrics());
+
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
             }
         } else
             System.out.println("Not all actions could be assigned");
     }
-    // TESTS ADRI_______________________________
-    // TESTS ADRI_______________________________
-    // TESTS ADRI_______________________________
-    // hay que hacer que cuando se hagan las actions se eliminen del controller creo
 }
