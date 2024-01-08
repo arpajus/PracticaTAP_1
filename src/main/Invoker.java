@@ -8,12 +8,13 @@ import java.util.List;
 
 import main.interfaces.Observer;
 
-import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 public class Invoker implements InterfaceInvoker {
 
@@ -23,7 +24,7 @@ public class Invoker implements InterfaceInvoker {
     private ArrayList<Observer> observers = new ArrayList<>();
     public ArrayList<Metric> metrics = new ArrayList<>();
     public ConcurrentHashMap<String, Result> cache = new ConcurrentHashMap<>();
-    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     public Invoker(double totalMemory, String id) {
         this.totalMemory = totalMemory;
@@ -148,18 +149,18 @@ public class Invoker implements InterfaceInvoker {
     }
 
     public List<Future<Result>> executeInvokerActionsAsync() {
-        ArrayList<Metric> metricsToNotify = new ArrayList<>();
-        List<Future<Result>> futures = new ArrayList<>();
-        long startTime = System.currentTimeMillis();
+    ArrayList<Metric> metricsToNotify = new ArrayList<>();
+    List<Future<Result>> futures = new ArrayList<>();
+    long startTime = System.currentTimeMillis();
 
-        List<Callable<Result>> callables = new ArrayList<>();
-
-        for (Action action : actions) {
-            System.out.println("Executing action: " + action.getId());
-
-            Future<Result> future = executorService.submit(() -> {
+    // Use CompletableFuture to execute each action asynchronously
+    List<CompletableFuture<Result>> completableFutures = actions.stream()
+            .map(action -> CompletableFuture.supplyAsync(() -> {
                 try {
+                    System.out.println("Executing action: " + action.getId() + " on Thread: " + Thread.currentThread().getName());
+
                     action.operation();
+
                     long endTime = System.currentTimeMillis();
                     Result r = new Result(action);
                     cache.put(r.getId(), r);
@@ -169,18 +170,27 @@ public class Invoker implements InterfaceInvoker {
 
                     return r;
                 } catch (Exception e) {
+                    e.printStackTrace();
                     return null;
                 }
-            });
+            }, executorService))
+            .collect(Collectors.toList());
 
-            futures.add(future);
-        }
+    // Wait for all CompletableFuture to complete
+    CompletableFuture<Void> allOf = CompletableFuture.allOf(
+            completableFutures.toArray(new CompletableFuture[0]));
 
-        notifyObservers(metricsToNotify);
-        actions.clear();
-        System.out.println("Metrics recorded.");
-        return futures;
+    try {
+        allOf.get(); 
+    } catch (InterruptedException | ExecutionException e) {
+        e.printStackTrace();
     }
+
+    notifyObservers(metricsToNotify);
+    actions.clear();
+    System.out.println("Metrics recorded.");
+    return futures;
+}
 
     public void waitForFutures(List<Future<Result>> futures) throws InterruptedException, ExecutionException {
         for (Future<Result> future : futures) {

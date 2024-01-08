@@ -3,9 +3,7 @@ package main;
 import main.operations.Adder;
 import main.policy.*;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
-import main.decorator.Result;
 
 public class Main {
     public static void main(String[] args) {

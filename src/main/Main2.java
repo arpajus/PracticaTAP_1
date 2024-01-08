@@ -2,14 +2,7 @@ package main;
 
 import main.operations.Adder;
 import main.policy.*;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import main.decorator.Result;
-
 
 public class Main2 {
     public static void main(String[] args) {
@@ -41,19 +34,19 @@ public class Main2 {
             System.out.println("The actual memory of iv1 is " + controller.getInvokers().get(0).getTotalMemory());
             System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
 
-            List<Future<Result>> futures = iv1.executeInvokerActionsAsync();  
-            List<Future<Result>> futures2 = iv2.executeInvokerActionsAsync();
+
 
             try {
-                iv1.waitForFutures(futures);
-                iv2.waitForFutures(futures2);
+                
+                controller.executeAllInvokersAsync();
+                System.out.println("All actions completed.");
 
-                iv1.shutdownExecutorService();
-                iv2.shutdownExecutorService();
-
+                /*System.out.println("-----------------");
                 controller.analyzeExecutionTime(controller.getMetrics());
-                controller.printMetrics();
-                controller.analyzeExecutionTimeBis(controller.getMetrics());
+                controller.analyzeInvokerMemory(controller.getMetrics());
+                System.out.println("-------------");
+                controller.analyzeExecutionTimeBis(controller.getMetrics());*/
+
 
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();

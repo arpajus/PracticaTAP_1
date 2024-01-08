@@ -13,8 +13,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+import java.util.concurrent.ExecutionException;
+import main.decorator.Result;  
 
-import javax.naming.spi.DirStateFactory.Result;
 
 public class Controller implements Observer {
 
@@ -191,6 +192,22 @@ public class Controller implements Observer {
             } catch (InsufficientMemoryException e) {
                 System.out.println("Error executing actions for invoker: " + e.getMessage());
             }
+        }
+    }
+
+    public void executeAllInvokersAsync() throws InterruptedException, ExecutionException {
+        List<Future<Result>> allFutures = new ArrayList<>();
+
+        for (Invoker invoker : invokers) {
+            List<Future<Result>> invokerFutures = invoker.executeInvokerActionsAsync();
+            allFutures.addAll(invokerFutures);
+
+            invoker.waitForFutures(allFutures);
+
+        }
+
+        for (Invoker invoker : invokers) {
+            invoker.shutdownExecutorService();
         }
     }
 
