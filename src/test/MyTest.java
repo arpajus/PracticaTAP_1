@@ -3,7 +3,7 @@ package test;
 import main.*;
 import main.decorator.InvokerCacheDecorator;
 import main.decorator.InvokerChronometerDecorator;
-import main.decorator.Result;
+import main.decorator.ActionResult;
 import main.exceptions.InsufficientMemoryException;
 import main.interfaces.InterfaceAction;
 import main.operations.Adder;
@@ -339,19 +339,13 @@ public class MyTest {
         assertArrayEquals(expectedResults, new BigInteger[] { BigInteger.valueOf(10), BigInteger.valueOf(24),
                 BigInteger.valueOf(10), BigInteger.valueOf(10), BigInteger.valueOf(10), BigInteger.valueOf(10) });
     }
-
     @Test
-    public void GreedyGroupTest() {
+    public void GreedyGroupTestCache() {
         Controller.resetInstance();
         controller = Controller.getInstance();
 
-        Invoker iv1Reuglar = new Invoker(3000, "1");
-        Invoker iv2Reuglar = new Invoker(1000, "2");
-
-        // InvokerDecorator iv1 = new InvokerCacheDecorator(iv1Reuglar);
-        // InvokerDecorator iv2 = new InvokerCacheDecorator(iv2Reuglar);
-        Invoker iv1 = new InvokerCacheDecorator(iv1Reuglar);
-        Invoker iv2 = new InvokerCacheDecorator(iv2Reuglar);
+        Invoker iv1 = new InvokerCacheDecorator (new Invoker(3000, "1"));
+        Invoker iv2 = new InvokerCacheDecorator (new Invoker(1000, "2"));
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -412,15 +406,15 @@ public class MyTest {
         controller.getActions().clear();
         controller.addAction(add1, 2);
 
-        assertTrue(controller.distributeActions());
+        assertFalse(controller.distributeActions());
 
         // result already in cache
         assertFalse(iv1.getCache() == null);
         assertFalse(iv1.getCache().get(add1.getId()) == null);
 
-        assertEquals(1, iv1.getActions().size());
+        assertEquals(0, iv1.getActions().size());
         assertEquals(0, iv2.getActions().size());
-        assertEquals(iv1.getTotalMemory(), 1000);
+        assertEquals(iv1.getTotalMemory(), 3000);
         assertEquals(iv2.getTotalMemory(), 1000);
 
         controller.executeAssignedActions();
@@ -433,11 +427,9 @@ public class MyTest {
         Controller.resetInstance();
         controller = Controller.getInstance();
 
-        iv1Reuglar = new Invoker(3000, "1");
-        iv2Reuglar = new Invoker(1000, "2");
-
-        iv1 = new InvokerCacheDecorator(iv1Reuglar);
-        iv2 = new InvokerCacheDecorator(iv2Reuglar);
+        iv1 = new Invoker(3000, "1");
+        iv1 = new InvokerCacheDecorator(iv1);
+        iv2 = new InvokerCacheDecorator(iv2);
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
@@ -456,9 +448,9 @@ public class MyTest {
         assertTrue(controller.distributeActions());
 
         assertEquals(iv1.getTotalMemory(), 700);
-        assertEquals(iv2.getTotalMemory(), 200);
+        assertEquals(iv2.getTotalMemory(), 1000);
         assertEquals(4, iv1.getActions().size());
-        assertEquals(1, iv2.getActions().size());
+        assertEquals(0, iv2.getActions().size());
 
         controller.executeAssignedActions();
 
@@ -496,12 +488,12 @@ public class MyTest {
         controller.getActions().clear();
         controller.addAction(add1, 2);
 
-        assertTrue(controller.distributeActions());
+        assertFalse(controller.distributeActions());
 
         // result already in cache
-        assertEquals(iv1.getTotalMemory(), 1000);
+        assertEquals(iv1.getTotalMemory(), 3000);
         assertEquals(iv2.getTotalMemory(), 1000);
-        assertEquals(1, iv1.getActions().size());
+        assertEquals(0, iv1.getActions().size());
         assertEquals(0, iv2.getActions().size());
 
         controller.executeAssignedActions();
@@ -514,11 +506,11 @@ public class MyTest {
         Controller.resetInstance();
         controller = Controller.getInstance();
 
-        iv1Reuglar = new Invoker(90, "1");
-        iv2Reuglar = new Invoker(10, "2");
+        iv1 = new Invoker(90, "1");
+        iv2 = new Invoker(10, "2");
 
-        iv1 = new InvokerCacheDecorator(iv1Reuglar);
-        iv2 = new InvokerCacheDecorator(iv2Reuglar);
+        iv1 = new InvokerCacheDecorator(iv1);
+        iv2 = new InvokerCacheDecorator(iv2);
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
         add1 = new Adder("add1", 2000, values);
@@ -637,13 +629,13 @@ public class MyTest {
         controller.getActions().clear();
         controller.addAction(add3, 3);
 
-        assertTrue(controller.distributeActions());
+        assertFalse(controller.distributeActions());
 
         // result already in cache
-        assertEquals(iv3.getTotalMemory(), 300);
-        assertEquals(iv4.getTotalMemory(), 800);
-        assertEquals(1, iv3.getActions().size());
-        assertEquals(1, iv4.getActions().size());
+        assertEquals(iv3.getTotalMemory(), 1500);
+        assertEquals(iv4.getTotalMemory(), 2000);
+        assertEquals(0, iv3.getActions().size());
+        assertEquals(0, iv4.getActions().size());
 
         controller.executeAssignedActions();
 
@@ -1184,16 +1176,16 @@ public class MyTest {
         controller.addAction(add100);
 
         assertTrue(controller.getActions().size() == 6);
-        assertTrue(controller.distributeActions());
+        assertFalse(controller.distributeActions());
 
         assertTrue(controller.getMetrics().get(0).getActionId().equals("add100"));
         assertTrue(controller.getMetrics().get(1).getActionId().equals("add200"));
         assertTrue(controller.getMetrics().get(2).getActionId().equals("add800"));
         assertTrue(controller.getMetrics().size() == 3);
 
-        assertEquals(controller.getInvokerById("invoker_0").getTotalMemory(), 200);
+        assertEquals(controller.getInvokerById("invoker_0").getTotalMemory(), 1000);
         assertEquals(controller.getInvokerById("invoker_1").getTotalMemory(), 1000);
-        assertEquals(1, controller.getInvokerById("invoker_0").getActions().size());
+        assertEquals(0, controller.getInvokerById("invoker_0").getActions().size());
         assertEquals(0, controller.getInvokerById("invoker_1").getActions().size());
 
         controller.executeAssignedActions();
@@ -1201,7 +1193,7 @@ public class MyTest {
         assertTrue(controller.getMetrics().get(0).getActionId().equals("add100"));
         assertTrue(controller.getMetrics().get(1).getActionId().equals("add200"));
         assertTrue(controller.getMetrics().get(2).getActionId().equals("add800"));
-        assertTrue(controller.getMetrics().size() == 4);
+        assertTrue(controller.getMetrics().size() == 3);
 
         assertEquals(controller.getInvokerById("invoker_0").getTotalMemory(), 1000);
         assertEquals(controller.getInvokerById("invoker_1").getTotalMemory(), 1000);
@@ -1385,6 +1377,75 @@ public class MyTest {
     }
 
     @Test
+    public void InvokerCacheDecoratorTestSameAction() {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
+        values = new int[] { 1, 2, 3, 4 };
+
+        Invoker iv2Regular = new Invoker(2700, "2");
+        InvokerCacheDecorator iv1Decorator = new InvokerCacheDecorator(new Invoker(1000, "1"));
+        InvokerCacheDecorator iv2Decorator = new InvokerCacheDecorator(iv2Regular);
+
+        controller.addInvoker(iv1Decorator);
+        controller.addInvoker(iv2Decorator);
+
+        Adder add1 = new Adder("add1", 900, values);
+        controller.setPolicy(new GreedyGroup());
+        controller.addAction(add1, 4);
+        // The code is not prepared to use the same instance of add1
+
+        assertEquals(iv1Decorator.getTotalMemory(), 1000);
+        assertEquals(iv2Decorator.getTotalMemory(), 2700);
+
+        assertTrue(controller.distributeActions());
+
+        assertEquals(1, iv1Decorator.getActions().size());
+        assertEquals(3, iv2Decorator.getActions().size());
+        assertEquals(iv1Decorator.getTotalMemory(), 100);
+        assertEquals(iv2Decorator.getTotalMemory(), 0);
+
+        controller.executeAssignedActions();
+
+        assertEquals(0, iv1Decorator.getActions().size()); // exp 1
+        assertEquals(0, iv2Decorator.getActions().size()); // exp 0
+        assertEquals(iv1Decorator.getTotalMemory(), 1000); // exp 100
+        assertEquals(iv2Decorator.getTotalMemory(), 2700); // exp 1600
+        assertEquals(new BigInteger("10"), controller.getActionById("add1_0").getResult());
+        assertEquals(new BigInteger("10"), controller.getActionById("add1_1").getResult());
+        assertEquals(new BigInteger("10"), controller.getActionById("add1_2").getResult());
+        assertEquals(new BigInteger("10"), controller.getActionById("add1_3").getResult());
+        assertTrue(controller.getMetrics().size() == 4);
+
+        assertEquals(new BigInteger("10"), iv1Decorator.getCache().get("add1_0").getResult());
+        assertEquals(new BigInteger("10"), iv2Decorator.getCache().get("add1_1").getResult());
+        assertEquals(new BigInteger("10"), iv2Decorator.getCache().get("add1_2").getResult());
+        assertEquals(new BigInteger("10"), iv2Decorator.getCache().get("add1_3").getResult());
+        
+        controller.addAction(add1);
+
+        assertEquals(iv1Decorator.getTotalMemory(), 1000);
+        assertEquals(iv2Decorator.getTotalMemory(), 2700);
+        assertEquals(0, iv1Decorator.getActions().size());
+        assertEquals(0, iv2Decorator.getActions().size());
+
+        assertFalse(controller.distributeActions());
+
+        assertEquals(0, iv1Decorator.getActions().size());
+        assertEquals(0, iv2Decorator.getActions().size());
+        assertEquals(iv1Decorator.getTotalMemory(), 1000);
+        assertEquals(iv2Decorator.getTotalMemory(), 2700);
+
+        controller.executeAssignedActions();
+
+        assertEquals(0, iv1Decorator.getActions().size()); // exp 1
+        assertEquals(0, iv2Decorator.getActions().size()); // exp 0
+        assertEquals(iv1Decorator.getTotalMemory(), 1000); // exp 100
+        assertEquals(iv2Decorator.getTotalMemory(), 2700); // exp 1600
+        assertEquals(new BigInteger("10"), controller.getActionById("add1").getResult());
+        assertTrue(controller.getMetrics().size() == 4);
+    }
+
+    @Test
     public void InvokerCacheDecoratorTest() {
         Controller.resetInstance();
         controller = Controller.getInstance();
@@ -1425,11 +1486,11 @@ public class MyTest {
         controller.getActions().clear();
         Adder add6 = new Adder("add6", 1100, values);
         Multiplier mul1 = new Multiplier("mul1", 1300, values);
-        controller.addAction(add6);
+        controller.addAction(add6);// este no lo hace
         controller.addAction(add2);// este no lo hace
         controller.addAction(mul1);
 
-        assertTrue(controller.getInvokerById("1").getCache().get("add1") == null); //esta en el cache del 1
+        assertTrue(controller.getInvokerById("1").getCache().get("add1") == null); // esta en el cache del 1
         assertTrue(controller.getInvokerById("2").getCache().get("add1") != null);
 
         assertEquals(0, iv1Decorator.getActions().size());
@@ -1439,9 +1500,9 @@ public class MyTest {
 
         assertTrue(controller.distributeActions());
         assertEquals(0, iv1Decorator.getActions().size());
-        assertEquals(2, iv2Decorator.getActions().size());
+        assertEquals(1, iv2Decorator.getActions().size());
         assertEquals(iv1Decorator.getTotalMemory(), 1000);
-        assertEquals(iv2Decorator.getTotalMemory(), 100);
+        assertEquals(iv2Decorator.getTotalMemory(), 1200);
 
         controller.executeAssignedActions();
         assertEquals(0, iv1Decorator.getActions().size());
@@ -1616,9 +1677,9 @@ public class MyTest {
 
         assertTrue(controller.distributeActions());
         assertEquals(0, iv1Decorator.getActions().size());
-        assertEquals(2, iv2Decorator.getActions().size());
+        assertEquals(1, iv2Decorator.getActions().size());
         assertEquals(iv1Decorator.getTotalMemory(), 1000);
-        assertEquals(iv2Decorator.getTotalMemory(), 100);
+        assertEquals(iv2Decorator.getTotalMemory(), 1200);
 
         controller.executeAssignedActions();
         assertEquals(0, iv1Decorator.getActions().size());
@@ -1741,7 +1802,7 @@ public class MyTest {
         assertTrue(iv1Decorator.chronometer(add1) != "");
         assertTrue(iv1Decorator.chronometer(add2) != "");
         assertTrue(iv1Decorator.chronometer(add3) != "");
-        assertTrue(iv1Decorator.chronometer(add6) != "");
+        assertTrue(iv1Decorator.chronometer(add6) == "");
         assertTrue(iv1Decorator.chronometer(mul1) != "");
         assertTrue(iv1Decorator.chronometer(mul2) == "");
 

@@ -5,6 +5,9 @@ import main.exceptions.InsufficientMemoryException;
 import main.interfaces.DistributionPolicy;
 import main.interfaces.InterfaceInvoker;
 import main.interfaces.Observer;
+import main.operations.Adder;
+import main.operations.Factorial;
+import main.operations.Multiplier;
 import main.policy.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,8 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.concurrent.ExecutionException;
-import main.decorator.Result;  
-
+import main.decorator.ActionResult;
 
 public class Controller implements Observer {
 
@@ -112,8 +114,23 @@ public class Controller implements Observer {
         // adds the same action N times, it laso adds i to de ID
         // action.id = hi, n = 4 -> hi0, hi1, hi2, hi3
         for (int i = 0; i < nTimes; i++) {
-            Action newAction = new GeneralAction(action.getId() + i, action.getMemory(), action.getValues());
-            actions.add(newAction);
+            if (action instanceof Adder) {
+                Adder newAction = new Adder(action.getId() + "_" + i, action.getMemory(),
+                        action.getValues());
+                actions.add(newAction);
+            } else {
+                if (action instanceof Multiplier) {
+                    Multiplier newAction = new Multiplier(action.getId() + "_" + i, action.getMemory(),
+                            action.getValues());
+                    actions.add(newAction);
+                } else {
+                    if (action instanceof Factorial) {
+                        Factorial newAction = new Factorial(action.getId() + "_" + i, action.getMemory(),
+                                action.getValues());
+                        actions.add(newAction);
+                    }
+                }
+            }
         }
     }
 
@@ -196,15 +213,14 @@ public class Controller implements Observer {
     }
 
     public void executeAllInvokersAsync() throws InterruptedException, ExecutionException {
-        List<Future<Result>> allFutures = new ArrayList<>();
+        List<Future<ActionResult>> allFutures = new ArrayList<>();
 
         for (Invoker invoker : invokers) {
-            List<Future<Result>> invokerFutures = invoker.executeInvokerActionsAsync();
+            List<Future<ActionResult>> invokerFutures = invoker.executeInvokerActionsAsync();
             allFutures.addAll(invokerFutures);
 
             invoker.waitForFutures(allFutures);
         }
-
 
         for (Invoker invoker : invokers) {
             invoker.shutdownExecutorService();
@@ -215,12 +231,12 @@ public class Controller implements Observer {
         this.metrics.addAll(metrics);
     }
 
-        @Override
+    @Override
     public void updateMetricAsync(ArrayList<Future<Metric>> metrics) {
-        ArrayList<Metric> auxiliar=new ArrayList<>();
+        ArrayList<Metric> auxiliar = new ArrayList<>();
         for (Future<Metric> future : metrics) {
             try {
-                Metric metric=future.get();
+                Metric metric = future.get();
                 auxiliar.add(metric);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -317,6 +333,5 @@ public class Controller implements Observer {
                     ", Memory Used: " + metric.getUsedMemory());
         }
     }
-
 
 }

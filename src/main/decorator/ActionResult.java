@@ -3,17 +3,23 @@ package main.decorator;
 import main.Action;
 import java.math.BigInteger;
 
-public class Result {
+public class ActionResult {
     private String id;
     private int[] input;
     private BigInteger result;
+    private Class<? extends Action> tipoAction;
 
-    public Result(Action action) {
+
+    public ActionResult(Action action) {
         this.id = action.getId();
         this.input = action.getValues();
         this.result = action.getResult();
+        this.tipoAction = action.getClass();
     }
     
+    public Class<? extends Action> getTipoAction() {
+        return tipoAction;
+    }
     public String getId() {
         return id;
     }

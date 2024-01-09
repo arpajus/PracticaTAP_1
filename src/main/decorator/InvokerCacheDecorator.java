@@ -38,8 +38,6 @@ public class InvokerCacheDecorator extends Invoker {
         if (!searchHash(action.getValues(), action)) {
             return invoker.setAction(action);
         } else {
-            // No se si esto se tiene que hacer o no, pero creo que si
-            action.setResult(invoker.getCache().get(action.getId()).getResult());
             return false;
         }
     }
@@ -60,20 +58,8 @@ public class InvokerCacheDecorator extends Invoker {
     }
 
     @Override
-    public ArrayList<Result> executeInvokerActions() throws InsufficientMemoryException {
-        ArrayList<Result> results = invoker.executeInvokerActions();
-        /*for (Result result : results) {
-            // -------------------------------------------------------------------------
-            // cache
-            // -------------------------------------------------------------------------
-
-             invoker.getCache().put(result.getId(), result);
-
-            // -------------------------------------------------------------------------
-            // cache
-            // -------------------------------------------------------------------------
-        }*/
-        return results;
+    public ArrayList<ActionResult> executeInvokerActions() throws InsufficientMemoryException {
+        return invoker.executeInvokerActions();
     }
 
     @Override
@@ -96,13 +82,13 @@ public class InvokerCacheDecorator extends Invoker {
         invoker.notifyObservers(metrics);
     }
 
-    public ConcurrentHashMap<String, Result> getCache() {
+    public ConcurrentHashMap<String, ActionResult> getCache() {
         return invoker.getCache();
     }
 
     private boolean searchHash(int[] values, Action action) {
-        for (Result result : invoker.getCache().values()) {
-            if (Arrays.equals(result.getInput(), values) && action.getId().equals(result.getId())) {
+        for (ActionResult result : invoker.getCache().values()) {
+            if (Arrays.equals(result.getInput(), values) && action.getClass().equals(result.getTipoAction())) {
                 action.setResult(result.getResult());
                 return true;
             }

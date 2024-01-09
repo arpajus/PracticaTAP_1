@@ -2,7 +2,7 @@ package main.interfaces;
 
 import main.Action;
 import main.Metric;
-import main.decorator.Result;
+import main.decorator.ActionResult;
 import main.exceptions.InsufficientMemoryException;
 
 import java.util.ArrayList;
@@ -23,9 +23,9 @@ public interface InterfaceInvoker {
 
     public void releaseMemory(double memoryReleased);
 
-    public ArrayList<Result> executeInvokerActions() throws InsufficientMemoryException;
+    public ArrayList<ActionResult> executeInvokerActions() throws InsufficientMemoryException;
 
-    public Result executeThisAction(Action foundAction);
+    public ActionResult executeThisAction(Action foundAction);
 
     public void addObserver(Observer observer);
 
@@ -35,6 +35,6 @@ public interface InterfaceInvoker {
 
     public void notifyObservers(ArrayList<Metric> metrics);
 
-    public ConcurrentHashMap<String, Result> getCache();
+    public ConcurrentHashMap<String, ActionResult> getCache();
 
 }

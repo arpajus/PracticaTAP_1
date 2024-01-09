@@ -1,6 +1,6 @@
 package main;
 
-import main.decorator.Result;
+import main.decorator.ActionResult;
 import main.exceptions.InsufficientMemoryException;
 import main.interfaces.InterfaceInvoker;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class Invoker implements InterfaceInvoker {
     private String id;
     private ArrayList<Observer> observers = new ArrayList<>();
     public ArrayList<Metric> metrics = new ArrayList<>();
-    public ConcurrentHashMap<String, Result> cache = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<String, ActionResult> cache = new ConcurrentHashMap<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     public Invoker(double totalMemory, String id) {
@@ -78,16 +78,16 @@ public class Invoker implements InterfaceInvoker {
     }
 
     // executes all actions at once
-    public ArrayList<Result> executeInvokerActions() throws InsufficientMemoryException {
+    public ArrayList<ActionResult> executeInvokerActions() throws InsufficientMemoryException {
         ArrayList<Metric> metricsToNotify = new ArrayList<>();
-        ArrayList<Result> results = new ArrayList<>();
+        ArrayList<ActionResult> results = new ArrayList<>();
         long startTime = System.currentTimeMillis();
         for (Action action : actions) {
             System.out.println("Executing action: " + action.getId());
             action.operation();
             long endTime = System.currentTimeMillis();
 
-            Result r = new Result(action);
+            ActionResult r = new ActionResult(action);
             action.setResult(r.getResult());
             results.add(r);
             cache.put(r.getId(), r);
@@ -102,16 +102,16 @@ public class Invoker implements InterfaceInvoker {
         return results;
     }
 
-    public Result executeThisAction(Action action) {
+    public ActionResult executeThisAction(Action action) {
         ArrayList<Metric> metricsToNotify = new ArrayList<>();
-        Result result;
+        ActionResult result;
         System.out.println("Executing action: " + action.getId());
 
         long startTime = System.currentTimeMillis();
         action.operation();
         long endTime = System.currentTimeMillis();
 
-        result = new Result(action);
+        result = new ActionResult(action);
         cache.put(result.getId(), result);
 
         Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(),
@@ -151,17 +151,17 @@ public class Invoker implements InterfaceInvoker {
         }
     }
 
-    public ConcurrentHashMap<String, Result> getCache() {
+    public ConcurrentHashMap<String, ActionResult> getCache() {
         return this.cache;
     }
 
-    public List<Future<Result>> executeInvokerActionsAsync() {
+    public List<Future<ActionResult>> executeInvokerActionsAsync() {
         ArrayList<Future<Metric>> metricsToNotify = new ArrayList<>();
-        List<Future<Result>> futures = new ArrayList<>();
+        List<Future<ActionResult>> futures = new ArrayList<>();
         long startTime = System.currentTimeMillis();
 
         // Use CompletableFuture to execute each action asynchronously
-        List<CompletableFuture<Result>> completableFutures = actions.stream()
+        List<CompletableFuture<ActionResult>> completableFutures = actions.stream()
                 .map(action -> CompletableFuture.supplyAsync(() -> {
                     try {
                         CompletableFuture<Metric> future = new CompletableFuture<>();
@@ -172,7 +172,7 @@ public class Invoker implements InterfaceInvoker {
                         action.operation();
 
                         long endTime = System.currentTimeMillis();
-                        Result r = new Result(action);
+                        ActionResult r = new ActionResult(action);
                         cache.put(r.getId(), r);
                         Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(),
                                 action.getMemory());
@@ -203,8 +203,8 @@ public class Invoker implements InterfaceInvoker {
         return futures;
     }
 
-    public void waitForFutures(List<Future<Result>> futures) throws InterruptedException, ExecutionException {
-        for (Future<Result> future : futures) {
+    public void waitForFutures(List<Future<ActionResult>> futures) throws InterruptedException, ExecutionException {
+        for (Future<ActionResult> future : futures) {
             try {
                 future.get(); // Wait the other futures
             } catch (InterruptedException | ExecutionException e) {

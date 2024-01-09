@@ -55,7 +55,7 @@ public class InvokerChronometerDecorator extends Invoker {
     }
 
     @Override
-    public ArrayList<Result> executeInvokerActions() throws InsufficientMemoryException {
+    public ArrayList<ActionResult> executeInvokerActions() throws InsufficientMemoryException {
         return invoker.executeInvokerActions();
     }
 
@@ -79,7 +79,7 @@ public class InvokerChronometerDecorator extends Invoker {
         invoker.notifyObservers(metrics);
     }
 
-    public ConcurrentHashMap<String, Result> getCache() {
+    public ConcurrentHashMap<String, ActionResult> getCache() {
         return invoker.getCache();
     }
 
