@@ -88,11 +88,12 @@ public class Invoker implements InterfaceInvoker {
             long endTime = System.currentTimeMillis();
 
             Result r = new Result(action);
+            action.setResult(r.getResult());
             results.add(r);
             cache.put(r.getId(), r);
 
             Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(),
-                    action.getMemory());
+            action.getMemory());
             metricsToNotify.add(metric);
         }
         notifyObservers(metricsToNotify);

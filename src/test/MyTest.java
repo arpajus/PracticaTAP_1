@@ -1429,6 +1429,9 @@ public class MyTest {
         controller.addAction(add2);// este no lo hace
         controller.addAction(mul1);
 
+        assertTrue(controller.getInvokerById("1").getCache().get("add1") == null); //esta en el cache del 1
+        assertTrue(controller.getInvokerById("2").getCache().get("add1") != null);
+
         assertEquals(0, iv1Decorator.getActions().size());
         assertEquals(0, iv2Decorator.getActions().size());
         assertEquals(iv1Decorator.getTotalMemory(), 1000);
@@ -1803,7 +1806,7 @@ public class MyTest {
                 new Class<?>[] { InterfaceAction.class },
                 new DynamicProxy(adder));
         t.operation();
-        //quien ejecuta esto? Esta en cache?
+        // quien ejecuta esto? Esta en cache?
 
         InterfaceAction action = ActionProxy.invoke(mul);
         action.operation();
@@ -1813,14 +1816,14 @@ public class MyTest {
     }
 
     @Test
-    public void testMultithreadScenario() throws InterruptedException, ExecutionException{
+    public void testMultithreadScenario() throws InterruptedException, ExecutionException {
         Controller.resetInstance();
-        controller=Controller.getInstance();
+        controller = Controller.getInstance();
         Invoker iv1 = new Invoker(1000, "1");
         controller.addInvoker(iv1);
         Invoker iv2 = new Invoker(2000, "2");
         controller.addInvoker(iv2);
-        Adder adder=new Adder("adder", 10, values);
+        Adder adder = new Adder("adder", 10, values);
         controller.addAction(adder, 10);
         controller.distributeActions();
         assertEquals(iv1.getActions().size(), 5);
@@ -1852,7 +1855,6 @@ public class MyTest {
         controller.executeAllInvokersAsync(); // the invokers have notified the controller sending metrics
 
         Thread.sleep(500);
-
 
         assertEquals(5, controller.getMetrics().size()); // there are 5 actions, so there are 5 metrics, one for action
 

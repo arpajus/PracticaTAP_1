@@ -39,7 +39,7 @@ public class InvokerCacheDecorator extends Invoker {
             return invoker.setAction(action);
         } else {
             // No se si esto se tiene que hacer o no, pero creo que si
-            // action.setResult(invoker.getCache().get(action.getId()).getResult());
+            action.setResult(invoker.getCache().get(action.getId()).getResult());
             return false;
         }
     }
