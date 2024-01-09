@@ -93,7 +93,7 @@ public class Invoker implements InterfaceInvoker {
             cache.put(r.getId(), r);
 
             Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(),
-            action.getMemory());
+                    action.getMemory());
             metricsToNotify.add(metric);
         }
         notifyObservers(metricsToNotify);
@@ -215,5 +215,12 @@ public class Invoker implements InterfaceInvoker {
 
     public void shutdownExecutorService() {
         executorService.shutdown();
+    }
+
+    public String toString() {
+        return "InvokerID: " + this.id +
+                " | Memory: " + this.totalMemory +
+                " | Actions: " + this.actions.toString() +
+                " | Metrics: " + this.metrics.toString();
     }
 }

@@ -95,4 +95,8 @@ public class InvokerCacheDecorator extends Invoker {
         }
         return false;
     }
+
+    public String toString() {
+        return invoker.toString();
+    }
 }

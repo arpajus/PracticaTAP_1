@@ -31,7 +31,7 @@ import java.util.concurrent.Future;
 
 import org.junit.Test;
 
-public class MyTest {
+public class JunitTesting {
 
     Controller controller = Controller.getInstance();
     RoundRobinImproved roundRobinImproved = new RoundRobinImproved();

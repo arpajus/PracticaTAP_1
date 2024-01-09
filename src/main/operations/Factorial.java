@@ -4,9 +4,7 @@ import java.math.BigInteger;
 
 import main.Action;
 
-public class Factorial extends Action  {
-
-    int result = 0; // BigInteger??
+public class Factorial extends Action {
 
     public Factorial(String id, double memory, int[] values) {
         super(id, memory, values);
@@ -20,7 +18,6 @@ public class Factorial extends Action  {
             result = result.multiply(BigInteger.valueOf(i));
         }
 
-        
         // trick to check cache access
         try {
             Thread.sleep(5000);

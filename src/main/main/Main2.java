@@ -1,5 +1,7 @@
-package main;
+package main.main;
 
+import main.Controller;
+import main.Invoker;
 import main.decorator.InvokerCacheDecorator;
 import main.operations.Adder;
 import main.policy.*;
