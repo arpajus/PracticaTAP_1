@@ -144,53 +144,63 @@ public class Invoker implements InterfaceInvoker {
         }
     }
 
+    public void notifyObserversAsync(ArrayList<Future<Metric>> metrics) {
+        for (Observer observer : observers) {
+            observer.updateMetricAsync(metrics);
+        }
+    }
+
     public ConcurrentHashMap<String, Result> getCache() {
         return this.cache;
     }
 
     public List<Future<Result>> executeInvokerActionsAsync() {
-    ArrayList<Metric> metricsToNotify = new ArrayList<>();
-    List<Future<Result>> futures = new ArrayList<>();
-    long startTime = System.currentTimeMillis();
+        ArrayList<Future<Metric>> metricsToNotify = new ArrayList<>();
+        List<Future<Result>> futures = new ArrayList<>();
+        long startTime = System.currentTimeMillis();
 
-    // Use CompletableFuture to execute each action asynchronously
-    List<CompletableFuture<Result>> completableFutures = actions.stream()
-            .map(action -> CompletableFuture.supplyAsync(() -> {
-                try {
-                    System.out.println("Executing action: " + action.getId() + " on Thread: " + Thread.currentThread().getName());
+        // Use CompletableFuture to execute each action asynchronously
+        List<CompletableFuture<Result>> completableFutures = actions.stream()
+                .map(action -> CompletableFuture.supplyAsync(() -> {
+                    try {
+                        CompletableFuture<Metric> future = new CompletableFuture<>();
 
-                    action.operation();
+                        System.out.println("Executing action: " + action.getId() + " on Thread: "
+                                + Thread.currentThread().getName());
 
-                    long endTime = System.currentTimeMillis();
-                    Result r = new Result(action);
-                    cache.put(r.getId(), r);
-                    Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(),
-                            action.getMemory());
-                    metricsToNotify.add(metric);
+                        action.operation();
 
-                    return r;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }, executorService))
-            .collect(Collectors.toList());
+                        long endTime = System.currentTimeMillis();
+                        Result r = new Result(action);
+                        cache.put(r.getId(), r);
+                        Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(),
+                                action.getMemory());
+                        future.complete(metric);
+                        metricsToNotify.add(future);
 
-    // Wait for all CompletableFuture to complete
-    CompletableFuture<Void> allOf = CompletableFuture.allOf(
-            completableFutures.toArray(new CompletableFuture[0]));
+                        return r;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                }, executorService))
+                .collect(Collectors.toList());
 
-    try {
-        allOf.get(); 
-    } catch (InterruptedException | ExecutionException e) {
-        e.printStackTrace();
+        // Wait for all CompletableFuture to complete
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(
+                completableFutures.toArray(new CompletableFuture[0]));
+
+        try {
+            allOf.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        notifyObserversAsync(metricsToNotify);
+        actions.clear();
+        System.out.println("Metrics recorded.");
+        return futures;
     }
-
-    notifyObservers(metricsToNotify);
-    actions.clear();
-    System.out.println("Metrics recorded.");
-    return futures;
-}
 
     public void waitForFutures(List<Future<Result>> futures) throws InterruptedException, ExecutionException {
         for (Future<Result> future : futures) {

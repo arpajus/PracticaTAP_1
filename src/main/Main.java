@@ -1,5 +1,6 @@
 package main;
 
+import main.decorator.InvokerCacheDecorator;
 import main.operations.Adder;
 import main.policy.*;
 import java.math.BigInteger;
@@ -15,12 +16,16 @@ public class Main {
         controller.setPolicy(roundRobinImproved);
         // We add the Observer
         // Observer observer=new Observer() {
-        Invoker iv1 = new Invoker(1000, "1");
+        // Invoker iv1 = new Invoker(1000, "1");
+        Invoker iv1 = new InvokerCacheDecorator(new Invoker(1000, "1"));
+
         controller.addInvoker(iv1);
         iv1.addObserver(controller);
-        Invoker iv2 = new Invoker(2000, "2");
-        controller.addInvoker(iv2);
-        iv2.addObserver(controller);
+        /*
+         * Invoker iv2 = new Invoker(2000, "2");
+         * controller.addInvoker(iv2);
+         * iv2.addObserver(controller);
+         */
         // we have to add the invokers to the controller enviroment
         int[] values = { 1, 2, 3, 4 };
         Adder add1 = new Adder("add1", 10, values);
@@ -33,14 +38,18 @@ public class Main {
         if (controller.distributeActions()) {
             System.out.println("Actions distributed");
             System.out.println("The actual memory of iv1 is " + controller.getInvokers().get(0).getTotalMemory());
-            System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
+            // System.out.println("The actual memory of iv2 is " +
+            // controller.getInvokers().get(1).getTotalMemory());
 
             controller.executeAssignedActions();
-            controller.printMetrics();
             System.out.println("Actions executed");
+            if(controller.getInvokerById("1").getCache().get("add1")!=null){
+                System.out.println("HOLAA");
+            }
+            controller.printMetrics();
             // when actions are executed the method realese memory is working
             System.out.println("The actual memory of iv1 is " + controller.getInvokers().get(0).getTotalMemory());
-            System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
+            //System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
 
             System.out.println("-----------------");
             controller.analyzeExecutionTime(controller.getMetrics());

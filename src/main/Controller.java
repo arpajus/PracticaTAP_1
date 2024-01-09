@@ -203,8 +203,8 @@ public class Controller implements Observer {
             allFutures.addAll(invokerFutures);
 
             invoker.waitForFutures(allFutures);
-
         }
+
 
         for (Invoker invoker : invokers) {
             invoker.shutdownExecutorService();
@@ -213,6 +213,20 @@ public class Controller implements Observer {
 
     public void updateMetric(ArrayList<Metric> metrics) {
         this.metrics.addAll(metrics);
+    }
+
+        @Override
+    public void updateMetricAsync(ArrayList<Future<Metric>> metrics) {
+        ArrayList<Metric> auxiliar=new ArrayList<>();
+        for (Future<Metric> future : metrics) {
+            try {
+                Metric metric=future.get();
+                auxiliar.add(metric);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        this.metrics.addAll(auxiliar);
     }
 
     public ArrayList<Metric> getMetrics() {
@@ -303,4 +317,6 @@ public class Controller implements Observer {
                     ", Memory Used: " + metric.getUsedMemory());
         }
     }
+
+
 }

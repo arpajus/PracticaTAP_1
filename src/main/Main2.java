@@ -1,5 +1,6 @@
 package main;
 
+import main.decorator.InvokerCacheDecorator;
 import main.operations.Adder;
 import main.policy.*;
 import java.util.concurrent.ExecutionException;
@@ -13,13 +14,13 @@ public class Main2 {
         RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
         controller.setPolicy(roundRobinImproved);
         // We add the Observer
-        // Observer observer=new Observer() {
-        Invoker iv1 = new Invoker(1000, "1");
+        Invoker iv1 = new InvokerCacheDecorator(new Invoker(1000, "1"));
         controller.addInvoker(iv1);
         iv1.addObserver(controller);
-        Invoker iv2 = new Invoker(2000, "2");
+        /*Invoker iv2 = new InvokerCacheDecorator(new Invoker(2000, "2"));
+
         controller.addInvoker(iv2);
-        iv2.addObserver(controller);
+        iv2.addObserver(controller);*/
         // we have to add the invokers to the controller enviroment
         int[] values = { 1, 2, 3, 4 };
         Adder add1 = new Adder("add1", 10, values);
@@ -32,21 +33,20 @@ public class Main2 {
         if (controller.distributeActions()) {
             System.out.println("Actions distributed");
             System.out.println("The actual memory of iv1 is " + controller.getInvokers().get(0).getTotalMemory());
-            System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
-
-
+            //System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
 
             try {
-                
+
                 controller.executeAllInvokersAsync();
                 System.out.println("All actions completed.");
 
-                /*System.out.println("-----------------");
-                controller.analyzeExecutionTime(controller.getMetrics());
-                controller.analyzeInvokerMemory(controller.getMetrics());
-                System.out.println("-------------");
-                controller.analyzeExecutionTimeBis(controller.getMetrics());*/
-
+                /*
+                 * System.out.println("-----------------");
+                 * controller.analyzeExecutionTime(controller.getMetrics());
+                 * controller.analyzeInvokerMemory(controller.getMetrics());
+                 * System.out.println("-------------");
+                 * controller.analyzeExecutionTimeBis(controller.getMetrics());
+                 */
 
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();

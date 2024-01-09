@@ -3,6 +3,7 @@ package test;
 import main.*;
 import main.decorator.InvokerCacheDecorator;
 import main.decorator.InvokerChronometerDecorator;
+import main.decorator.Result;
 import main.exceptions.InsufficientMemoryException;
 import main.interfaces.InterfaceAction;
 import main.operations.Adder;
@@ -25,6 +26,8 @@ import java.io.PrintStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.junit.Test;
 
@@ -1807,5 +1810,57 @@ public class MyTest {
 
         assertEquals(new BigInteger("10"), t.getResult());
         assertEquals(new BigInteger("24"), action.getResult());
+    }
+
+    @Test
+    public void testMultithreadScenario() throws InterruptedException, ExecutionException{
+        Controller.resetInstance();
+        controller=Controller.getInstance();
+        Invoker iv1 = new Invoker(1000, "1");
+        controller.addInvoker(iv1);
+        Invoker iv2 = new Invoker(2000, "2");
+        controller.addInvoker(iv2);
+        Adder adder=new Adder("adder", 10, values);
+        controller.addAction(adder, 10);
+        controller.distributeActions();
+        assertEquals(iv1.getActions().size(), 5);
+        assertEquals(iv2.getActions().size(), 5);
+        controller.executeAllInvokersAsync();
+        assertEquals(iv1.getActions().size(), 0);
+        assertEquals(iv2.getActions().size(), 0);
+    }
+
+    @Test
+    public void ObserverTestMultiThread() throws InterruptedException, ExecutionException {
+        Controller.resetInstance();
+        controller = Controller.getInstance();
+        controller.setPolicy(roundRobinImproved);
+
+        Invoker iv1 = new Invoker(1000, "iv1");
+        controller.addInvoker(iv1);
+        Invoker iv2 = new Invoker(2000, "iv2");
+        controller.addInvoker(iv2);
+
+        iv1.addObserver(controller);
+        iv2.addObserver(controller);
+
+        Adder add = new Adder("add", 100, values);
+        controller.addAction(add, 5);
+
+        controller.distributeActions();
+
+        controller.executeAllInvokersAsync(); // the invokers have notified the controller sending metrics
+
+        Thread.sleep(500);
+
+
+        assertEquals(5, controller.getMetrics().size()); // there are 5 actions, so there are 5 metrics, one for action
+
+        for (Metric metric : controller.getMetrics()) { // it checks that there are information on the metrics
+            assertNotNull(metric.getActionId());
+            assertNotNull(metric.getAssignedInvoker());
+            assertNotNull(metric.getExecutionTime());
+            assertNotNull(metric.getUsedMemory());
+        }
     }
 }
