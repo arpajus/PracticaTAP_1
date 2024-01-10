@@ -9,7 +9,7 @@ import java.math.BigInteger;
 
 public class MainPolicyBigGroup {
     public static void main(String[] args) {
-               Controller controller = Controller.getInstance();
+        Controller controller = Controller.getInstance();
         controller.setPolicy(new BigGroup(4));
 
         Invoker iv1 = new Invoker(2500, "1");

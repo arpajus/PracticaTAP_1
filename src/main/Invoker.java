@@ -24,7 +24,7 @@ public class Invoker implements InterfaceInvoker {
     private ArrayList<Observer> observers = new ArrayList<>();
     public ArrayList<Metric> metrics = new ArrayList<>();
     public ConcurrentHashMap<String, ActionResult> cache = new ConcurrentHashMap<>();
-    private final ExecutorService executorService = Executors.newFixedThreadPool(4);
+    private ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     public Invoker(double totalMemory, String id) {
         this.totalMemory = totalMemory;
@@ -42,6 +42,12 @@ public class Invoker implements InterfaceInvoker {
 
     public ArrayList<Action> getActions() {
         return actions;
+    }
+
+    
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
     }
 
     public boolean setAction(Action action) throws InsufficientMemoryException {

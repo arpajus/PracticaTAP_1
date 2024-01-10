@@ -26,6 +26,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.junit.Test;
 
@@ -1893,35 +1895,21 @@ public class JunitTesting {
     }
 
     @Test
-    public void ObserverTestMultiThread() throws InterruptedException, ExecutionException {
+    public void testMultithreadChangingThreads() throws InterruptedException, ExecutionException {
         Controller.resetInstance();
         controller = Controller.getInstance();
-        controller.setPolicy(roundRobinImproved);
-
-        Invoker iv1 = new Invoker(1000, "iv1");
+        Invoker iv1 = new Invoker(1000, "1");
         controller.addInvoker(iv1);
-        Invoker iv2 = new Invoker(2000, "iv2");
+        Invoker iv2 = new Invoker(2000, "2");
+        iv1.setExecutorService(Executors.newFixedThreadPool(6));
         controller.addInvoker(iv2);
-
-        iv1.addObserver(controller);
-        iv2.addObserver(controller);
-
-        Adder add = new Adder("add", 100, values);
-        controller.addAction(add, 5);
-
+        Adder adder = new Adder("adder", 10, values);
+        controller.addAction(adder, 10);
         controller.distributeActions();
-
-        controller.executeAllInvokersAsync(); // the invokers have notified the controller sending metrics
-
-        Thread.sleep(500);
-
-        assertEquals(5, controller.getMetrics().size()); // there are 5 actions, so there are 5 metrics, one for action
-
-        for (Metric metric : controller.getMetrics()) { // it checks that there are information on the metrics
-            assertNotNull(metric.getActionId());
-            assertNotNull(metric.getAssignedInvoker());
-            assertNotNull(metric.getExecutionTime());
-            assertNotNull(metric.getUsedMemory());
-        }
+        assertEquals(iv1.getActions().size(), 5);
+        assertEquals(iv2.getActions().size(), 5);
+        controller.executeAllInvokersAsync();
+        assertEquals(iv1.getActions().size(), 0);
+        assertEquals(iv2.getActions().size(), 0);
     }
 }

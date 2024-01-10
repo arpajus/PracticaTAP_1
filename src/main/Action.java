@@ -1,25 +1,44 @@
 package main;
+
 import java.math.BigInteger;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import main.interfaces.InterfaceAction;
 import main.interfaces.InterfaceInvoker;
 
-public abstract class Action implements InterfaceAction{
+public abstract class Action implements InterfaceAction {
     // nose si aparte de id tiene que haber un codigo, no tengo claro si id y codigo
     // son diferentes
     private String id;
     private double memory; // memory -> MB
+    private String text;
     protected int values[];
     private BigInteger result;
+    private Map<String, Integer> resultText;
     private InterfaceInvoker invoker;
 
     public Action(String id, double memory, int[] values) {
         this.id = id;
         this.memory = memory;
-        //copy of values or refference?
+        // copy of values or refference?
         this.values = values;
+    }
+
+    public Action(String id, double memory, String text) {
+        this.id = id;
+        this.memory = memory;
+        // copy of values or refference?
+        this.text = text;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public String getId() {
@@ -52,6 +71,14 @@ public abstract class Action implements InterfaceAction{
 
     public void setResult(BigInteger result) {
         this.result = result;
+    }
+
+    public Map<String, Integer> getResultText() {
+        return resultText;
+    }
+
+    public void setResultText(Map<String, Integer> result) {
+        this.resultText = result;
     }
 
     public void setInvoker(Invoker invoker) {
