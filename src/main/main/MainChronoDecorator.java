@@ -2,20 +2,20 @@ package main.main;
 
 import main.Controller;
 import main.Invoker;
-import main.decorator.InvokerCacheDecorator;
+import main.decorator.InvokerChronometerDecorator;
 import main.operations.Adder;
 import main.operations.Factorial;
 
 import java.math.BigInteger;
 import main.policy.*;
 
-public class MainDecorator {
+public class MainChronoDecorator {
     public static void main(String[] args) {
         Controller controller = Controller.getInstance();
         controller.setPolicy(new GreedyGroup()); // The distribution policy is set to greedyGroup
 
-        Invoker iv1 = new InvokerCacheDecorator(new Invoker(2500, "1"));
-        Invoker iv2 = new InvokerCacheDecorator(new Invoker(1500, "2"));
+        Invoker iv1 = new InvokerChronometerDecorator(new Invoker(2500, "1"));
+        Invoker iv2 = new InvokerChronometerDecorator(new Invoker(1500, "2"));
 
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
