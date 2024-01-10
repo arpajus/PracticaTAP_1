@@ -7,7 +7,7 @@ public class Metric {
     private long executionTime;
     private InterfaceInvoker assignedInvoker;
     private double usedMemory;
-    
+
     public Metric(String actionId, long executionTime, InterfaceInvoker assignedInvoker, double usedMemory) {
         this.actionId = actionId;
         this.executionTime = executionTime;
@@ -45,5 +45,10 @@ public class Metric {
 
     public void setUsedMemory(double usedMemory) {
         this.usedMemory = usedMemory;
+    }
+
+    public String toString() {
+        return "ActionID: " + actionId + " | ExecTime: " + executionTime + " | InvokerID: " + assignedInvoker.getId()
+                + " | MemUsed:" + usedMemory;
     }
 }

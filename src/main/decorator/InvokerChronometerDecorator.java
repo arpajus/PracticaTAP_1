@@ -1,7 +1,6 @@
 package main.decorator;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 import main.Action;
 import main.Controller;
@@ -83,22 +82,23 @@ public class InvokerChronometerDecorator extends Invoker {
         return invoker.getCache();
     }
 
-    public String chronometer(Action action) {
+    public ArrayList<Metric> getMetrics() {
+        return invoker.getMetrics();
+    }
+
+    public String toString() {
+        return invoker.toString() +
+                " | Metrics: " + invoker.getMetrics().toString() + " || TotalTime: " + chronometer();
+    }
+
+    public long chronometer() {
         Controller controller = Controller.getInstance();
-        ArrayList<Metric> metrics = controller.getMetrics();
-        String text = "";
-        Optional<Metric> actionMetric = metrics.stream()
-                .filter(metric -> metric.getActionId().equals(action.getId()))
-                .findFirst();
-        if (actionMetric.isPresent()) {
-            Metric m = actionMetric.get();
-            text = "Action: " + m.getActionId() +
-                    ", Time: " + m.getExecutionTime() +
-                    ", Invoker: " + m.getAssignedInvoker().getId() +
-                    ", Memory Used: " + m.getUsedMemory();
-                    System.out.println(text);
-            return text;
+        long time = 0;
+        for (Metric metric : controller.getMetrics()) {
+            if (metric.getAssignedInvoker().equals(invoker)) {
+                time += metric.getExecutionTime();
+            }
         }
-        return text;
+        return time;
     }
 }

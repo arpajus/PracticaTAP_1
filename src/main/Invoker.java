@@ -57,6 +57,10 @@ public class Invoker implements InterfaceInvoker {
         }
     }
 
+    public ArrayList<Metric> getMetrics() {
+        return metrics;
+    }
+
     public double getTotalMemory() {
         return totalMemory;
     }
@@ -96,6 +100,7 @@ public class Invoker implements InterfaceInvoker {
                     action.getMemory());
             metricsToNotify.add(metric);
         }
+        metrics.addAll(metricsToNotify);
         notifyObservers(metricsToNotify);
         actions.clear();
         System.out.println("Metrics recorded.");
@@ -117,7 +122,7 @@ public class Invoker implements InterfaceInvoker {
         Metric metric = new Metric(action.getId(), endTime - startTime, action.getInvoker(),
                 action.getMemory());
         metricsToNotify.add(metric);
-
+        metrics.addAll(metricsToNotify);
         notifyObservers(metricsToNotify);
         actions.remove(action);
         System.out.println("Metrics recorded.");
@@ -178,7 +183,6 @@ public class Invoker implements InterfaceInvoker {
                                 action.getMemory());
                         future.complete(metric);
                         metricsToNotify.add(future);
-
                         return r;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -220,7 +224,6 @@ public class Invoker implements InterfaceInvoker {
     public String toString() {
         return "InvokerID: " + this.id +
                 " | Memory: " + this.totalMemory +
-                " | Actions: " + this.actions.toString() +
-                " | Metrics: " + this.metrics.toString();
+                " | Actions: " + this.actions.toString();
     }
 }

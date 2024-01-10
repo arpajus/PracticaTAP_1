@@ -95,6 +95,10 @@ public class InvokerCacheDecorator extends Invoker {
         }
         return false;
     }
+    
+    public ArrayList<Metric> getMetrics() {
+        return invoker.getMetrics();
+    }
 
     public String toString() {
         return invoker.toString();

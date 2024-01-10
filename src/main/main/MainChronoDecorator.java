@@ -5,8 +5,8 @@ import main.Invoker;
 import main.decorator.InvokerChronometerDecorator;
 import main.operations.Adder;
 import main.operations.Factorial;
+import java.util.Scanner;
 
-import java.math.BigInteger;
 import main.policy.*;
 
 public class MainChronoDecorator {
@@ -14,9 +14,24 @@ public class MainChronoDecorator {
         Controller controller = Controller.getInstance();
         controller.setPolicy(new GreedyGroup()); // The distribution policy is set to greedyGroup
 
-        Invoker iv1 = new InvokerChronometerDecorator(new Invoker(2500, "1"));
-        Invoker iv2 = new InvokerChronometerDecorator(new Invoker(1500, "2"));
+        Invoker iv1;
+        Invoker iv2;
 
+        // Choose mode
+        System.out.println("\n\n[0] - DO NOT use chronometer decorator");
+        System.out.println("[Any Key] - Use chronometer decorator");
+        System.out.print("\nChoice: ");
+
+        Scanner sc = new Scanner(System.in);
+        char input = sc.next().charAt(0);
+        if (input == '0') {
+            iv1 = new Invoker(2500, "1");
+            iv2 = new Invoker(1500, "2");
+        } else {
+            iv1 = new InvokerChronometerDecorator(new Invoker(2500, "1"));
+            iv2 = new InvokerChronometerDecorator(new Invoker(1500, "2"));
+        }
+        sc.close();
         controller.addInvoker(iv1);
         controller.addInvoker(iv2);
 
@@ -40,29 +55,15 @@ public class MainChronoDecorator {
         System.out.println("----------------------");
 
         if (controller.distributeActions()) {
-            if (distributeActionsOk1()) {
-                System.out.println("---------------- Actions distributed as expected ----------------");
-            } else {
-                System.out.println("-------------- Actions distributed NOT as expected ---------------");
-            }
+            System.out.println("----------------------");
             System.out.println("Invokers info after distributing actions: ");
             System.out.println(controller.getInvokerById("1").toString());
             System.out.println(controller.getInvokerById("2").toString());
-            System.out.println("----------------------");
-            System.out.println("----------------------");
-
-            System.out.println("Invoker 1 Cache is empty");
-            System.out.println("Invoker 2 Cache is empty");
             controller.executeAssignedActions();
-            if (executeActionsOk1()) {
-                System.out.println("---------------- Actions executed as expected ----------------");
-            } else {
-                System.out.println("-------------- Actions executed NOT as expected ---------------");
-            }
+            System.out.println("----------------------");
+            System.out.println("Executed actions: ");
             System.out.println(controller.getInvokerById("1").toString());
             System.out.println(controller.getInvokerById("2").toString());
-            System.out.println("Invoker 1 Cache has: adder [values {1,2,3,4,}]");
-            System.out.println("Invoker 2 Cache has: factorial [values {5}]");
 
         } else {
             System.out.println("Not all actions could be assigned");
@@ -77,27 +78,17 @@ public class MainChronoDecorator {
         System.out.println("----------------------");
 
         if (controller.distributeActions()) {
-            if (distributeActionsOk2()) {
-                System.out.println("---------------- Actions distributed as expected ----------------");
-            } else {
-                System.out.println("-------------- Actions distributed NOT as expected ---------------");
-            }
+            System.out.println("----------------------");
             System.out.println("Invokers info after distributing actions: ");
             System.out.println(controller.getInvokerById("1").toString());
             System.out.println(controller.getInvokerById("2").toString());
             System.out.println("----------------------");
             System.out.println("----------------------");
-
             controller.executeAssignedActions();
-            if (executeActionsOk1()) {
-                System.out.println("---------------- Actions executed as expected ----------------");
-            } else {
-                System.out.println("-------------- Actions executed NOT as expected ---------------");
-            }
+            System.out.println("----------------------");
+            System.out.println("Executed actions: ");
             System.out.println(controller.getInvokerById("1").toString());
             System.out.println(controller.getInvokerById("2").toString());
-            System.out.println("Invoker 1 Cache has: adder [values {1,2,3,4,}], factorial [values {5}]");
-            System.out.println("Invoker 2 Cache has: factorial [values {5}]");
         } else {
             System.out.println("Not all actions could be assigned");
         }
@@ -106,22 +97,12 @@ public class MainChronoDecorator {
         Adder add4 = new Adder("add4", 100, values);
         Factorial f1 = new Factorial("f1", 100, values2);
         Factorial f2 = new Factorial("f2", 100, values2);
-        Factorial f3 = new Factorial("f3", 100, values2);
-        Factorial f4 = new Factorial("f4", 100, values2);
 
         controller.addAction(add3);
         controller.addAction(add4);
         controller.addAction(f1);
         controller.addAction(f2);
-        controller.addAction(f3);
-        controller.addAction(f4);
 
-        System.out.println("----------------------");
-        System.out.println("----------------------");
-        System.out.println("----CACHE LOADED------");
-        System.out.println("----------------------");
-        System.out.println("----------------------");
-        System.out.println("Now if input and operation is in cache it gets it from cache (no sleep)");
         System.out.println("----------------------");
         System.out.println("----------------------");
         System.out.println("Invokers info before distributing actions: ");
@@ -131,71 +112,20 @@ public class MainChronoDecorator {
         System.out.println("----------------------");
 
         if (controller.distributeActions()) {
-            if (distributeActionsOk3()) {
-                System.out.println("---------------- Actions distributed as expected ----------------");
-            } else {
-                System.out.println("-------------- Actions distributed NOT as expected ---------------");
-            }
+            System.out.println("----------------------");
             System.out.println("Invokers info after distributing actions: ");
             System.out.println(controller.getInvokerById("1").toString());
             System.out.println(controller.getInvokerById("2").toString());
             System.out.println("----------------------");
             System.out.println("----------------------");
-
             controller.executeAssignedActions();
-            if (executeActionsOk1()) {
-                System.out.println("---------------- Actions executed as expected ----------------");
-            } else {
-                System.out.println("-------------- Actions executed NOT as expected ---------------");
-            }
+            System.out.println("----------------------");
+            System.out.println("Executed actions: ");
             System.out.println(controller.getInvokerById("1").toString());
             System.out.println(controller.getInvokerById("2").toString());
-            System.out.println("Invoker 1 Cache has: adder [values {1,2,3,4,}], factorial [values {5}]");
-            System.out.println("Invoker 2 Cache has: factorial [values {5}]");
         } else {
             System.out.println(
                     "Not all actions could be assigned (they are not assigned because they are already in cache)");
         }
-    }
-
-    private static boolean distributeActionsOk1() {
-        Controller controller = Controller.getInstance();
-        return controller.getInvokerById("1").getActions().get(0).getId().equals("add1") &&
-                controller.getInvokerById("1").getActions().get(1).getId().equals("add2_0") &&
-                controller.getInvokerById("1").getActions().get(2).getId().equals("add2_1") &&
-                controller.getInvokerById("1").getActions().get(3).getId().equals("add2_2") &&
-                controller.getInvokerById("2").getActions().get(0).getId().equals("f5")
-                && controller.getInvokerById("1").getActions().size() == 4
-                && controller.getInvokerById("2").getActions().size() == 1 &&
-                controller.getInvokerById("1").getTotalMemory() == 200 &&
-                controller.getInvokerById("2").getTotalMemory() == 700;
-    }
-
-    private static boolean executeActionsOk1() {
-        Controller controller = Controller.getInstance();
-        return controller.getActionById("add1").getResult().equals(new BigInteger("10")) &&
-                controller.getActionById("add2_0").getResult().equals(new BigInteger("10")) &&
-                controller.getActionById("add2_1").getResult().equals(new BigInteger("10")) &&
-                controller.getActionById("add2_2").getResult().equals(new BigInteger("10")) &&
-                controller.getActionById("f5").getResult().equals(new BigInteger("120")) &&
-                controller.getInvokerById("1").getActions().size() == 0 &&
-                controller.getInvokerById("2").getActions().size() == 0;
-    }
-
-    private static boolean distributeActionsOk2() {
-        Controller controller = Controller.getInstance();
-        return controller.getInvokerById("1").getActions().size() == 1 &&
-                controller.getInvokerById("2").getActions().size() == 0 &&
-                controller.getInvokerById("1").getActions().get(0).getId().equals("f5") &&
-                controller.getInvokerById("1").getTotalMemory() == 1700 &&
-                controller.getInvokerById("2").getTotalMemory() == 1500;
-    }
-
-    private static boolean distributeActionsOk3() {
-        Controller controller = Controller.getInstance();
-        return controller.getInvokerById("1").getActions().size() == 0
-                && controller.getInvokerById("2").getActions().size() == 0 &&
-                controller.getInvokerById("1").getTotalMemory() == 2500 &&
-                controller.getInvokerById("2").getTotalMemory() == 1500;
     }
 }
