@@ -50,9 +50,6 @@ public class Controller implements Observer {
         controller = null;
     }
 
-    // investigar concurrentHashMap si es necesario para optimizar costes (y el
-    // concurrent se puede usar con multithreading)
-
     private Controller(ArrayList<Invoker> invokers, ArrayList<Action> actions, int id) {
         this.invokers = invokers;
         this.actions = actions;
@@ -60,10 +57,6 @@ public class Controller implements Observer {
         this.metrics = new ArrayList<>();
         this.id = id;
     }
-
-    // creo que es mejor arraylist, porque los invokers son fijos (si hay 3 hay
-    // siempre 3, o 30)
-    // por lo que el acceso sera O(1), en vez de O(n) con linked list
 
     private Controller(int id) {
         this.invokers = new ArrayList<Invoker>();

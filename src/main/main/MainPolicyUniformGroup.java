@@ -2,58 +2,123 @@ package main.main;
 
 import main.Controller;
 import main.Invoker;
-import main.decorator.InvokerCacheDecorator;
 import main.operations.Adder;
+import main.operations.Multiplier;
 import main.policy.*;
-import java.util.concurrent.ExecutionException;
 
 public class MainPolicyUniformGroup {
     public static void main(String[] args) {
-        // every time we assign an action to an invoker we MUST invoke the method take
-        // memory.
-        // every time that an action has finished we MUST give memory to the Invoker.
         Controller controller = Controller.getInstance();
-        RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
-        controller.setPolicy(roundRobinImproved);
-        // We add the Observer
-        Invoker iv1 = new InvokerCacheDecorator(new Invoker(1000, "1"));
+        controller.setPolicy(new UniformGroup());
+
+        Invoker iv1 = new Invoker(2500, "1");
+        Invoker iv2 = new Invoker(1500, "2");
+
         controller.addInvoker(iv1);
-        iv1.addObserver(controller);
-        /*Invoker iv2 = new InvokerCacheDecorator(new Invoker(2000, "2"));
-
         controller.addInvoker(iv2);
-        iv2.addObserver(controller);*/
-        // we have to add the invokers to the controller enviroment
-        int[] values = { 1, 2, 3, 4 };
-        Adder add1 = new Adder("add1", 10, values);
-        controller.addAction(add1, 9);
-        // same with actions, we have to add this actions to the invoker
 
+        int[] values = { 1, 2, 3, 4 };
+        int[] values2 = { 5, 5 };
+        Adder add1 = new Adder("add1", 2000, values);
+        Adder add2 = new Adder("add2", 100, values);
+        Multiplier f5 = new Multiplier("mul5", 800, values2);
+
+        iv1.addObserver(controller);
+        controller.addAction(add1);
+        controller.addAction(add2, 3);
+        controller.addAction(f5);
+
+        System.out.println("----------------------");
+        System.out.println("----------------------");
+        System.out.println("Invokers info before distributing actions: ");
+        System.out.println(controller.getInvokers().get(0).toString());
+        System.out.println(controller.getInvokers().get(1).toString());
         System.out.println("----------------------");
         System.out.println("----------------------");
 
         if (controller.distributeActions()) {
-            System.out.println("Actions distributed");
-            System.out.println("The actual memory of iv1 is " + controller.getInvokers().get(0).getTotalMemory());
-            //System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
-
-            try {
-
-                controller.executeAllInvokersAsync();
-                System.out.println("All actions completed.");
-
-                /*
-                 * System.out.println("-----------------");
-                 * controller.analyzeExecutionTime(controller.getMetrics());
-                 * controller.analyzeInvokerMemory(controller.getMetrics());
-                 * System.out.println("-------------");
-                 * controller.analyzeExecutionTimeBis(controller.getMetrics());
-                 */
-
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+            if (distributeActionsOk1()) {
+                System.out.println("---------------- Actions distributed as expected ----------------");
+            } else {
+                System.out.println("-------------- Actions distributed NOT as expected ---------------");
             }
-        } else
+            System.out.println("Invokers info after distributing actions: ");
+            System.out.println(controller.getInvokers().get(0).toString());
+            System.out.println(controller.getInvokers().get(1).toString());
+            System.out.println("----------------------");
+            System.out.println("----------------------");
+
+            controller.executeAssignedActions();
+            System.out.println("---------------- Actions executed ----------------");
+            System.out.println("---------------- Actions executed ----------------");
+            System.out.println(controller.getInvokers().get(0).toString());
+            System.out.println(controller.getInvokers().get(1).toString());
+
+        } else {
             System.out.println("Not all actions could be assigned");
+        }
+
+        System.out.println("----------------------");
+        System.out.println("----------------------");
+        System.out.println("Invokers info before distributing actions: ");
+        System.out.println(controller.getInvokers().get(0).toString());
+        System.out.println(controller.getInvokers().get(1).toString());
+        System.out.println("----------------------");
+        System.out.println("----------------------");
+
+        Adder add3 = new Adder("add3", 100, values2);
+        Multiplier mul4 = new Multiplier("mul4", 100, values);
+
+        controller.addAction(add3);
+        controller.addAction(mul4);
+
+        if (controller.distributeActions()) {
+            if (distributeActionsOk2()) {
+                System.out.println("---------------- Actions distributed as expected ----------------");
+            } else {
+                System.out.println("-------------- Actions distributed NOT as expected ---------------");
+            }
+            System.out.println("Invokers info after distributing actions: ");
+            System.out.println(controller.getInvokers().get(0).toString());
+            System.out.println(controller.getInvokers().get(1).toString());
+            System.out.println("----------------------");
+            System.out.println("----------------------");
+
+            controller.executeAssignedActions();
+            System.out.println("---------------- Actions executed ----------------");
+            System.out.println("---------------- Actions executed ----------------");
+            System.out.println(controller.getInvokers().get(0).toString());
+            System.out.println(controller.getInvokers().get(1).toString());
+        } else {
+            System.out.println("Not all actions could be assigned");
+        }
+    }
+
+    private static boolean distributeActionsOk1() {
+        Controller controller = Controller.getInstance();
+        return controller.getInvokers().get(0).getActions().get(0).getId().equals("add1") &&
+                controller.getInvokers().get(0).getActions().get(1).getId().equals("add2_0") &&
+                controller.getInvokers().get(0).getActions().get(2).getId().equals("add2_1") &&
+                controller.getInvokers().get(1).getActions().get(0).getId().equals("add2_2") &&
+                controller.getInvokers().get(1).getActions().get(1).getId().equals("mul5")
+                && controller.getInvokers().get(0).getActions().size() == 3
+                && controller.getInvokers().get(1).getActions().size() == 2 &&
+                controller.getInvokers().get(0).getTotalMemory() == 300 &&
+                controller.getInvokers().get(1).getTotalMemory() == 600;
+    }
+
+    private static boolean distributeActionsOk2() {
+        Controller controller = Controller.getInstance();
+        return controller.getInvokers().get(0).getActions().get(0).getId().equals("add1") &&
+                controller.getInvokers().get(0).getActions().get(1).getId().equals("add2_0") &&
+                controller.getInvokers().get(0).getActions().get(2).getId().equals("add2_1") &&
+                controller.getInvokers().get(1).getActions().get(0).getId().equals("add2_2") &&
+                controller.getInvokers().get(1).getActions().get(1).getId().equals("mul5") &&
+                controller.getInvokers().get(1).getActions().get(2).getId().equals("mul4") &&
+                controller.getInvokers().get(0).getActions().get(3).getId().equals("add3") &&
+                controller.getInvokers().get(0).getActions().size() == 4 &&
+                controller.getInvokers().get(1).getActions().size() == 3 &&
+                controller.getInvokers().get(0).getTotalMemory() == 200 &&
+                controller.getInvokers().get(1).getTotalMemory() == 500;
     }
 }

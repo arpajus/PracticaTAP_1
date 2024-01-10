@@ -2,6 +2,9 @@ package main.policy;
 
 import main.interfaces.DistributionPolicy;
 import main.interfaces.InterfaceInvoker;
+import main.operations.Adder;
+import main.operations.Factorial;
+import main.operations.Multiplier;
 import main.Action;
 import main.Invoker;
 import main.exceptions.InsufficientMemoryException;
@@ -15,8 +18,8 @@ public class UniformGroup implements DistributionPolicy {
         int actionsPerInvoker = actions.size() / invokers.size();
         int remainingActions = actions.size() % invokers.size();
         int invokersIndex = 0;
-        boolean allReturned = true;
 
+        boolean allReturned = true;
         for (InterfaceInvoker invoker : invokers) {
             int actionsToAssign = actionsPerInvoker + (remainingActions-- > 0 ? 1 : 0);
             for (int i = 0; i < actionsToAssign; i++) {
@@ -37,5 +40,4 @@ public class UniformGroup implements DistributionPolicy {
         }
         return allReturned;
     }
-
 }
