@@ -3,7 +3,6 @@ package test;
 import main.*;
 import main.decorator.InvokerCacheDecorator;
 import main.decorator.InvokerChronometerDecorator;
-import main.decorator.ActionResult;
 import main.exceptions.InsufficientMemoryException;
 import main.interfaces.InterfaceAction;
 import main.operations.Adder;
@@ -27,7 +26,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import org.junit.Test;
 

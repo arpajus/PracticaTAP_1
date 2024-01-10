@@ -2,9 +2,6 @@ package main.policy;
 
 import main.interfaces.DistributionPolicy;
 import main.interfaces.InterfaceInvoker;
-import main.operations.Adder;
-import main.operations.Factorial;
-import main.operations.Multiplier;
 import main.Action;
 import main.Invoker;
 import main.exceptions.InsufficientMemoryException;
