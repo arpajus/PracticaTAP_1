@@ -8,8 +8,18 @@ import java.util.Iterator;
 import main.Invoker;
 import main.exceptions.InsufficientMemoryException;
 
+/**
+ * Implementation of a distribution policy that greedily assigns actions to available invokers.
+ */
 public class GreedyGroup implements DistributionPolicy {
 
+    /**
+     * Distributes a list of actions among a list of invokers using the greedy group strategy.
+     *
+     * @param actions  The list of actions to be distributed.
+     * @param invokers The list of invokers available for distribution.
+     * @return True if the actions were successfully distributed; false otherwise.
+     */
     @Override
     public boolean distributeActions(ArrayList<Action> actions, ArrayList<Invoker> invokers) {
         boolean assigned = false;
@@ -36,7 +46,13 @@ public class GreedyGroup implements DistributionPolicy {
         return assigned;
     }
 
-    // An invoker is available if the action fits in
+    /**
+     * Finds an available invoker for a given action based on memory constraints.
+     *
+     * @param invokers The list of invokers to search.
+     * @param action   The action to be assigned.
+     * @return An available invoker if found; otherwise, null.
+     */
     private Invoker findAvailableInvoker(ArrayList<Invoker> invokers, Action action) {
         Iterator<Invoker> iterator = invokers.iterator();
         while (iterator.hasNext()) {

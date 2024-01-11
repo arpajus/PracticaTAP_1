@@ -7,9 +7,21 @@ import main.exceptions.InsufficientMemoryException;
 
 import java.util.ArrayList;
 
+/**
+ * Implementation of a distribution policy that assigns actions in a round-robin fashion to invokers.
+ * This version improves the assignment strategy by considering available memory for each invoker.
+ */
 public class RoundRobinImproved implements DistributionPolicy {
-    private int currentInvokerIndex = 0; // This variable is usefull to know the last invoker that we've set an action
+    private int currentInvokerIndex = 0; // This variable is useful to know the last invoker that we've set an action
 
+    /**
+     * Distributes a list of actions among a list of invokers using an improved round-robin strategy.
+     * This strategy considers available memory for each invoker.
+     *
+     * @param actions  The list of actions to be distributed.
+     * @param invokers The list of invokers available for distribution.
+     * @return True if the actions were successfully distributed; false otherwise.
+     */
     @Override
     public boolean distributeActions(ArrayList<Action> actions, ArrayList<Invoker> invokers) {
         int initialIndex = currentInvokerIndex;
@@ -44,7 +56,7 @@ public class RoundRobinImproved implements DistributionPolicy {
         int initialIndex = currentInvokerIndex;
 
         do {
-            // Gets an invoker swaping between them (1,2,1,2...) only if it fits
+            // Gets an invoker swapping between them (1,2,1,2...) only if it fits
             Invoker invoker = invokers.get(currentInvokerIndex);
             currentInvokerIndex = (currentInvokerIndex + 1) % invokers.size();
 

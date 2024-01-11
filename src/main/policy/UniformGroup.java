@@ -8,8 +8,18 @@ import main.exceptions.InsufficientMemoryException;
 
 import java.util.ArrayList;
 
+/**
+ * Implementation of a distribution policy that evenly distributes actions among invokers in groups.
+ */
 public class UniformGroup implements DistributionPolicy {
 
+    /**
+     * Distributes a list of actions evenly among a list of invokers in groups.
+     *
+     * @param actions  The list of actions to be distributed.
+     * @param invokers The list of invokers available for distribution.
+     * @return True if the actions were successfully distributed; false otherwise.
+     */
     @Override
     public boolean distributeActions(ArrayList<Action> actions, ArrayList<Invoker> invokers) {
         int actionsPerInvoker = actions.size() / invokers.size();
@@ -26,12 +36,11 @@ public class UniformGroup implements DistributionPolicy {
                 actions.remove(0);
                 try {
                     if (invoker.setAction(action)) {
-                        System.out
-                                .println(("Action " + action.getId() + " assigned to Invoker " + (invokersIndex + 1)));
+                        System.out.println(("Action " + action.getId() + " assigned to Invoker " + (invokersIndex + 1)));
                     }
                 } catch (InsufficientMemoryException e) {
                     System.out.println(
-                            "Error assigning sction to Invoker " + (invokersIndex + 1) + ": " + e.getMessage());
+                            "Error assigning action to Invoker " + (invokersIndex + 1) + ": " + e.getMessage());
                     allReturned = false;
                 }
             }

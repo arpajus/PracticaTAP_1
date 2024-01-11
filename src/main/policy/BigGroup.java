@@ -7,14 +7,29 @@ import main.exceptions.InsufficientMemoryException;
 
 import java.util.ArrayList;
 
+/**
+ * Implementation of a distribution policy that assigns actions in groups to invokers.
+ */
 public class BigGroup implements DistributionPolicy {
 
     private final int groupSize;
 
+    /**
+     * Constructs a BigGroup distribution policy with the specified group size.
+     *
+     * @param groupSize The size of the action groups to be assigned.
+     */
     public BigGroup(int groupSize) {
         this.groupSize = groupSize;
     }
 
+    /**
+     * Distributes a list of actions among a list of invokers using the big group strategy.
+     *
+     * @param actions  The list of actions to be distributed.
+     * @param invokers The list of invokers available for distribution.
+     * @return True if the actions were successfully distributed; false otherwise.
+     */
     @Override
     public boolean distributeActions(ArrayList<Action> actions, ArrayList<Invoker> invokers) {
         // Check if invokers or actions are empty

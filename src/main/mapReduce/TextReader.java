@@ -5,9 +5,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Class for reading the content of a text file and returning it as a string.
+ */
 public class TextReader {
 
-    // Method to read the content of the file and return it as a string
+    /**
+     * Reads the content of the specified file and returns it as a string.
+     *
+     * @param filePath The path to the file to be read.
+     * @return The content of the file as a string.
+     */
     public static String readText(String filePath) {
         StringBuilder content = new StringBuilder();
         char[] buffer = new char[1024]; // Block size, you can adjust according to your needs
