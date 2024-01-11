@@ -23,13 +23,10 @@ public class MainMapReduce2 {
         Invoker iv2 = new Invoker(2000, "2");
         controller.addInvoker(iv2);
         iv2.addObserver(controller);
-
-
         String text1 = "Hola mundo Esto es un ejemplo MapReduce en Java es interesante Hola Java Ejemplo de MapReduce";
 
         CountWords countWordsTask = new CountWords("CountWords", 10, text1);
         WordCount wordCountTask = new WordCount("WordCount", 10, text1);
-
 
         controller.addAction(countWordsTask);
         controller.addAction(wordCountTask);
