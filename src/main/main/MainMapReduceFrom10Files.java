@@ -15,18 +15,18 @@ import main.operations.WordCount;
 public class MainMapReduceFrom10Files {
     public static void main(String[] args) {
 
-        //texts get readed and put into a list of strings
+        // texts get readed and put into a list of strings
         List<String> texts = List.of(
-                TextReader.readText("pg84.txt"),
-                TextReader.readText("pg100.txt"),
-                TextReader.readText("pg145.txt"),
-                TextReader.readText("pg1342.txt"),
-                TextReader.readText("pg1513.txt"),
-                TextReader.readText("pg2641.txt"),
-                TextReader.readText("pg2701.txt"),
-                TextReader.readText("pg16389.txt"),
-                TextReader.readText("pg37106.txt"),
-                TextReader.readText("pg67979.txt"));
+                TextReader.readText("text/pg84.txt"),
+                TextReader.readText("text/pg100.txt"),
+                TextReader.readText("text/pg145.txt"),
+                TextReader.readText("text/pg1342.txt"),
+                TextReader.readText("text/pg1513.txt"),
+                TextReader.readText("text/pg2641.txt"),
+                TextReader.readText("text/pg2701.txt"),
+                TextReader.readText("text/pg16389.txt"),
+                TextReader.readText("text/pg37106.txt"),
+                TextReader.readText("text/pg67979.txt"));
 
         System.out.println("----------------------");
         System.out.println("Text loaded");
