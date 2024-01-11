@@ -70,8 +70,4 @@ public class MainObserver {
         } else
             System.out.println("Not all actions could be assigned");
     }
-    // TESTS ADRI_______________________________
-    // TESTS ADRI_______________________________
-    // TESTS ADRI_______________________________
-    // hay que hacer que cuando se hagan las actions se eliminen del controller creo
 }

@@ -1849,10 +1849,10 @@ public class JunitTesting {
         controller = Controller.getInstance();
         values = new int[] { 1, 2, 3, 4 };
 
-        InvokerChronometerDecorator iv1Decorator = new InvokerChronometerDecorator(
+        Invoker iv1Decorator = new InvokerChronometerDecorator(
                 new InvokerCacheDecorator(
                         new Invoker(1000, "1")));
-        InvokerChronometerDecorator iv2Decorator = new InvokerChronometerDecorator(
+        Invoker iv2Decorator = new InvokerChronometerDecorator(
                 new InvokerCacheDecorator(
                         new Invoker(2500, "2")));
 
@@ -1867,7 +1867,6 @@ public class JunitTesting {
                 new Class<?>[] { InterfaceAction.class },
                 new DynamicProxy(adder));
         t.operation();
-        // quien ejecuta esto? Esta en cache?
 
         InterfaceAction action = ActionProxy.invoke(mul);
         action.operation();

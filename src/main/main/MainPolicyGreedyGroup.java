@@ -11,7 +11,7 @@ import java.math.BigInteger;
 public class MainPolicyGreedyGroup {
     public static void main(String[] args) {
         Controller controller = Controller.getInstance();
-        controller.setPolicy(new GreedyGroup()); // The distribution policy is set to greedyGroup
+        controller.setPolicy(new GreedyGroup());
 
         Invoker iv1 = new Invoker(2500, "1");
         Invoker iv2 = new Invoker(1500, "2");
@@ -26,6 +26,7 @@ public class MainPolicyGreedyGroup {
         Multiplier f5 = new Multiplier("mul5", 800, values2);
 
         iv1.addObserver(controller);
+        iv2.addObserver(controller);
         controller.addAction(add1);
         controller.addAction(add2, 3);
         controller.addAction(f5);

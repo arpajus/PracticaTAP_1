@@ -24,6 +24,7 @@ public class MainPolicyUniformGroup {
         Multiplier f5 = new Multiplier("mul5", 800, values2);
 
         iv1.addObserver(controller);
+        iv2.addObserver(controller);
         controller.addAction(add1);
         controller.addAction(add2, 3);
         controller.addAction(f5);

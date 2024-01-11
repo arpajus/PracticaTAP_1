@@ -12,7 +12,7 @@ import main.policy.*;
 public class MainChronoDecorator {
     public static void main(String[] args) {
         Controller controller = Controller.getInstance();
-        controller.setPolicy(new GreedyGroup()); // The distribution policy is set to greedyGroup
+        controller.setPolicy(new GreedyGroup());
 
         Invoker iv1;
         Invoker iv2;

@@ -1,10 +1,21 @@
 package main.main;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.math.BigInteger;
+
+import main.Action;
 import main.Controller;
 import main.Invoker;
+import main.interfaces.InterfaceAction;
 import main.operations.Adder;
+import main.operations.Factorial;
 import main.operations.Multiplier;
 import main.policy.*;
+import main.reflection.ActionProxy;
+import main.reflection.DynamicProxy;
 
 public class MainReflection {
     public static void main(String[] args) {
@@ -18,14 +29,48 @@ public class MainReflection {
         controller.addInvoker(iv2);
 
         int[] values = { 1, 2, 3, 4 };
-        int[] values2 = { 5, 5 };
-        Adder add1 = new Adder("add1", 2000, values);
-        Adder add2 = new Adder("add2", 100, values);
-        Multiplier f5 = new Multiplier("mul5", 800, values2);
+        int[] values2 = { 1, 2, 3 };
+        Adder add = new Adder("add", 100, values);
+        Multiplier mul = new Multiplier("mul", 100, values);
+        Adder add2 = new Adder("add2", 100, values2);
 
         iv1.addObserver(controller);
-        controller.addAction(add1);
-        controller.addAction(add2, 3);
-        controller.addAction(f5);
+        iv2.addObserver(controller);
+
+        InterfaceAction mulDynamicProxy = ActionProxy.invoke(mul);
+        InterfaceAction adderDynamicProxy = ActionProxy.invoke(add);
+        InterfaceAction InterfaceActionAdd2 = add2;
+
+        mulDynamicProxy.operation();
+        adderDynamicProxy.operation();
+        add2.operation();
+        InterfaceActionAdd2.operation();
+
+        System.out.println("------------------");
+        if (new BigInteger("24").equals(controller.getActionById("mul").getResult())) {
+            System.out.println("mulDynamicProxy (DynamicProxy) executed OK. (Result is expected)");
+        } else {
+            System.out.println("mulDynamicProxy (DynamicProxy) executed NOT OK. (Result is NOT as expected)");
+        }
+
+        System.out.println("------------------");
+        if (new BigInteger("10").equals(controller.getActionById("add").getResult())) {
+            System.out.println("adderDynamicProxy (DynamicProxy) executed OK. (Result is expected)");
+        } else {
+            System.out.println("adderDynamicProxy (DynamicProxy) executed NOT OK. (Result is NOT as expected)");
+        }
+
+        System.out.println("------------------");
+        if (controller.getActionById("add2") == null) {
+            System.out.println("add2 is not in controller (as expected)");
+        } else {
+            System.out.println("add2 IS in controller (NOT as expected)");
+        }
+        System.out.println("------------------");
+        if (new BigInteger("6").equals(add2.getResult())) {
+            System.out.println("add2 result saved in add2 OK");
+        } else {
+            System.out.println("add2 result NOT saved in add2 (NOT as expected)");
+        }
     }
 }
