@@ -94,4 +94,4 @@ Contributions are welcome!
 ## Acknowledgments
 The project makes use of design patterns and Java features to create a robust and flexible task distribution system.
 
-Copyright (c) [2024] [ArnauPapiol][AdrianGarcia]
+Copyright (c) [2024] [@arpajus][AdrianGarcia]
