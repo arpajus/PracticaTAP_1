@@ -1,16 +1,20 @@
 package main.main;
 
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import main.Action;
 import main.Controller;
 import main.Invoker;
 import main.decorator.InvokerCacheDecorator;
+import main.mapReduce.Reduce;
 import main.operations.CountWords;
 import main.operations.WordCount;
 import main.policy.RoundRobinImproved;
 
-public class MainMapReduce2 {
+public class MainMapReduceString {
     public static void main(String[] args) {
         Controller controller = Controller.getInstance();
         RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
@@ -54,14 +58,36 @@ public class MainMapReduce2 {
             System.out.println("-------------");
             controller.analyzeExecutionTimeBis(controller.getMetrics());
 
-            // Mostrar resultados de las acciones
+            // Obtain results of actions
             System.out.println("Results of the actions: ");
             List<Action> results = controller.getActions();
+
+            // filter actions wordCount and count
+            List<WordCount> wordCountResults = results.stream()
+                    .filter(action -> action instanceof WordCount)
+                    .map(action -> (WordCount) action)
+                    .collect(Collectors.toList());
+
+            List<CountWords> countWordsResults = results.stream()
+                    .filter(action -> action instanceof CountWords)
+                    .map(action -> (CountWords) action)
+                    .collect(Collectors.toList());
+
+            // reduce wordCount
+            Map<String, Integer> consolidatedWordCountResult = Reduce.reduceWordCount(wordCountResults.stream()
+                    .map(WordCount::getResultText)
+                    .collect(Collectors.toList()));
+
+            // reduce countWord
+            BigInteger consolidatedCountWordsResult = Reduce.reduceCountWords(countWordsResults.stream()
+                    .map(CountWords::getResult)
+                    .collect(Collectors.toList()));
+
             for (Action action : results) {
                 if (action.getResult() != null) {
-                    System.out.println("Result of the action " + action.getId() + ": " + action.getResult());
+                    System.out.println("Result of the action " + action.getId() + ": " + consolidatedCountWordsResult);
                 } else if (action.getResultText() != null) {
-                    System.out.println("Result of the action " + action.getId() + ": " + action.getResultText());
+                    System.out.println("Result of the action " + action.getId() + ": " + consolidatedWordCountResult);
                 }
             }
         } else {

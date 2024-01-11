@@ -6,6 +6,7 @@ import main.decorator.InvokerChronometerDecorator;
 import main.exceptions.InsufficientMemoryException;
 import main.interfaces.InterfaceAction;
 import main.mapReduce.Reduce;
+import main.mapReduce.TextReader;
 import main.operations.Adder;
 import main.operations.CountWords;
 import main.operations.Factorial;
@@ -29,6 +30,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -1917,52 +1919,200 @@ public class JunitTesting {
     }
 
     @Test
-    public void testMapReduce() {
-        List<String> texts = List.of(
-                "Hola mundo",
-                "Esto es un ejemplo",
-                "MapReduce en Java es interesante",
-                "Hola Java",
-                "Ejemplo de MapReduce");
+    public void testMapCountWords() {
+        String text = "Hello World! This is a test.";
+        CountWords countWords = new CountWords("1", 10, text);
+        countWords.operation();
+        BigInteger result = countWords.getResult();
+        assertNotNull(result);
+        assertEquals(BigInteger.valueOf(6), result);
+    }
 
-        // map of countWord
-        List<CountWords> countWordsTasks = new ArrayList<>();
-        for (int i = 0; i < texts.size(); i++) {
-            CountWords countWordsTask = new CountWords("CountWords" + i, 10, texts.get(i));
-            countWordsTask.operation();
-            countWordsTasks.add(countWordsTask);
-        }
+    @Test
+    public void testMapWordCount() {
+        String text = "Hello World! Hello Java! This is a test.";
+        WordCount wordCount = new WordCount("1", 10, text);
+        wordCount.operation();
+        Map<String, Integer> result = wordCount.getResultText();
+        assertNotNull(result);
+        assertEquals(7, result.size());
+        assertEquals(2, result.get("hello"));
+        assertEquals(1, result.get("world"));
+        assertEquals(1, result.get("java"));
+    }
 
-        // map of wordCount
-        List<WordCount> wordCountTasks = new ArrayList<>();
-        for (int i = 0; i < texts.size(); i++) {
-            WordCount wordCountTask = new WordCount("WordCount" + i, 0.0, texts.get(i));
-            wordCountTask.operation();
-            wordCountTasks.add(wordCountTask);
-        }
+    @Test
+    public void testMapReduceString() {
+        Controller controller = Controller.getInstance();
+        RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
+        controller.setPolicy(roundRobinImproved);
 
-        // reduce of countWord
-        int totalCountWords = Reduce.reduceCountWords(countWordsTasks.stream()
-                .map(CountWords::getResult)
-                .map(BigInteger::intValue)
-                .collect(Collectors.toList()));
+        Invoker iv1 = new InvokerCacheDecorator(new Invoker(1000, "1"));
+        controller.addInvoker(iv1);
+        iv1.addObserver(controller);
 
-        // reduce of wordCount
-        Map<String, Integer> totalWordCounts = Reduce.reduceWordCount(wordCountTasks.stream()
+        Invoker iv2 = new Invoker(2000, "2");
+        controller.addInvoker(iv2);
+        iv2.addObserver(controller);
+
+        String text = "Hello this is a test! Hello MapReduce! Hello java! TAP is about jaVA";
+        CountWords countWordsTask = new CountWords("CountWords", 10, text);
+        WordCount wordCountTask = new WordCount("WordCount", 10, text);
+
+        controller.addAction(countWordsTask);
+        controller.addAction(wordCountTask);
+
+        assertTrue(controller.distributeActions());
+        controller.executeAssignedActions();
+
+        List<WordCount> wordCountResults = controller.getActions().stream()
+                .filter(action -> action instanceof WordCount)
+                .map(action -> (WordCount) action)
+                .collect(Collectors.toList());
+
+        List<CountWords> countWordsResults = controller.getActions().stream()
+                .filter(action -> action instanceof CountWords)
+                .map(action -> (CountWords) action)
+                .collect(Collectors.toList());
+
+        Map<String, Integer> consolidatedWordCountResult = Reduce.reduceWordCount(wordCountResults.stream()
                 .map(WordCount::getResultText)
                 .collect(Collectors.toList()));
 
-        assertTrue(totalWordCounts.get("de") == 1);
-        assertTrue(totalWordCounts.get("java") == 2);
-        assertTrue(totalWordCounts.get("mapreduce") == 2);
-        assertTrue(totalWordCounts.get("esto") == 1);
-        assertTrue(totalWordCounts.get("mundo") == 1);
-        assertTrue(totalWordCounts.get("un") == 1);
-        assertTrue(totalWordCounts.get("en") == 1);
-        assertTrue(totalWordCounts.get("hola") == 2);
-        assertTrue(totalWordCounts.get("es") == 2);
-        assertTrue(totalWordCounts.get("ejemplo") == 2);
-        assertTrue(totalWordCounts.get("interesante") == 1);
-        assertEquals(16, totalCountWords);
+        BigInteger consolidatedCountWordsResult = Reduce.reduceCountWords(countWordsResults.stream()
+                .map(CountWords::getResult)
+                .collect(Collectors.toList()));
+
+        assertNotNull(consolidatedCountWordsResult);
+        assertEquals(BigInteger.valueOf(13), consolidatedCountWordsResult);
+        assertEquals(3, consolidatedWordCountResult.get("hello"));
+        assertEquals(null, consolidatedWordCountResult.get("world"));
+        assertEquals(2, consolidatedWordCountResult.get("java"));
+    }
+
+    @Test
+    public void testMapReduceFiles() {
+        Controller controller = Controller.getInstance();
+        RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
+        controller.setPolicy(roundRobinImproved);
+
+        Invoker iv1 = new InvokerCacheDecorator(new Invoker(1000, "1"));
+        controller.addInvoker(iv1);
+        iv1.addObserver(controller);
+
+        Invoker iv2 = new Invoker(2000, "2");
+        controller.addInvoker(iv2);
+        iv2.addObserver(controller);
+
+        // texts get readed and put into a list of strings
+        List<String> filePaths = List.of(
+                "text/test.txt",
+                "text/test2.txt");
+
+        String combinedText = filePaths.stream()
+                .map(TextReader::readText)
+                .collect(Collectors.joining(" "));
+
+        CountWords countWordsTask = new CountWords("CountWords", 10, combinedText);
+        WordCount wordCountTask = new WordCount("WordCount", 10, combinedText);
+
+        controller.addAction(countWordsTask);
+        controller.addAction(wordCountTask);
+
+        assertTrue(controller.distributeActions());
+
+        controller.executeAssignedActions();
+
+        List<Action> results = controller.getActions();
+
+        // filter actions wordCount and count
+        List<WordCount> wordCountResults = results.stream()
+                .filter(action -> action instanceof WordCount)
+                .map(action -> (WordCount) action)
+                .collect(Collectors.toList());
+
+        List<CountWords> countWordsResults = results.stream()
+                .filter(action -> action instanceof CountWords)
+                .map(action -> (CountWords) action)
+                .collect(Collectors.toList());
+
+        // reduce wordCount
+        Map<String, Integer> consolidatedWordCountResult = Reduce.reduceWordCount(wordCountResults.stream()
+                .map(WordCount::getResultText)
+                .collect(Collectors.toList()));
+
+        // reduce countWord
+        BigInteger consolidatedCountWordsResult = Reduce.reduceCountWords(countWordsResults.stream()
+                .map(CountWords::getResult)
+                .collect(Collectors.toList()));
+
+        assertNotNull(consolidatedCountWordsResult);
+        assertEquals(BigInteger.valueOf(100), consolidatedCountWordsResult);
+        assertEquals(12, consolidatedWordCountResult.get("de"));
+        assertEquals(5, consolidatedWordCountResult.get("que"));
+        assertEquals(2, consolidatedWordCountResult.get("la"));
+    }
+
+    @Test
+    public void testMapReduceFilesThreads() {
+        Controller controller = Controller.getInstance();
+        RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
+        controller.setPolicy(roundRobinImproved);
+
+        Invoker iv1 = new InvokerCacheDecorator(new Invoker(1000, "1"));
+        controller.addInvoker(iv1);
+        iv1.addObserver(controller);
+
+        Invoker iv2 = new Invoker(2000, "2");
+        controller.addInvoker(iv2);
+        iv2.addObserver(controller);
+
+        // texts get readed and put into a list of strings
+        List<String> filePaths = List.of(
+                "text/test.txt",
+                "text/test2.txt");
+
+        String combinedText = filePaths.stream()
+                .map(TextReader::readText)
+                .collect(Collectors.joining(" "));
+
+        CountWords countWordsTask = new CountWords("CountWords", 10, combinedText);
+        WordCount wordCountTask = new WordCount("WordCount", 10, combinedText);
+
+        controller.addAction(countWordsTask);
+        controller.addAction(wordCountTask);
+
+        assertTrue(controller.distributeActions());
+
+        controller.executeAllInvokersAsync();
+
+        List<Action> results = controller.getActions();
+
+        // filter actions wordCount and count
+        List<WordCount> wordCountResults = results.stream()
+                .filter(action -> action instanceof WordCount)
+                .map(action -> (WordCount) action)
+                .collect(Collectors.toList());
+
+        List<CountWords> countWordsResults = results.stream()
+                .filter(action -> action instanceof CountWords)
+                .map(action -> (CountWords) action)
+                .collect(Collectors.toList());
+
+        // reduce wordCount
+        Map<String, Integer> consolidatedWordCountResult = Reduce.reduceWordCount(wordCountResults.stream()
+                .map(WordCount::getResultText)
+                .collect(Collectors.toList()));
+
+        // reduce countWord
+        BigInteger consolidatedCountWordsResult = Reduce.reduceCountWords(countWordsResults.stream()
+                .map(CountWords::getResult)
+                .collect(Collectors.toList()));
+
+        assertNotNull(consolidatedCountWordsResult);
+        assertEquals(BigInteger.valueOf(100), consolidatedCountWordsResult);
+        assertEquals(12, consolidatedWordCountResult.get("de"));
+        assertEquals(5, consolidatedWordCountResult.get("que"));
+        assertEquals(2, consolidatedWordCountResult.get("la"));
     }
 }

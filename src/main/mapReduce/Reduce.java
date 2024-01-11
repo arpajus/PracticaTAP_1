@@ -1,5 +1,6 @@
 package main.mapReduce;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,6 @@ public class Reduce {
      */
     public static Map<String, Integer> reduceWordCount(List<Map<String, Integer>> wordCountMaps) {
         Map<String, Integer> result = new HashMap<>();
-
         for (Map<String, Integer> wordCountMap : wordCountMaps) {
             for (Map.Entry<String, Integer> entry : wordCountMap.entrySet()) {
                 String word = entry.getKey();
@@ -35,13 +35,13 @@ public class Reduce {
      * @param wordCounts The list of word counts to be reduced.
      * @return The reduced total word count.
      */
-    public static int reduceCountWords(List<Integer> wordCounts) {
-        int result = 0;
+    public static BigInteger reduceCountWords(List<BigInteger> wordCounts) {
+        BigInteger result = BigInteger.ZERO;
 
-        for (int count : wordCounts) {
-            result += count;
+        for (BigInteger count : wordCounts) {
+            result = result.add(count);
         }
-
         return result;
     }
 }
+
