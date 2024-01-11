@@ -4,12 +4,18 @@ import java.util.ArrayList;
 
 import main.Action;
 import java.util.Arrays;
+import java.util.List;
+
 import main.Invoker;
 import main.Metric;
 import main.exceptions.InsufficientMemoryException;
 import main.interfaces.Observer;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
+//Decorator for Invoker who adds the functionality to check the Invoker cache to see if an action is already in cache 
+//to avoid wasting execution resources
 public class InvokerCacheDecorator extends Invoker {
     private Invoker invoker;
 
@@ -33,12 +39,13 @@ public class InvokerCacheDecorator extends Invoker {
         return invoker.getActions();
     }
 
+    // Checks if an action is already in cache
     @Override
     public boolean setAction(Action action) throws InsufficientMemoryException {
         if (!searchHash(action.getValues(), action)) {
-            return invoker.setAction(action);
+            return invoker.setAction(action); // if it isn't adds the action to this invoker
         } else {
-            return false;
+            return false; // if it is, then it isn't added
         }
     }
 
@@ -86,21 +93,27 @@ public class InvokerCacheDecorator extends Invoker {
         return invoker.getCache();
     }
 
-    private boolean searchHash(int[] values, Action action) {
+    public List<Future<ActionResult>> executeInvokerActionsAsync() {
+        return invoker.executeInvokerActionsAsync();
+    }
+
+    public void waitForFutures(List<Future<ActionResult>> futures) throws InterruptedException, ExecutionException {
+        invoker.waitForFutures(futures);
+    }
+
+    public void shutdownExecutorService() {
+        invoker.shutdownExecutorService();
+    }
+
+    private boolean searchHash(int[] values, Action action) { // searchs the cache to see if action is already in
         for (ActionResult result : invoker.getCache().values()) {
-            if (Arrays.equals(result.getInput(), values) && action.getClass().equals(result.getTipoAction())) {
-                action.setResult(result.getResult());
+            // if cache has the same Input and ActionType as the action that wants to be
+            // added
+            if (Arrays.equals(result.getInput(), values) && action.getClass().equals(result.getActionType())) {
+                action.setResult(result.getResult()); // action result = result in cache
                 return true;
             }
         }
         return false;
-    }
-    
-    public ArrayList<Metric> getMetrics() {
-        return invoker.getMetrics();
-    }
-
-    public String toString() {
-        return invoker.toString();
     }
 }

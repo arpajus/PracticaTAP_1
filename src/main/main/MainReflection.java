@@ -1,21 +1,13 @@
 package main.main;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.math.BigInteger;
-
-import main.Action;
 import main.Controller;
 import main.Invoker;
 import main.interfaces.InterfaceAction;
 import main.operations.Adder;
-import main.operations.Factorial;
 import main.operations.Multiplier;
 import main.policy.*;
 import main.reflection.ActionProxy;
-import main.reflection.DynamicProxy;
 
 public class MainReflection {
     public static void main(String[] args) {
@@ -41,8 +33,13 @@ public class MainReflection {
         InterfaceAction adderDynamicProxy = ActionProxy.invoke(add);
         InterfaceAction InterfaceActionAdd2 = add2;
 
+        // Operation get executed from dynamicProxy using ActionProxy and while doing so
+        // get added to the controller
         mulDynamicProxy.operation();
         adderDynamicProxy.operation();
+
+        // Operation get executed directly from the interface due to the DymaicBinding
+        // and doesn't get added to the controller
         add2.operation();
         InterfaceActionAdd2.operation();
 

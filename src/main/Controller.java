@@ -53,7 +53,7 @@ public class Controller implements Observer {
     private Controller(ArrayList<Invoker> invokers, ArrayList<Action> actions, int id) {
         this.invokers = invokers;
         this.actions = actions;
-        this.policy = new RoundRobinImproved();
+        this.policy = new RoundRobinImproved(); // default policy set to RoundRobinImproved
         this.metrics = new ArrayList<>();
         this.id = id;
     }
@@ -68,6 +68,22 @@ public class Controller implements Observer {
 
     public int getId() {
         return id;
+    }
+
+    public ArrayList<Invoker> getInvokers() {
+        return invokers;
+    }
+
+    public void setInvokers(ArrayList<Invoker> invokers) {
+        this.invokers = invokers;
+    }
+
+    public void setPolicy(DistributionPolicy policy) {
+        this.policy = policy;
+    }
+
+    public void addAction(Action action) {
+        actions.add(action);
     }
 
     public ArrayList<Action> getActions() {
@@ -87,25 +103,9 @@ public class Controller implements Observer {
         this.actions = actions;
     }
 
-    public ArrayList<Invoker> getInvokers() {
-        return invokers;
-    }
-
-    public void setInvokers(ArrayList<Invoker> invokers) {
-        this.invokers = invokers;
-    }
-
-    public void setPolicy(DistributionPolicy policy) {
-        this.policy = policy;
-    }
-
-    public void addAction(Action action) {
-        actions.add(action);
-    }
-
     public void addAction(Action action, int nTimes) {
-        // adds the same action N times, it laso adds i to de ID
-        // action.id = hi, n = 4 -> hi0, hi1, hi2, hi3
+        // adds the same action N times (same type), it laso adds "i" to the ID
+        // action.id = hi, n = 4 -> hi_0, hi_1, hi_2, hi_3
         for (int i = 0; i < nTimes; i++) {
             if (action instanceof Adder) {
                 Adder newAction = new Adder(action.getId() + "_" + i, action.getMemory(),
@@ -134,7 +134,7 @@ public class Controller implements Observer {
 
     public void addInvoker(Invoker invoker, int nTimes) {
         // adds the invoker action N times, it laso adds i to de ID
-        // invoker.id = hi, n = 4 -> hi0, hi1, hi2, hi3
+        // invoker.id = hi, n = 4 -> hi_0, hi_1, hi_2, hi_3
         for (int i = 0; i < nTimes; i++) {
             if (invoker instanceof InvokerCacheDecorator) {
                 Invoker newInvoker = new InvokerCacheDecorator(
@@ -205,16 +205,25 @@ public class Controller implements Observer {
         }
     }
 
-    public void executeAllInvokersAsync() throws InterruptedException, ExecutionException {
+    // executes all actions using threads
+    public void executeAllInvokersAsync() {
         List<Future<ActionResult>> allFutures = new ArrayList<>();
 
         for (Invoker invoker : invokers) {
+            // saves the results into a list of Futures
             List<Future<ActionResult>> invokerFutures = invoker.executeInvokerActionsAsync();
             allFutures.addAll(invokerFutures);
-
-            invoker.waitForFutures(allFutures);
+            // waits for current result before countinuing
+            try {
+                invoker.waitForFutures(allFutures);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
         }
 
+        // ends the threads
         for (Invoker invoker : invokers) {
             invoker.shutdownExecutorService();
         }
@@ -224,6 +233,7 @@ public class Controller implements Observer {
         this.metrics.addAll(metrics);
     }
 
+    // updathes the metrics using threads and future
     @Override
     public void updateMetricAsync(ArrayList<Future<Metric>> metrics) {
         ArrayList<Metric> auxiliar = new ArrayList<>();
@@ -326,5 +336,4 @@ public class Controller implements Observer {
                     ", Memory Used: " + metric.getUsedMemory());
         }
     }
-
 }

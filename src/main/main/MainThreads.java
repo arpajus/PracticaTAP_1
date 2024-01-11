@@ -5,7 +5,6 @@ import main.Invoker;
 import main.operations.Adder;
 import main.policy.*;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class MainThreads {
@@ -17,7 +16,7 @@ public class MainThreads {
         RoundRobinImproved roundRobinImproved = new RoundRobinImproved();
         controller.setPolicy(roundRobinImproved);
         // We add the Observer
-        Invoker iv1=new Invoker(1000, "1");
+        Invoker iv1 = new Invoker(1000, "1");
         controller.addInvoker(iv1);
         iv1.addObserver(controller);
         Invoker iv2 = new Invoker(2000, "2");
@@ -25,7 +24,7 @@ public class MainThreads {
         controller.addInvoker(iv2);
         iv2.addObserver(controller);
 
-        //setting the number of threads
+        // setting the number of threads
         iv1.setExecutorService(Executors.newFixedThreadPool(5));
         iv2.setExecutorService(Executors.newFixedThreadPool(3));
 
@@ -43,20 +42,14 @@ public class MainThreads {
             System.out.println("The actual memory of iv1 is " + controller.getInvokers().get(0).getTotalMemory());
             System.out.println("The actual memory of iv2 is " + controller.getInvokers().get(1).getTotalMemory());
 
-            try {
+            controller.executeAllInvokersAsync();
+            System.out.println("All actions completed.");
 
-                controller.executeAllInvokersAsync();
-                System.out.println("All actions completed.");
-
-                System.out.println("-----------------");
-                controller.analyzeExecutionTime(controller.getMetrics());
-                controller.analyzeInvokerMemory(controller.getMetrics());
-                System.out.println("-------------");
-                controller.analyzeExecutionTimeBis(controller.getMetrics());
-
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
+            System.out.println("-----------------");
+            controller.analyzeExecutionTime(controller.getMetrics());
+            controller.analyzeInvokerMemory(controller.getMetrics());
+            System.out.println("-------------");
+            controller.analyzeExecutionTimeBis(controller.getMetrics());
         } else
             System.out.println("Not all actions could be assigned");
     }

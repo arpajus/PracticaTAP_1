@@ -17,9 +17,11 @@ public class UniformGroup implements DistributionPolicy {
         int invokersIndex = 0;
 
         boolean allReturned = true;
+        // Iterate all invokers
         for (InterfaceInvoker invoker : invokers) {
             int actionsToAssign = actionsPerInvoker + (remainingActions-- > 0 ? 1 : 0);
             for (int i = 0; i < actionsToAssign; i++) {
+                // Assign action to the first invoker then gets removed
                 Action action = actions.get(0);
                 actions.remove(0);
                 try {

@@ -14,10 +14,12 @@ public class GreedyGroup implements DistributionPolicy {
     public boolean distributeActions(ArrayList<Action> actions, ArrayList<Invoker> invokers) {
         boolean assigned = false;
 
+        // Iterate all actions
         for (Action action : actions) {
             Invoker invoker = findAvailableInvoker(invokers, action);
             if (invoker != null) {
                 try {
+                    // Assign action
                     if (invoker.setAction(action)) {
                         assigned = true;
                         System.out.println(
@@ -34,6 +36,7 @@ public class GreedyGroup implements DistributionPolicy {
         return assigned;
     }
 
+    // An invoker is available if the action fits in
     private Invoker findAvailableInvoker(ArrayList<Invoker> invokers, Action action) {
         Iterator<Invoker> iterator = invokers.iterator();
         while (iterator.hasNext()) {

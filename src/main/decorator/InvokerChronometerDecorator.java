@@ -1,6 +1,7 @@
 package main.decorator;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import main.Action;
 import main.Controller;
@@ -9,7 +10,10 @@ import main.Metric;
 import main.exceptions.InsufficientMemoryException;
 import main.interfaces.Observer;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
+//Decorator for Invoker who adds the functionality to print all the execution time of this Invoker and its metrics
 public class InvokerChronometerDecorator extends Invoker {
     private Invoker invoker;
 
@@ -86,11 +90,25 @@ public class InvokerChronometerDecorator extends Invoker {
         return invoker.getMetrics();
     }
 
+    public List<Future<ActionResult>> executeInvokerActionsAsync() {
+        return invoker.executeInvokerActionsAsync();
+    }
+
+    public void waitForFutures(List<Future<ActionResult>> futures) throws InterruptedException, ExecutionException {
+        invoker.waitForFutures(futures);
+    }
+
+    public void shutdownExecutorService() {
+        invoker.shutdownExecutorService();
+    }
+
+    // prints this invoker metrics and its total time
     public String toString() {
         return invoker.toString() +
                 " | Metrics: " + invoker.getMetrics().toString() + " || TotalTime: " + chronometer();
     }
 
+    // Adds all the metrics times from this Invoker to get their total time
     public long chronometer() {
         Controller controller = Controller.getInstance();
         long time = 0;

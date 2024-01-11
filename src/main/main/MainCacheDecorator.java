@@ -19,7 +19,7 @@ public class MainCacheDecorator {
         Invoker iv1;
         Invoker iv2;
 
-        //Choose mode
+        // Choose mode
         System.out.println("\n\n[0] - DO NOT use cache decorator");
         System.out.println("[Any Key] - Use cache decorator");
         System.out.print("\nChoice: ");
@@ -46,7 +46,7 @@ public class MainCacheDecorator {
 
         iv1.addObserver(controller);
         controller.addAction(add1);
-        controller.addAction(add2, 3);
+        controller.addAction(add2, 3); // action add2 gets added 3 times as: add2_0, add2_1, add2_2
         controller.addAction(f5);
 
         System.out.println("----------------------");
@@ -57,6 +57,7 @@ public class MainCacheDecorator {
         System.out.println("----------------------");
         System.out.println("----------------------");
 
+        // At this point nothing is in cache, so it distributes and executes everything
         if (controller.distributeActions()) {
             if (distributeActionsOk1()) {
                 System.out.println("---------------- Actions distributed as expected ----------------");
@@ -79,7 +80,7 @@ public class MainCacheDecorator {
             }
             System.out.println(controller.getInvokerById("1").toString());
             System.out.println(controller.getInvokerById("2").toString());
-            System.out.println("Invoker 1 Cache has: adder [values {1,2,3,4,}]");
+            System.out.println("Invoker 1 Cache has: adder [values {1,2,3,4}]");
             System.out.println("Invoker 2 Cache has: factorial [values {5}]");
 
         } else {
@@ -94,6 +95,13 @@ public class MainCacheDecorator {
         System.out.println("----------------------");
         System.out.println("----------------------");
 
+        /*
+         * At this point Invoker "1" cache has: adder operation with [values {1,2,3,4}]
+         * At this point Invoker "2" cache has: factorial operation with [values {5}]
+         * It will only distribute action f5 due to its policy (GreedyGroup), because it
+         * tries to assign all to Invoker "1", since f5 is not in his Cache, it gets
+         * distributed and executed
+         */
         if (controller.distributeActions()) {
             if (distributeActionsOk2()) {
                 System.out.println("---------------- Actions distributed as expected ----------------");
@@ -114,7 +122,7 @@ public class MainCacheDecorator {
             }
             System.out.println(controller.getInvokerById("1").toString());
             System.out.println(controller.getInvokerById("2").toString());
-            System.out.println("Invoker 1 Cache has: adder [values {1,2,3,4,}], factorial [values {5}]");
+            System.out.println("Invoker 1 Cache has: adder [values {1,2,3,4}], factorial [values {5}]");
             System.out.println("Invoker 2 Cache has: factorial [values {5}]");
         } else {
             System.out.println("Not all actions could be assigned");
@@ -147,7 +155,15 @@ public class MainCacheDecorator {
         System.out.println(controller.getInvokerById("2").toString());
         System.out.println("----------------------");
         System.out.println("----------------------");
-
+        /*
+         * At this point Invoker "1" cache has:
+         * adder -> [values {1,2,3,4}], factorial -> [values {5}]
+         * At this point Invoker "2" cache has:
+         * factorial -> [values {5}]
+         * Tries to distribute add3, add4, f1, f2, f3, f4 to Invoker 1 first due to its policy (GreedyGroup).
+         * It won't distribute any of the new actions nor execute them, because they share its actionType
+         * and input (already in cache).
+         */
         if (controller.distributeActions()) {
             if (distributeActionsOk3()) {
                 System.out.println("---------------- Actions distributed as expected ----------------");
@@ -168,7 +184,7 @@ public class MainCacheDecorator {
             }
             System.out.println(controller.getInvokerById("1").toString());
             System.out.println(controller.getInvokerById("2").toString());
-            System.out.println("Invoker 1 Cache has: adder [values {1,2,3,4,}], factorial [values {5}]");
+            System.out.println("Invoker 1 Cache has: adder [values {1,2,3,4}], factorial [values {5}]");
             System.out.println("Invoker 2 Cache has: factorial [values {5}]");
         } else {
             System.out.println(

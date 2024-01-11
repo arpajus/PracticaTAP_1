@@ -6,7 +6,10 @@ import main.decorator.ActionResult;
 import main.exceptions.InsufficientMemoryException;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public interface InterfaceInvoker {
     public String getId();
@@ -37,4 +40,11 @@ public interface InterfaceInvoker {
 
     public ConcurrentHashMap<String, ActionResult> getCache();
 
+    public List<Future<ActionResult>> executeInvokerActionsAsync(); // required for threads
+
+    public void waitForFutures(List<Future<ActionResult>> futures) throws InterruptedException, ExecutionException; // required
+                                                                                                                    // for
+                                                                                                                    // threads
+
+    public void shutdownExecutorService(); // required for threads
 }

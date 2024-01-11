@@ -44,8 +44,6 @@ public class Invoker implements InterfaceInvoker {
         return actions;
     }
 
-    
-
     public void setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
     }
@@ -113,6 +111,7 @@ public class Invoker implements InterfaceInvoker {
         return results;
     }
 
+    //executes only the action passed by parameter
     public ActionResult executeThisAction(Action action) {
         ArrayList<Metric> metricsToNotify = new ArrayList<>();
         ActionResult result;

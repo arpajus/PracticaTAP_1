@@ -11,6 +11,7 @@ public class ActionProxy {
         System.out.println("ActionProxy added action to controller: " + action.toString());
         controller.addAction(action);
 
+        // Creates a DynamicProxy for the action using reflection
         return (InterfaceAction) Proxy.newProxyInstance(
                 Action.class.getClassLoader(),
                 new Class<?>[] { InterfaceAction.class },

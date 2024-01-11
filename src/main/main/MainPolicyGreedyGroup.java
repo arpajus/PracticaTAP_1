@@ -28,7 +28,7 @@ public class MainPolicyGreedyGroup {
         iv1.addObserver(controller);
         iv2.addObserver(controller);
         controller.addAction(add1);
-        controller.addAction(add2, 3);
+        controller.addAction(add2, 3); // action add2 gets added 3 times as: add2_0, add2_1, add2_2
         controller.addAction(f5);
 
         System.out.println("----------------------");
@@ -38,7 +38,12 @@ public class MainPolicyGreedyGroup {
         System.out.println(controller.getInvokerById("2").toString());
         System.out.println("----------------------");
         System.out.println("----------------------");
-
+        /*
+         * It will try to distribute as it follows:
+         * Invoker 1: add1, add2_0, add2_1, add2_3 (all it fits) (f5 mem = 800, invoker
+         * 1 mem left = 200)
+         * Invoker 2: f5
+         */
         if (controller.distributeActions()) {
             if (distributeActionsOk1()) {
                 System.out.println("---------------- Actions distributed as expected ----------------");
@@ -77,7 +82,11 @@ public class MainPolicyGreedyGroup {
 
         controller.addAction(add3);
         controller.addAction(mul4);
-
+        /*
+         * It will try to distribute as it follows:
+         * Invoker 1: add1, add2_0, add2_1, add2_3, add3, mul4 (all it fits)
+         * Invoker 2: f5
+         */
         if (controller.distributeActions()) {
             if (distributeActionsOk2()) {
                 System.out.println("---------------- Actions distributed as expected ----------------");

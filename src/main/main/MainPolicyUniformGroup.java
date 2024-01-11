@@ -26,7 +26,7 @@ public class MainPolicyUniformGroup {
         iv1.addObserver(controller);
         iv2.addObserver(controller);
         controller.addAction(add1);
-        controller.addAction(add2, 3);
+        controller.addAction(add2, 3); // action add2 gets added 3 times as: add2_0, add2_1, add2_2
         controller.addAction(f5);
 
         System.out.println("----------------------");
@@ -36,7 +36,12 @@ public class MainPolicyUniformGroup {
         System.out.println(controller.getInvokers().get(1).toString());
         System.out.println("----------------------");
         System.out.println("----------------------");
-
+        /*
+         * It will try to distribute as it follows:
+         * Tries to distribute equally:
+         * Invoker 1: add1, add2_0, add2_1
+         * Invoker 2: add2_2, f5
+         */
         if (controller.distributeActions()) {
             if (distributeActionsOk1()) {
                 System.out.println("---------------- Actions distributed as expected ----------------");
@@ -72,7 +77,12 @@ public class MainPolicyUniformGroup {
 
         controller.addAction(add3);
         controller.addAction(mul4);
-
+        /*
+         * It will try to distribute as it follows:
+         * Tries to distribute equally:
+         * Invoker 1: add1, add2_0, add2_1, add3
+         * Invoker 2: add2_2, f5, mul4
+         */
         if (controller.distributeActions()) {
             if (distributeActionsOk2()) {
                 System.out.println("---------------- Actions distributed as expected ----------------");

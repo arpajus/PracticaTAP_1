@@ -15,11 +15,13 @@ public class RoundRobinImproved implements DistributionPolicy {
         int initialIndex = currentInvokerIndex;
         boolean allReturned = true;
 
+        // Iterate all actions
         for (Action action : actions) {
             Invoker invoker = findAvailableInvoker(invokers, action);
 
             if (invoker != null) {
                 try {
+                    // Assign action
                     if (invoker.setAction(action)) {
                         System.out.println(
                                 "Action " + action.getId() + " assigned to Invoker " + (invokers.indexOf(invoker) + 1));
@@ -42,6 +44,7 @@ public class RoundRobinImproved implements DistributionPolicy {
         int initialIndex = currentInvokerIndex;
 
         do {
+            // Gets an invoker swaping between them (1,2,1,2...) only if it fits
             Invoker invoker = invokers.get(currentInvokerIndex);
             currentInvokerIndex = (currentInvokerIndex + 1) % invokers.size();
 

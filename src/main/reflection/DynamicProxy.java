@@ -7,15 +7,16 @@ public class DynamicProxy implements InvocationHandler {
 
     public static Object newInstance(Object target) {
         Class<?> targetClass = target.getClass();
-        return (Object) Proxy.newProxyInstance(targetClass.getClassLoader(), targetClass.getInterfaces(), new DynamicProxy(target));
+        return (Object) Proxy.newProxyInstance(targetClass.getClassLoader(), targetClass.getInterfaces(),
+                new DynamicProxy(target));
     }
-    
 
     public DynamicProxy(Object target) {
         this.target = target;
     }
 
     @Override
+    // Executes a method of the proxy with args
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object invocationResult = null;
         try {

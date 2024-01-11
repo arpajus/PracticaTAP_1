@@ -1,6 +1,5 @@
 package main.operations;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +13,7 @@ public class WordCount extends Action {
 
     @Override
     public void operation() {
-        String text=getText();
+        String text = getText();
         Map<String, Integer> wordCountMap = map(text);
         setResultText(wordCountMap);
     }
@@ -32,5 +31,5 @@ public class WordCount extends Action {
 
         return wordCountMap;
     }
-    
+
 }

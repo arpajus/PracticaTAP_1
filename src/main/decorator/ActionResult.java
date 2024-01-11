@@ -7,19 +7,19 @@ public class ActionResult {
     private String id;
     private int[] input;
     private BigInteger result;
-    private Class<? extends Action> tipoAction;
-
+    private Class<? extends Action> actionType; // reflection
 
     public ActionResult(Action action) {
         this.id = action.getId();
         this.input = action.getValues();
         this.result = action.getResult();
-        this.tipoAction = action.getClass();
+        this.actionType = action.getClass();
     }
-    
-    public Class<? extends Action> getTipoAction() {
-        return tipoAction;
+
+    public Class<? extends Action> getActionType() {
+        return actionType;
     }
+
     public String getId() {
         return id;
     }

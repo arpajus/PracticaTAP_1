@@ -13,7 +13,9 @@ public class RoundRobin implements DistributionPolicy {
     public boolean distributeActions(ArrayList<Action> actions, ArrayList<Invoker> invokers) {
         int invokersIndex = 0;
         boolean allReturned = true;
+        // Iterate all actions
         for (Action action : actions) {
+            // Gets an invoker swaping between them (1,2,1,2...)
             Invoker invoker = invokers.get(invokersIndex);
             try {
                 if (invoker.setAction(action)) {

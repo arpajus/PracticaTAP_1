@@ -27,7 +27,7 @@ public class MainPolicyBigGroup {
         iv1.addObserver(controller);
         iv2.addObserver(controller);
         controller.addAction(add1);
-        controller.addAction(add2, 3);
+        controller.addAction(add2, 3); // action add2 gets added 3 times as: add2_0, add2_1, add2_2
         controller.addAction(f5);
 
         System.out.println("----------------------");
@@ -38,6 +38,11 @@ public class MainPolicyBigGroup {
         System.out.println("----------------------");
         System.out.println("----------------------");
 
+        /*
+         * It will try to distribute as it follows:
+         * Invoker 1: add1, add2_0, add2_1, add2_3 (4 group)
+         * Invoker 2: f5
+         */
         if (controller.distributeActions()) {
             if (distributeActionsOk1()) {
                 System.out.println("---------------- Actions distributed as expected ----------------");
@@ -77,6 +82,11 @@ public class MainPolicyBigGroup {
         controller.addAction(add3);
         controller.addAction(mul4);
 
+        /*
+         * It will try to distribute as it follows:
+         * Invoker 1: add1, add2_0, add2_1, add2_3 (4 group)
+         * Invoker 2: f5, add3, mul4 (3 group)
+         */
         if (controller.distributeActions()) {
             if (distributeActionsOk2()) {
                 System.out.println("---------------- Actions distributed as expected ----------------");
