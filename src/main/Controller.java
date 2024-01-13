@@ -55,6 +55,22 @@ public class Controller implements Observer {
     }
 
     /**
+     * Constructs a new Controller instance with the specified parameters.
+     *
+     * @param nInvokers   The number of invokers to add to the controller.
+     * @param totalMemory The total memory allocated for invokers.
+     * @param actions     The list of actions to be managed by the controller.
+     * @param id          The unique identifier for the controller.
+     */
+    private Controller(int nInvokers, float totalMemory, ArrayList<Action> actions, int id) {
+        addInvoker(new Invoker(totalMemory, "1"), nInvokers);
+        this.actions = actions;
+        this.policy = new RoundRobinImproved(); // default policy set to RoundRobinImproved
+        this.metrics = new ArrayList<>();
+        this.id = id;
+    }
+
+    /**
      * Private constructor used for creating a new Controller instance with a
      * specified identifier.
      *
